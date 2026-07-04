@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="330" viewBox="0 0 880 330" role="img" aria-label="Memento - five polaroid notes: CLAUDE.md charter, MEMORY.md log, TASKS.md plan, DECISIONS.md history, BRIEF.md anchor">
+  <defs>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- self-contained background so it works on light and dark GitHub themes -->
+  <rect x="0" y="0" width="880" height="330" rx="14" fill="#0f1419"/>
+  <rect x="0.5" y="0.5" width="879" height="329" rx="14" fill="none" stroke="#2a3138" stroke-width="1"/>
+
+  <!-- title block -->
+  <text x="42" y="64" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="bold" letter-spacing="10" fill="#e6edf3">MEMENTO</text>
+  <text x="44" y="92" font-family="ui-monospace, 'Cascadia Code', Consolas, monospace" font-size="13" fill="#8b949e">your agent forgets everything between sessions - this is its system of notes</text>
+
+  <!-- handwritten reminder, top right -->
+  <g transform="translate(700 46) rotate(-4)">
+    <text x="0" y="0" font-family="'Segoe Print', 'Comic Sans MS', cursive" font-size="15" fill="#d29922">remember:</text>
+    <text x="0" y="22" font-family="'Segoe Print', 'Comic Sans MS', cursive" font-size="15" fill="#d29922">/memento:sync</text>
+    <text x="0" y="44" font-family="'Segoe Print', 'Comic Sans MS', cursive" font-size="15" fill="#d29922">before you leave</text>
+  </g>
+
+  <!-- polaroid 1: CLAUDE.md / charter -->
+  <g transform="translate(48 128) rotate(-3 68 84)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="136" height="168" rx="3" fill="#f5f2ea"/>
+    <rect x="10" y="12" width="116" height="102" fill="#1d4f8c"/>
+    <text x="68" y="58" text-anchor="middle" font-family="Georgia, serif" font-size="15" font-weight="bold" letter-spacing="2" fill="#f0f6fc">CHARTER</text>
+    <text x="68" y="80" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#a5c4e4">scope + stable IDs</text>
+    <text x="68" y="94" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#a5c4e4">auto-loaded</text>
+    <text x="68" y="146" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="13" font-weight="bold" fill="#24292f">CLAUDE.md</text>
+    <rect x="48" y="-6" width="40" height="13" rx="1" fill="#d8d3a8" opacity="0.75" transform="rotate(3 68 0)"/>
+  </g>
+
+  <!-- polaroid 2: MEMORY.md / log -->
+  <g transform="translate(210 132) rotate(2 68 84)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="136" height="168" rx="3" fill="#f5f2ea"/>
+    <rect x="10" y="12" width="116" height="102" fill="#9a6700"/>
+    <text x="68" y="58" text-anchor="middle" font-family="Georgia, serif" font-size="15" font-weight="bold" letter-spacing="2" fill="#fff8e6">LOG</text>
+    <text x="68" y="80" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#f0d896">dated facts</text>
+    <text x="68" y="94" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#f0d896">with sources</text>
+    <text x="68" y="146" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="13" font-weight="bold" fill="#24292f">MEMORY.md</text>
+    <rect x="48" y="-6" width="40" height="13" rx="1" fill="#d8d3a8" opacity="0.75" transform="rotate(-2 68 0)"/>
+  </g>
+
+  <!-- polaroid 3: TASKS.md / plan -->
+  <g transform="translate(372 126) rotate(-2 68 84)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="136" height="168" rx="3" fill="#f5f2ea"/>
+    <rect x="10" y="12" width="116" height="102" fill="#1a7f37"/>
+    <text x="68" y="58" text-anchor="middle" font-family="Georgia, serif" font-size="15" font-weight="bold" letter-spacing="2" fill="#ecfdf0">PLAN</text>
+    <text x="68" y="80" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#9fd8ac">phases + blockers</text>
+    <text x="68" y="94" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#9fd8ac">checkboxes</text>
+    <text x="68" y="146" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="13" font-weight="bold" fill="#24292f">TASKS.md</text>
+    <rect x="48" y="-6" width="40" height="13" rx="1" fill="#d8d3a8" opacity="0.75" transform="rotate(2 68 0)"/>
+  </g>
+
+  <!-- polaroid 4: DECISIONS.md / history -->
+  <g transform="translate(534 134) rotate(3 68 84)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="136" height="168" rx="3" fill="#f5f2ea"/>
+    <rect x="10" y="12" width="116" height="102" fill="#6639ba"/>
+    <text x="68" y="58" text-anchor="middle" font-family="Georgia, serif" font-size="15" font-weight="bold" letter-spacing="2" fill="#f5f0ff">HISTORY</text>
+    <text x="68" y="80" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#cdb8f0">D1 -&gt; D1.1</text>
+    <text x="68" y="94" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#cdb8f0">never deleted</text>
+    <text x="68" y="146" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="12" font-weight="bold" fill="#24292f">DECISIONS.md</text>
+    <rect x="48" y="-6" width="40" height="13" rx="1" fill="#d8d3a8" opacity="0.75" transform="rotate(-3 68 0)"/>
+  </g>
+
+  <!-- polaroid 5: BRIEF.md / anchor -->
+  <g transform="translate(696 129) rotate(-1 68 84)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="136" height="168" rx="3" fill="#f5f2ea"/>
+    <rect x="10" y="12" width="116" height="102" fill="#a12f2f"/>
+    <text x="68" y="58" text-anchor="middle" font-family="Georgia, serif" font-size="15" font-weight="bold" letter-spacing="2" fill="#fff0f0">ANCHOR</text>
+    <text x="68" y="80" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#eeb4b4">the original ask</text>
+    <text x="68" y="94" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#eeb4b4">verbatim + DoD</text>
+    <text x="68" y="146" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="13" font-weight="bold" fill="#24292f">BRIEF.md</text>
+    <rect x="48" y="-6" width="40" height="13" rx="1" fill="#d8d3a8" opacity="0.75" transform="rotate(1 68 0)"/>
+  </g>
+</svg>
