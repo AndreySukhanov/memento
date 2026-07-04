@@ -1,0 +1,23 @@
+# Decisions - {{TASK_NAME}}
+
+> **Decision records.** Numbered D1, D2, D3... When a decision is revised, the old block is
+> NOT deleted - a new block `D<N>.<M>` is added on top of it, referencing the original.
+> The history of *why it was "this way" and became "that way"* matters as much as the current state.
+
+## Revision format
+
+```markdown
+## D1.1. [Revises D1, <date>] <New decision>
+
+**Re-evaluation of D1** (<one-line summary of the original decision>).
+
+**New decision:** <what was decided now>.
+
+**Why revised:** <what changed; stakeholder quote if there was one>.
+
+**What happens to artifacts built under D1:** <rebuild / obsolete / still valid>.
+```
+
+---
+
+{{INITIAL_DECISIONS}}
