@@ -36,35 +36,21 @@ Two details do most of the work:
 
 A workspace-level `INDEX.md` registers every task folder, so "what's active and where does it live" is always one file away.
 
-## What it looks like
-
-Before - a folder of raw materials, the way real tasks actually start:
+## Structure
 
 ```
 workspace/
-└── payment-timeout-bug/
-    ├── chat_export.txt      # channel dump: who noticed what, the DoD buried in messages
-    ├── error.log            # production errors
-    └── notes.md             # half-structured repro steps and ideas
+├── INDEX.md                 # registry of all task folders: active / completed / timeline
+├── task-one/
+│   ├── CLAUDE.md            # charter    - scope, environments, stable IDs, stakeholders
+│   ├── MEMORY.md            # log        - dated facts with sources, findings, evidence, open questions
+│   ├── TASKS.md             # plan       - phases, checkboxes, blockers
+│   ├── DECISIONS.md         # history    - decision records D1, D2... revisions as D1.1, never deleted
+│   ├── BRIEF.md             # anchor     - original problem statement, verbatim, + definition of done
+│   └── ...                  # raw materials (chat exports, logs, screenshots) stay untouched
+└── task-two/
+    └── ...
 ```
-
-One `/memento:init payment-timeout-bug` later:
-
-```
-workspace/
-├── INDEX.md                 # NEW: workspace registry - the task is listed in "Active"
-└── payment-timeout-bug/
-    ├── chat_export.txt      # untouched
-    ├── error.log            # untouched
-    ├── notes.md             # untouched
-    ├── CLAUDE.md            # charter: essence, scope, repro steps, stable anchors, stakeholders
-    ├── MEMORY.md            # dated quotes with sources, findings, an evidence case, open questions, risks
-    ├── TASKS.md             # phases with real first checkboxes and a named blocker
-    ├── DECISIONS.md         # scaffold: the pending decision is named, nothing is invented
-    └── BRIEF.md             # the original ask, verbatim, plus definition of done
-```
-
-Nothing gets summarized away: quotes stay verbatim with author and timestamp, log evidence becomes a numbered case, and everything the materials did not answer becomes an open question instead of a guess.
 
 ## Install
 
