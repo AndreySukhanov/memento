@@ -36,6 +36,36 @@ Two details do most of the work:
 
 A workspace-level `INDEX.md` registers every task folder, so "what's active and where does it live" is always one file away.
 
+## What it looks like
+
+Before - a folder of raw materials, the way real tasks actually start:
+
+```
+workspace/
+└── payment-timeout-bug/
+    ├── chat_export.txt      # channel dump: who noticed what, the DoD buried in messages
+    ├── error.log            # production errors
+    └── notes.md             # half-structured repro steps and ideas
+```
+
+One `/memento:init payment-timeout-bug` later:
+
+```
+workspace/
+├── INDEX.md                 # NEW: workspace registry - the task is listed in "Active"
+└── payment-timeout-bug/
+    ├── chat_export.txt      # untouched
+    ├── error.log            # untouched
+    ├── notes.md             # untouched
+    ├── CLAUDE.md            # charter: essence, scope, repro steps, stable anchors, stakeholders
+    ├── MEMORY.md            # dated quotes with sources, findings, an evidence case, open questions, risks
+    ├── TASKS.md             # phases with real first checkboxes and a named blocker
+    ├── DECISIONS.md         # scaffold: the pending decision is named, nothing is invented
+    └── BRIEF.md             # the original ask, verbatim, plus definition of done
+```
+
+Nothing gets summarized away: quotes stay verbatim with author and timestamp, log evidence becomes a numbered case, and everything the materials did not answer becomes an open question instead of a guess.
+
 ## Install
 
 ```
@@ -52,7 +82,7 @@ A workspace-level `INDEX.md` registers every task folder, so "what's active and 
 | `/memento:status` | Read-only overview of all active tasks with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own status. |
 | `/memento:close` | Close a finished task: completion block, final decision record, index row moves to Completed. The folder stays - closed tasks are your long-term archive. |
 
-Plus an auto-activating **skill** that teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, the sync discipline - whenever it works inside an Memento folder.
+Plus an auto-activating **skill** that teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, the sync discipline - whenever it works inside a Memento folder.
 
 ## Why it works
 
