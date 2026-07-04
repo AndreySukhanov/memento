@@ -1,0 +1,13 @@
+{
+  "name": "memento",
+  "version": "1.0.0",
+  "description": "Persistent, file-based task memory for Claude Code. Your agent forgets everything between sessions - Memento doesn't.",
+  "author": {
+    "name": "Andrey Sukhanov",
+    "url": "https://github.com/AndreySukhanov"
+  },
+  "repository": "https://github.com/AndreySukhanov/memento",
+  "homepage": "https://github.com/AndreySukhanov/memento#readme",
+  "license": "MIT",
+  "keywords": ["memory", "task-memory", "knowledge-base", "agent-memory", "context", "productivity"]
+}
