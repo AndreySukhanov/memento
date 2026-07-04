@@ -1,6 +1,6 @@
 {
   "name": "memento",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Persistent, file-based task memory for Claude Code. Your agent forgets everything between sessions - Memento doesn't.",
   "author": {
     "name": "Andrey Sukhanov",

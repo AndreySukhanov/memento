@@ -43,7 +43,9 @@ Local materials then become **supporting context** in MEMORY.md; they do not dis
 
 ### Step 2. Collect and classify contents
 
-Glob `<path>/**/*` and classify every file by extension:
+Glob `<path>/**/*` and classify every file by extension.
+
+**Skip hidden and system directories entirely** - `.git`, `.obsidian`, `.idea`, `.vscode`, `node_modules`, `__pycache__`, `.venv` and anything else starting with a dot: their contents are tool plumbing, not task materials, and must not appear in MEMORY.md or Source references.
 
 **Readable text** - `.txt .md .json .yml .yaml .sql .py .js .ts .tsx .jsx .html .css .csv .log` and other plain-text formats: Read as text.
 
@@ -84,6 +86,8 @@ For each of `CLAUDE.md`, `MEMORY.md`, `TASKS.md`, `DECISIONS.md`, `BRIEF.md`:
 ### Step 5. Register in the workspace index
 
 The workspace root = the **parent directory** of the task folder. The index = `<workspace_root>/INDEX.md`.
+
+**Sanity-check the parent first**: if it looks like a general-purpose directory rather than a task workspace (Desktop, Downloads, Documents, the user's home directory), do not silently put an index there - ask: "The parent of this task folder is <path>, which looks like a general-purpose directory. Where does your task workspace live, or should I create INDEX.md here anyway?"
 
 1. If `INDEX.md` does not exist, create it from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.md.tmpl` (confirm with the user first: "No index found at <path> - create one?").
 2. Add a row to "🟢 Active": `| [<task name>](./<folder>/CLAUDE.md) | <one-line essence> | Opened {{DATE}}; <status> | <key artifacts> |`
