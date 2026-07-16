@@ -18,11 +18,13 @@ Run the full ritual if the session contained **actions** on the task: an artifac
 ## Sync order (fixed)
 
 1. **`MEMORY.md`** - append dated entries for everything new: stakeholder statements (who / when / verbatim), technical findings, new evidence cases. Update the "Current status" line with today's date.
+   - **Dedup on append:** before adding each entry, scan its target section for a line making the same claim. If one exists, update that line in place (new date / added detail) instead of writing a near-duplicate. A log that restates the same fact buries the real update.
 2. **`DECISIONS.md`** - if any recorded decision was revised this session, add a `D<N>.<M>` revision block (never delete the original; see the format at the top of the file). New decisions get the next `D<N>`.
 3. **`CLAUDE.md`** - only if the **scope or stable anchors changed**: rewrite the affected charter sections to the *current* state (no history here - history lives in DECISIONS.md). Most sessions this file is untouched.
 4. **`TASKS.md`** - check off completed items; mark checkboxes invalidated by revised decisions with `(obsolete, see D<N>.<M>)`; add new items and blockers.
 5. **`<workspace_root>/INDEX.md`** - if the one-line status of this task in "🟢 Active" no longer reflects reality, fix it. Add a Timeline line for significant events (phase completed, blocker cleared).
 6. **Session auto-memory** (if this environment has one) - update the task's project note: status line + date.
+7. **Compaction check** (Rule 5) - if `MEMORY.md` now exceeds the size budget (~250 lines / ~12 KB), seal its oldest dated entries into a `## Sealed (before <date>)` block: keep only still-load-bearing facts, drop resolved noise, never touch `CLAUDE.md` / `DECISIONS.md`. If the file is under budget, skip this step. For a large seal, hand off to `/memento:compact`.
 
 ## Report
 
@@ -30,11 +32,12 @@ Finish with a compact diff-style summary:
 
 ```
 Synced <task name>:
-  MEMORY.md    +2 facts, +1 case, status line updated
+  MEMORY.md    +2 facts, +1 case, 1 dup merged, status line updated
   DECISIONS.md +D3.1 (revision of D3)
   CLAUDE.md    untouched (no scope change)
   TASKS.md     2 checked, 1 marked obsolete, +1 blocker
   INDEX.md     status line updated
+  Compaction   under budget, skipped
 ```
 
 If nothing needed syncing, say exactly that - a truthful "nothing drifted" is a valid outcome.

@@ -44,3 +44,18 @@ At the end of any session with real actions on the task, sync in this order (or 
 6. session auto-memory, if the environment has one
 
 Registration is atomic: a new task folder that is not in `INDEX.md` within the same operation will be forgotten - write the charter and the index row back to back.
+
+## Rule 5: Compaction - seal the log, don't grow it forever
+
+`MEMORY.md` is append-only by Rule 4, so it grows every session until it no longer fits the context window it was meant to save. A memory file too big to load is the same failure as no memory at all. Bound it by **sealing**, never by silent deletion.
+
+When `MEMORY.md` crosses a size budget (rule of thumb: **~250 lines or ~12 KB**, or the moment loading it starts to crowd the session), compact the **oldest** material:
+
+- **Seal, don't delete.** Collapse the oldest dated entries into a `## Sealed (before <date>)` block near the bottom (just above `File history`): a few lines per period that keep only facts *still load-bearing today*. Decision rationale already lives in `DECISIONS.md`, so here you keep durable findings, live constraints, and still-open threads.
+- **Drop the noise, not the signal.** Resolved smoke runs, superseded numbers, day-to-day chatter - gone. Litmus: *"compressed to one clause, does the task still make sense next month?"* Yes -> seal it. Already irrelevant -> drop it. Still drives what you'd do today -> leave it live, don't seal.
+- **Never seal `CLAUDE.md` or `DECISIONS.md`.** The charter is already current-state-only; decisions are never deleted (Rule 3). Compaction touches `MEMORY.md` alone.
+- **Levels, not a wipe.** Recent sessions stay raw (L0). The first seal rolls a season into a paragraph (L1); when sealed blocks themselves pile up, fold the oldest into one line per quarter (L2). A reader can still reconstruct "what did we know, and when" at every level.
+
+**Dedup on append (the companion discipline).** Rule 2 catches the same fact living in two *files*; this catches it living twice in the *same* file. Before appending a dated entry, scan the target section for a line making the same claim. If found, update that line's date/detail in place instead of adding a near-duplicate - a log that says the same thing five times is how the real update gets buried (the exact failure that bloated one category to 184 records, half of them restatements).
+
+Run compaction inside `/memento:sync` when the budget is crossed, or on demand with `/memento:compact`.
