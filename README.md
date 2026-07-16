@@ -69,16 +69,18 @@ workspace/
 |---|---|
 | `/memento:init <folder>` | Turn a folder of raw materials (chat exports, screenshots, notes, logs) into the 5-file memory set. Reads **everything** including images, extracts dated stakeholder quotes and evidence, never invents facts - gaps become open questions. Optionally pulls the ticket from your tracker. |
 | `/memento:sync` | End-of-session ritual: propagate what happened into the memory files **in a fixed order** (log -> decisions -> charter -> plan -> index), so nothing drifts. |
+| `/memento:compact` | Seal the oldest entries of a task's `MEMORY.md` into a compressed summary block so the log stays loadable - keeps still-relevant facts, drops resolved noise, never touches the charter or decisions. Runs automatically inside sync when the log crosses its size budget. |
 | `/memento:status` | Read-only overview of all active tasks with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own status. |
 | `/memento:close` | Close a finished task: completion block, final decision record, index row moves to Completed. The folder stays - closed tasks are your long-term archive. |
 
-Plus an auto-activating **skill** that teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, the sync discipline - whenever it works inside a Memento folder.
+Plus an auto-activating **skill** that teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, the sync discipline, the compaction rule (seal the log, don't grow it forever) - whenever it works inside a Memento folder.
 
 ## Why it works
 
 - **Decisions are append-only.** When a decision is revised, the old block stays and a `D1.1` block explains what changed, why, and what happens to artifacts built under the old decision. A month later you can reconstruct the whole path - and nobody re-litigates a settled question.
 - **Every fact has a date and a source.** "The API returns 403" is a trap; "the API returned 403 on 2026-06-12, per Jane's message in #backend" is memory. Staleness becomes measurable - `/memento:status` literally measures it.
 - **Evidence is triaged explicitly.** During init, every screenshot and log gets an explicit keep/mention/skip decision, and even skipped files are listed - nothing silently disappears.
+- **Memory stays bounded.** An append-only log eventually grows too big to load - which defeats the point. Compaction seals the oldest entries into a compressed, still-readable summary (keeping what's load-bearing, dropping resolved noise), so the log stays loadable without losing the thread.
 - **It's just Markdown.** Greppable, diffable, works in any editor, survives any tooling change. Your memory is not held hostage by a plugin - uninstall Memento and every file remains fully usable.
 
 ## Origin
