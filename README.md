@@ -73,7 +73,7 @@ workspace/
 | `/memento:status` | Read-only overview of all active tasks with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own status. |
 | `/memento:close` | Close a finished task: completion block, final decision record, index row moves to Completed. The folder stays - closed tasks are your long-term archive. |
 
-Plus an auto-activating **skill** that teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, the sync discipline, the compaction rule (seal the log, don't grow it forever) - whenever it works inside a Memento folder.
+Plus an auto-activating **skill** that teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, the sync discipline, the compaction rule (seal the log, don't grow it forever), correction lenses (refract wrong history, never rewrite it), status glyphs, and the shape of session auto-memory - whenever it works inside a Memento folder.
 
 ## Why it works
 
@@ -81,6 +81,8 @@ Plus an auto-activating **skill** that teaches the agent the method itself - the
 - **Every fact has a date and a source.** "The API returns 403" is a trap; "the API returned 403 on 2026-06-12, per Jane's message in #backend" is memory. Staleness becomes measurable - `/memento:status` literally measures it.
 - **Evidence is triaged explicitly.** During init, every screenshot and log gets an explicit keep/mention/skip decision, and even skipped files are listed - nothing silently disappears.
 - **Memory stays bounded.** An append-only log eventually grows too big to load - which defeats the point. Compaction seals the oldest entries into a compressed, still-readable summary (keeping what's load-bearing, dropping resolved noise), so the log stays loadable without losing the thread.
+- **Wrong history is refracted, not rewritten.** When past entries turn out to be factually wrong, you add a correction lens at the top of the log instead of editing dozens of scattered lines. What you believed - and when - stays auditable, while every future read is corrected automatically.
+- **Cross-task memory has a shape.** Rules of engagement, stable references and who the user is live in session auto-memory as atomic files with frontmatter - one fact per file, indexed - so they accrete for months without becoming an unreadable blob.
 - **It's just Markdown.** Greppable, diffable, works in any editor, survives any tooling change. Your memory is not held hostage by a plugin - uninstall Memento and every file remains fully usable.
 
 ## Origin
