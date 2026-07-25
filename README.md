@@ -84,6 +84,8 @@ session auto-memory/         # cross-task layer (one fact per file)
 
 Plus an auto-activating **skill** that teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, the sync discipline, the compaction rule (seal the log, don't grow it forever), correction lenses (refract wrong history, never rewrite it), status glyphs, and the shape of session auto-memory - whenever it works inside a Memento folder.
 
+The skill also **offers the sync instead of waiting to be asked**: it watches for drift triggers during the session (a decision made or revised, a stakeholder statement, an artifact changed, a phase moved, new evidence, a standing preference, a belief proven wrong) and, at a natural boundary, names what changed and proposes `/memento:sync`. Once per boundary, never nagging - and silent when the session was pure Q&A.
+
 ## Why it works
 
 - **Decisions are append-only.** When a decision is revised, the old block stays and a `D1.1` block explains what changed, why, and what happens to artifacts built under the old decision. A month later you can reconstruct the whole path - and nobody re-litigates a settled question.
