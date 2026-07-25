@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.2.1 - The skill offers the sync
+
+**Sync is no longer purely user-initiated.** A ritual that depends on the user
+remembering it gets skipped exactly when the session was busiest. The skill now
+tracks **drift triggers** during a session - a decision made/revised/rejected, a
+stakeholder statement, an artifact change, a phase move, new evidence, a standing
+preference, a belief proven wrong - and at a natural conversation boundary states
+plainly what changed and offers `/memento:sync`.
+
+Discipline built in: offer **once** per boundary, name *what* drifted rather than
+asking a generic "shall I sync?", accept a refusal as a valid outcome, and stay
+silent when nothing fired (pure Q&A sessions need no sync; offering anyway trains
+users to ignore the prompt).
+
+Added to Rule 4 in `skills/task-memory/SKILL.md`; skill description broadened so
+it activates at session wrap-up, not only inside a task folder.
+
 ## 1.2.0 - Correction lenses, status glyphs, atomic auto-memory
 
 Three practices that were already load-bearing in daily production use but

@@ -1,6 +1,6 @@
 ---
 name: task-memory
-description: Rules for maintaining Memento task memory. Use when working inside a task folder that contains the 5-file memory set (CLAUDE.md, MEMORY.md, TASKS.md, DECISIONS.md, BRIEF.md), when deciding whether a new task deserves a full memory folder, when recording or revising decisions, or when the user mentions task memory, memory sync, or decision history.
+description: Rules for maintaining Memento task memory. Use when working inside a task folder that contains the 5-file memory set (CLAUDE.md, MEMORY.md, TASKS.md, DECISIONS.md, BRIEF.md), when deciding whether a new task deserves a full memory folder, when recording or revising decisions, when a session produced decisions/stakeholder statements/artifact changes and is wrapping up (offer the sync), or when the user mentions task memory, memory sync, or decision history.
 ---
 
 # Memento task-memory method
@@ -44,6 +44,36 @@ At the end of any session with real actions on the task, sync in this order (or 
 6. session auto-memory, if the environment has one
 
 Registration is atomic: a new task folder that is not in `INDEX.md` within the same operation will be forgotten - write the charter and the index row back to back.
+
+### Offer the sync - don't wait to be asked
+
+A ritual that depends on the user remembering it will be skipped exactly when the session was busiest. So the agent watches for **sync triggers** and offers the sync itself.
+
+**Track these during the session.** Any one of them means memory has drifted:
+
+- a **decision** was made, revised or rejected (Rule 3 material);
+- a **stakeholder statement** arrived - a quote, a requirement, a constraint;
+- an **artifact changed** - script, spec, migration, PR;
+- a **phase moved** - blocked, unblocked, completed, reopened;
+- **new evidence** appeared - log, screenshot, measurement, test result;
+- the user stated a **standing preference** (Rule 8 `feedback_*` material);
+- an earlier belief turned out to be **wrong** (Rule 6 lens material).
+
+**When at least one fired**, and the conversation reaches a natural boundary - the
+task is wrapped up, the user shifts to another topic, or says something like
+"that's it for today" - say so plainly and name what would be written:
+
+> Memory has drifted this session: a decision was revised (D4 -> D4.1) and Jane
+> confirmed the deploy window. Sync it? (`/memento:sync`)
+
+Rules for the offer: **offer once** per boundary, never nag; state *what* changed,
+not just "shall I sync"; if the user declines, drop it - a refused sync is a valid
+outcome, not an unfinished task. If nothing fired, stay quiet: a session of pure
+question-answering needs no sync, and offering one anyway trains the user to
+ignore the prompt.
+
+Purely informational sessions, quick lookups and aborted experiments do **not**
+count as triggers.
 
 ## Rule 5: Compaction - seal the log, don't grow it forever
 
