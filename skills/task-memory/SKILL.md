@@ -5,7 +5,7 @@ description: Rules for maintaining Memento task memory. Use when working inside 
 
 # Memento task-memory method
 
-Four rules that keep file-based task memory truthful across sessions. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
+Eight rules that keep file-based task memory truthful across sessions. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
 
 ## Rule 1: The threshold - not every task deserves a folder
 
@@ -57,5 +57,96 @@ When `MEMORY.md` crosses a size budget (rule of thumb: **~250 lines or ~12 KB**,
 - **Levels, not a wipe.** Recent sessions stay raw (L0). The first seal rolls a season into a paragraph (L1); when sealed blocks themselves pile up, fold the oldest into one line per quarter (L2). A reader can still reconstruct "what did we know, and when" at every level.
 
 **Dedup on append (the companion discipline).** Rule 2 catches the same fact living in two *files*; this catches it living twice in the *same* file. Before appending a dated entry, scan the target section for a line making the same claim. If found, update that line's date/detail in place instead of adding a near-duplicate - a log that says the same thing five times is how the real update gets buried (the exact failure that bloated one category to 184 records, half of them restatements).
+
+## Rule 6: Correction lenses - never rewrite history, refract it
+
+Rule 3 protects *decisions* from being overwritten. Facts need the same
+protection. When you discover that past entries were factually wrong - a wrong
+person attributed, a wrong place, a wrong assumption - the instinct is to edit
+them. Don't. You lose the record of what you believed and when, and you will
+miss occurrences scattered across files.
+
+Instead put a **correction lens** at the top of `MEMORY.md`, in a section read
+*before* any older entry:
+
+```markdown
+## CORRECTION LENSES (read before any older entry)
+
+- **LENS 1 (2026-05-12) - role attribution.** Before this date the role
+  "backend developer / deploys to prod" was wrongly attributed to the CEO.
+  Any earlier entry saying "CEO deploys / CEO owns the API" must be read as:
+  API decisions went through the CEO for approval, the implementer was the
+  backend engineer.
+```
+
+**Why it works:** history stays auditable ("on the 19th we believed X"), while
+every future read is corrected automatically. One lens fixes dozens of scattered
+entries without touching them.
+
+Write a lens instead of an edit when: the wrong fact appears in more than one
+place, or the error changes the interpretation of a whole period rather than one
+line, or the old belief itself explains decisions made back then. Straight edits
+remain fine for typos and single-line fixes.
+
+**Companion for volatile state:** keep a `## CURRENT PHASE` block right under the
+lenses, refreshed whenever the situation flips. An agent reading a month-old log
+will otherwise reason from a stale frame - the files can be perfectly correct
+while the *reading frame* is not.
+
+## Rule 7: Status glyphs - state visible at a glance
+
+Prefix sections and entries with a one-character status. Reading a 30 KB memory
+file to learn what is hot right now defeats the purpose of memory.
+
+```
+active/burning · waiting on a condition · in progress, calm · closed
+(pick a 4-glyph set and put the legend in the file header)
+```
+
+Apply to `TASKS.md` section headers, `MEMORY.md` dated entries, and workspace
+`INDEX.md` rows. This is triage, not decoration: it lets a human and an agent
+scan a long file in one pass, and it surfaces drift - a "burning" marker three
+months old is itself a signal.
+
+## Rule 8: Session auto-memory - atomic facts, not one growing file
+
+Rule 4 step 6 says "session auto-memory, if the environment has one" without
+saying how. The shape that survives months of use:
+
+**One fact = one file**, with frontmatter, in the session-memory directory:
+
+```markdown
+---
+name: Never suggest going to sleep
+description: User asked (2026-07-24) not to advise rest unprompted.
+type: feedback
+---
+User explicitly asked: do not tell him to rest on my own initiative.
+
+**Why:** repeated every answer for days, read as nagging.
+**How to apply:** only if he asks, or once in an acute spiral - never twice.
+```
+
+Types that emerge in practice: `feedback_*` (corrections and standing
+preferences), `project_*` (active work: goal, state, next step), `reference_*`
+(stable lookups: where credentials live, contracts, calculation recipes),
+`user_*` (who the person is).
+
+Keep an index `MEMORY.md` in the same directory - grouped by glyph, one line per
+file with a *why it matters* clause, so retrieval is decidable without opening
+everything.
+
+**Why atomic beats monolithic:** the index carries the map and only the relevant
+file is loaded; a single fact can be revised without rewriting a large file; the
+frontmatter `description` is what makes retrieval decidable. A workspace running
+this shape accumulated ~50 such files over months with no maintenance burden; the
+same content in one file would have become unreadable long before that.
+
+**Division of labour:** folder files (`CLAUDE.md`, `MEMORY.md`, ...) hold *task*
+memory, synced by the Rule 4 ritual. Auto-memory holds *cross-task* memory -
+rules of engagement, stable references, who the user is - and accretes
+continuously as such facts surface.
+
+---
 
 Run compaction inside `/memento:sync` when the budget is crossed, or on demand with `/memento:compact`.
