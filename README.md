@@ -40,6 +40,8 @@ Two details do most of the work:
 
 A workspace-level `INDEX.md` registers every task folder, so "what's active and where does it live" is always one file away.
 
+Alongside task memory there is a second, **cross-task layer**: session auto-memory - atomic files (one fact each, with frontmatter) holding rules of engagement, stable references and who the user is. Task folders answer *"what is this task?"*; auto-memory answers *"how do we work together?"*.
+
 ## Structure
 
 ```
@@ -54,6 +56,13 @@ workspace/
 │   └── ...                  # raw materials (chat exports, logs, screenshots) stay untouched
 └── task-two/
     └── ...
+
+session auto-memory/         # cross-task layer (one fact per file)
+├── MEMORY.md                # index: grouped rows with a why-it-matters clause
+├── feedback_*.md            # corrections and standing preferences from the user
+├── project_*.md             # active work: goal, state, next step
+├── reference_*.md           # stable lookups: credentials location, contracts, recipes
+└── user_*.md                # who the person is
 ```
 
 ## Install
@@ -68,7 +77,7 @@ workspace/
 | Command | What it does |
 |---|---|
 | `/memento:init <folder>` | Turn a folder of raw materials (chat exports, screenshots, notes, logs) into the 5-file memory set. Reads **everything** including images, extracts dated stakeholder quotes and evidence, never invents facts - gaps become open questions. Optionally pulls the ticket from your tracker. |
-| `/memento:sync` | End-of-session ritual: propagate what happened into the memory files **in a fixed order** (log -> decisions -> charter -> plan -> index), so nothing drifts. |
+| `/memento:sync` | End-of-session ritual: propagate what happened into the memory files **in a fixed order** (correction lenses -> log -> decisions -> charter -> plan -> index -> auto-memory), so nothing drifts. Writes a lens instead of editing history when past entries turn out to be wrong. |
 | `/memento:compact` | Seal the oldest entries of a task's `MEMORY.md` into a compressed summary block so the log stays loadable - keeps still-relevant facts, drops resolved noise, never touches the charter or decisions. Runs automatically inside sync when the log crosses its size budget. |
 | `/memento:status` | Read-only overview of all active tasks with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own status. |
 | `/memento:close` | Close a finished task: completion block, final decision record, index row moves to Completed. The folder stays - closed tasks are your long-term archive. |
@@ -99,6 +108,10 @@ Task trackers store *state*, wikis store *documents*. Memento stores *working me
 
 **What about vector databases / RAG memory?**
 Complementary, not competing. Memento is deliberately low-tech: for a single workspace of tasks, structured files beat embeddings on precision, auditability, and zero infrastructure. If you outgrow it, the files are perfect RAG source material.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v1.2.0** - correction lenses, status glyphs, atomic auto-memory.
 
 ## License
 
