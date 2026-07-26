@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.0.0 - One command, automatic maintenance
+
+**Breaking: the command set is gone - only `/memento:init` remains.**
+`/memento:sync`, `/memento:compact`, `/memento:status` and `/memento:close`
+are removed; their algorithms now live in the skill as **Automatic operations**
+the agent performs on its own initiative:
+
+- **Sync** runs automatically at a natural session boundary when drift
+  triggers fired - the agent announces a diff-style summary instead of asking
+  permission. Nothing fired - nothing touched.
+- **Compaction** runs inside the sync whenever the log crosses its budget;
+  large seals get a heads-up first.
+- **Closing** is proposed by the agent when a task is done (confirmation kept -
+  closing is semantic; never over open blockers silently).
+- **Status** is answered from the files whenever the user asks how their tasks
+  are doing - read-only, with the same staleness and drift warnings.
+
+Rationale: a ritual that waits for a command gets skipped exactly when the
+session was busiest. v1.2.1 taught the skill to *offer* the sync; v2.0.0 makes
+it *perform* the maintenance. Initialization stays a command because
+bootstrapping a folder from raw materials is a deliberate, user-initiated act.
+
 ## 1.2.1 - The skill offers the sync
 
 **Sync is no longer purely user-initiated.** A ritual that depends on the user
