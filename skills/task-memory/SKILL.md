@@ -201,6 +201,13 @@ Four mandates - different lenses, not one "check everything":
 | **Pattern scout** | Cross-task links and patterns the main agent missed - a fresh read of the whole board | `INDEX.md` + active task logs |
 | **Memory auditor** | Contradictions between files, stale statuses, duplicates, broken pointers | the whole structure |
 
+**Verification tiers - graduated by stakes.** A single observer's verdict is proportionate for ordinary insights; for claims that decisions ride on, one model's vote is a thin gate - verifier models err too. Two tiers:
+
+- **Single verdict (default):** one model from the pool verifies; recorded as `verified by <model>, <date>`.
+- **Panel vote (high stakes):** triggered when the claim touches a **release artifact**, **contradicts a stakeholder statement**, or would **revise a decision** (D-block). Every model in the pool gets the same verification brief, each through a *different lens* - correctness of the cited sources / the strongest alternative explanation / consequence check ("if this is true, what follows and does that hold?"). Majority decides; a tie escalates to the user. Recorded with the dissent named, never averaged away: `verified by 2/3 panel (gpt, grok), <date>; dissent: gemini - <one-line reason>`.
+
+Diverse lenses beat identical refuters: models fail differently, so coverage compounds.
+
 Reports land in `<workspace_root>/Observers/` as `YYYY-MM-DD-<model>-<mandate>.md` and are never deleted - they are the audit history.
 
 **Memory health score.** Every observer report ends with a mandatory short **Memory quality** section: could the task be reconstructed from the files alone; what was missing; a **0-10 score**. The cold read is a standing test of the memory itself, and the score turns that side effect into a tracked signal - the latest score per task surfaces in the status overview, and a task cannot close over a low score without a repair pass. If the scores are low, the memory is failing at its one job, whatever the task status says.
@@ -296,6 +303,8 @@ Mechanics (external models over the OpenRouter API):
 3. **Save the raw report** to `Observers/YYYY-MM-DD-<model>-<mandate>.md` verbatim, before any triage. Reports are never deleted.
 4. **Triage** (main agent): update insight statuses (`verified by <model>, <date>` / refuted with the reason), open questions for "insufficient evidence" verdicts, record disagreements in the insight file (both positions) and surface them to the user. Sapper findings that invalidate a decision's premise -> a `D<N>.<M>` revision proposal, never a silent edit.
 5. **Report to the user** in one block: which mandates ran, on which models, verdict counts (confirmed / refuted / insufficient), the memory health scores, and anything escalated.
+
+**Tier selection** (Rule 10): before sending a verification brief, check the stakes. Ordinary insight -> one model (rotate through the pool). Claim touching a release artifact / contradicting a stakeholder statement / revising a D-block -> **panel vote**: same brief to every pool model, each with its assigned lens (sources / alternative explanation / consequences), majority decides, tie escalates, dissent recorded by name.
 
 Rotate mandates by need, not all four every time: insight verification runs on the insight trigger; Sapper - before major decisions and closes; pattern scout and memory auditor - on the calendar (an active workspace deserves a pass every week or two).
 

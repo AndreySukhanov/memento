@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.7.0 - Panel voting: verification graduated by stakes
+
+Rule 10 gains two verification tiers. A single observer's verdict stays the
+default for ordinary insights; for claims that decisions ride on, one model's
+vote is a thin gate - verifier models err too.
+
+**Panel vote** triggers when a claim touches a release artifact, contradicts
+a stakeholder statement, or would revise a decision (D-block). Every model in
+the pool gets the same verification brief through a *different lens* -
+correctness of cited sources / strongest alternative explanation /
+consequence check. Majority decides; a tie escalates to the user; the dissent
+is recorded by name, never averaged away:
+`verified by 2/3 panel (gpt, grok), <date>; dissent: gemini - <reason>`.
+
+Diverse lenses beat identical refuters: models fail differently, so coverage
+compounds.
+
 ## 2.6.0 - Dead-end recall + memory health score
 
 Two zero-new-entity additions from the backlog - both activate data the
