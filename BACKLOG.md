@@ -8,7 +8,9 @@ Sources of inspiration are named where relevant - the 2026 memory-runtime landsc
 
 ## Now - strongest candidates for the next releases
 
-### 1. Rule 11: Case distillation - closed tasks become skills (verified procedural memory)
+### 1. Rule 11: Case distillation - closed tasks become skills (verified procedural memory) ⏳ deferred by design
+
+> Held until enough real closed tasks exist to validate distillation on live material rather than synthetic examples - it is the only M-cost, new-entity candidate, and it ships last on purpose.
 
 **Problem.** Closed task folders are an archive, not leverage. The same kind of task (a release-SQL package, a smoke-test harness, a stakeholder-alignment dance) gets re-derived from scratch, and the archive only helps if someone thinks to read it.
 
@@ -21,7 +23,7 @@ Sources of inspiration are named where relevant - the 2026 memory-runtime landsc
 
 **Cost.** M. New rule + a close-operation extension + one observer mandate ("skill auditor": do the Cases actually support the generalization?).
 
-### 2. Dead-end recall - refuted memory must be retrieved, not just kept
+### 2. Dead-end recall - refuted memory must be retrieved, not just kept ✅ shipped in v2.6.0
 
 **Problem.** We already keep refuted insights and won't-do items ("a documented dead end is also memory") - but nothing forces the agent to *look at them* when planning. Industry evaluations note that retrieving what failed matters as much as retrieving what worked (contrastive recall); storage without retrieval is decoration.
 
@@ -31,7 +33,7 @@ Sources of inspiration are named where relevant - the 2026 memory-runtime landsc
 
 **Cost.** S. A paragraph in Rule 9/Rule 3 and one line in the sync operation.
 
-### 3. Panel voting - graduated verification for high-stakes claims
+### 3. Panel voting - graduated verification for high-stakes claims ✅ shipped in v2.7.0
 
 **Problem.** Rule 10 currently promotes a hypothesis on a single observer's verdict. For cheap insights that is proportionate; for a claim that feeds a release decision, one model's vote is a thin gate - and verifier models err too.
 
@@ -44,7 +46,7 @@ Sources of inspiration are named where relevant - the 2026 memory-runtime landsc
 
 **Cost.** S-M. Rule 10 extension + observer-pass branching on stakes.
 
-### 4. Memory health score - formalize the cold-read test
+### 4. Memory health score - formalize the cold-read test ✅ shipped in v2.6.0
 
 **Problem.** Every observer pass already doubles as a test of whether the files speak for themselves, but the result evaporates into prose. MEMPROBE-style thinking applies: memory quality is measurable as an artifact, separately from task success.
 
@@ -61,7 +63,7 @@ Sources of inspiration are named where relevant - the 2026 memory-runtime landsc
 
 ## Next - worth doing, needs more shaping
 
-### 5. Retrieval interop - "markdown is truth, index is a rebuildable shadow"
+### 5. Retrieval interop - "markdown is truth, index is a rebuildable shadow" ✅ shipped as [docs/RETRIEVAL.md](docs/RETRIEVAL.md)
 
 **Problem.** Recall currently rides on the index file plus grep. That holds at the current scale (dozens of files) and keeps the zero-infrastructure promise, but a workspace with hundreds of tasks and thousands of insights will outgrow lexical search.
 
