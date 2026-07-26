@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.1.0 - Init once, bootstrap automatically
+
+`/memento:init` is now a **one-time workspace initialization**: it creates the
+`INDEX.md` registry and registers existing task folders. From there the skill
+**auto-inits** new tasks: when work crosses the Rule 1 threshold (or a folder
+of raw materials has no memory files), the agent announces it and bootstraps
+the 5-file set itself - same extraction discipline as before (read everything
+including images, never invent facts, atomic index registration).
+
+Pointing `/memento:init` at a task folder inside an initialized workspace
+still bootstraps that single folder - kept as a manual escape hatch.
+
+Guardrails: no silent structure in an uninitialized workspace (no `INDEX.md` ->
+suggest running init once); borderline threshold calls still get the "full
+folder, or just a note?" question.
+
 ## 2.0.0 - One command, automatic maintenance
 
 **Breaking: the command set is gone - only `/memento:init` remains.**

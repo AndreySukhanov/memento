@@ -17,7 +17,7 @@ The result is familiar to anyone doing multi-day, multi-stakeholder work with an
 
 ## The idea
 
-Memento is not a database, not a vector store, not an MCP server. It is a **method plus automation**: a disciplined file layout that turns each task into a self-describing memory unit, and a skill that keeps it truthful automatically. One command bootstraps a task folder; from there the agent maintains the memory itself.
+Memento is not a database, not a vector store, not an MCP server. It is a **method plus automation**: a disciplined file layout that turns each task into a self-describing memory unit, and a skill that keeps it truthful automatically. One command initializes the workspace - once; from there the agent creates and maintains the memory itself.
 
 Every non-trivial task gets a folder with five files, each with one strict role:
 
@@ -68,18 +68,19 @@ session auto-memory/         # cross-task layer (one fact per file)
 /plugin install memento@memento
 ```
 
-## One command
+## One command, run once
 
 | Command | What it does |
 |---|---|
-| `/memento:init <folder>` | Turn a folder of raw materials (chat exports, screenshots, notes, logs) into the 5-file memory set. Reads **everything** including images, extracts dated stakeholder quotes and evidence, never invents facts - gaps become open questions. Optionally pulls the ticket from your tracker. |
+| `/memento:init <workspace>` | **One-time workspace initialization.** Creates the `INDEX.md` registry and registers existing task folders (bootstrapping the 5-file set for those that only have raw materials). Pointed at a task folder inside an initialized workspace, it bootstraps just that folder - a manual escape hatch you rarely need. |
 
-Initialization is the only command, because bootstrapping a folder is a deliberate, user-initiated act. Everything after that is not.
+Initialization is the only command, and you run it once per workspace. Everything after that - including creating folders for new tasks - is automatic.
 
 ## Automatic maintenance
 
 An auto-activating **skill** teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, correction lenses (refract wrong history, never rewrite it), status glyphs, the shape of session auto-memory - and makes maintenance the agent's duty, not yours:
 
+- **Bootstrap.** When a task crosses the folder threshold (more than a day / 2+ stakeholders / release artifact / 2+ phases), the agent announces it and creates the 5-file folder itself: reads **everything** in the materials including images, extracts dated stakeholder quotes and evidence, never invents facts - gaps become open questions - and registers the folder in the index in the same operation.
 - **Sync.** The agent watches for drift triggers during the session (a decision made or revised, a stakeholder statement, an artifact changed, a phase moved, new evidence, a standing preference, a belief proven wrong) and, at a natural boundary, writes the memory files **in a fixed order** (lenses -> log -> decisions -> charter -> plan -> index -> auto-memory), announcing a diff-style summary of what was written. Nothing fired - nothing touched.
 - **Compaction.** When a log crosses its size budget (~250 lines / ~12 KB), the oldest entries are sealed into a compressed summary block that keeps still-relevant facts and drops resolved noise - the log stays loadable without losing the thread. Large seals get a heads-up first.
 - **Closing.** When a task is done, the agent proposes the close (confirmation required - closing is semantic), records the final outcome and decision, and moves the index row to Completed. Folders are never deleted - closed tasks are your long-term archive.
@@ -112,7 +113,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.0.0** - one command, automatic maintenance.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.1.0** - init once, bootstrap automatically.
 
 ## License
 

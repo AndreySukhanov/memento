@@ -1,17 +1,17 @@
 ---
 name: task-memory
-description: Rules and automatic maintenance for Memento task memory. Use when working inside a task folder that contains the 5-file memory set (CLAUDE.md, MEMORY.md, TASKS.md, DECISIONS.md, BRIEF.md), when deciding whether a new task deserves a full memory folder, when recording or revising decisions, when a session produced decisions/stakeholder statements/artifact changes and is wrapping up (run the sync), when a task's MEMORY.md outgrows its size budget (seal it), when the user asks how their tasks are doing (status overview), when a task is finished (close it), or when the user mentions task memory, memory sync, or decision history.
+description: Rules and automatic maintenance for Memento task memory. Use when working inside a task folder that contains the 5-file memory set (CLAUDE.md, MEMORY.md, TASKS.md, DECISIONS.md, BRIEF.md), when a task crosses the folder threshold and needs a folder bootstrapped automatically (auto-init in an initialized workspace), when recording or revising decisions, when a session produced decisions/stakeholder statements/artifact changes and is wrapping up (run the sync), when a task's MEMORY.md outgrows its size budget (seal it), when the user asks how their tasks are doing (status overview), when a task is finished (close it), or when the user mentions task memory, memory sync, or decision history.
 ---
 
 # Memento task-memory method
 
 Eight rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
 
-The only command is `/memento:init` - bootstrapping a folder from raw materials is a deliberate, user-initiated act. Everything else - syncing, sealing, closing, status - is the agent's own duty: memory that waits for a command drifts.
+The only command is `/memento:init`, and it is run **once per workspace** - it creates the `INDEX.md` registry and registers what already exists. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
 
 ## Rule 1: The threshold - not every task deserves a folder
 
-Create a **full 5-file folder** (via `/memento:init`) only if at least one holds:
+Create a **full 5-file folder** (automatically - see "Auto-init" below) only if at least one holds:
 - the task will take **more than one working day**;
 - **more than two stakeholders** with different roles are involved;
 - a **release artifact** is required (migration script, spec document, PR);
@@ -132,7 +132,22 @@ Keep an index `MEMORY.md` in the same directory - grouped by glyph, one line per
 
 # Automatic operations
 
-The rules above say *why*; this section says *how*. All four operations are performed by the agent on its own initiative - no commands.
+The rules above say *why*; this section says *how*. All five operations are performed by the agent on its own initiative - no commands.
+
+## Auto-init (Rule 1 in action)
+
+Once the workspace is initialized (`INDEX.md` exists at its root), the agent creates task folders itself. Triggers:
+
+- the current work **crosses the Rule 1 threshold** and has no task folder yet;
+- a folder of **raw materials without the 5 memory files** is being worked in.
+
+When a trigger fires, announce and do - same policy as the sync:
+
+> This task crosses the folder threshold (release artifact + 3 stakeholders). Bootstrapping `checkout-latency-bug/` in the workspace.
+
+Then follow the **Task bootstrap procedure** from the plugin's `commands/init.md` (read that file for the full discipline): classify and read all materials including every image, extract dated stakeholder quotes and evidence with explicit keep/mention/skip decisions, fill the 5 templates from `${CLAUDE_PLUGIN_ROOT}/templates/`, never invent facts - gaps become open questions - and register the folder in `INDEX.md` in the same operation. If there are no materials yet, bootstrap from session context: what is known so far goes in, everything unknown becomes an open question.
+
+Guardrails: if the workspace has **no `INDEX.md`**, do not silently create structure - suggest running `/memento:init` once instead. If the threshold call is genuinely borderline, ask ("full folder, or just a note?" - Rule 1). Name the folder plainly after the task; the user can rename it later.
 
 ## The sync (Rule 4 in action)
 
