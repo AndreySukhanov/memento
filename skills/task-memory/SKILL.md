@@ -143,16 +143,33 @@ A memory that only accumulates entries is an archive, not a memory. An **insight
 - **Reactive, at append time** - *contradiction* and *answered question*. These are direct matches against the section you are already scanning for dedup (Rule 5); they jump out the moment the entry is written and are never postponed - a fact that contradicts memory, or answers a recorded question, must not sit unprocessed.
 - **Batch synthesis, on accumulation** - *pattern*, *implication*, *cross-task link*. Run this pass only when enough new material has piled up since the last one: rule of thumb **~7+ new dated entries or ~2 KB of new log material**, or a **phase boundary** (a phase completed, a decision landed). Track it with a `_Last insight pass: <date>_` marker line in the Insights section - everything dated after the marker is unprocessed material. Below the threshold, skip silently: synthesis over two facts produces noise, and rereading the whole memory for every new line is waste, not diligence. When the pass runs, update the marker.
 
-Record insights in a dedicated `MEMORY.md` section, clearly marked as derived:
+**Recording - one insight = one dated file.** Every insight is saved to the workspace-level `Insights/` folder as `Insights/YYYY-MM-DD-<slug>.md`:
+
+```markdown
+---
+date: 2026-07-26
+title: Deploy window collides with the freeze
+tasks: [checkout-latency-bug, platform-migration]
+status: hypothesis   # hypothesis | confirmed <date> | refuted <date>
+sources:
+  - checkout-latency-bug/MEMORY.md - Jane's window fact (26.07)
+  - platform-migration/CLAUDE.md - release freeze section
+---
+
+Jane's deploy window (26.07) falls inside the release freeze recorded in
+platform-migration. One of the two must move.
+```
+
+The task's `MEMORY.md` `## Insights` section gets the short dated pointer line:
 
 ```markdown
 ## Insights (derived - verify before acting on)
 
-- 💡 **2026-07-26 - deploy window collides with the freeze.** Jane's window
-  (26.07, see Stakeholder facts) falls inside the release freeze recorded in
-  `platform-migration/CLAUDE.md`. One of the two must move.
-  Derived from: fact 26.07 + platform-migration charter. Status: hypothesis.
+- 💡 **2026-07-26** - deploy window collides with the freeze ->
+  [Insights/2026-07-26-deploy-window-freeze.md](../Insights/2026-07-26-deploy-window-freeze.md) (hypothesis)
 ```
+
+A **cross-task** insight lives as one file; every involved task's log gets its own pointer line - found from all ends, stored once. When an insight's status changes (confirmed, refuted), update the file's `status` field with a date and the pointer lines; never delete the file - a refuted insight documents a dead end, which is also memory. If the `Insights/` folder does not exist yet, create it on the first insight.
 
 Guardrails - what keeps this signal, not noise:
 - an insight must cite **at least two sources** (that is the definition - a restated single fact is not an insight);
@@ -188,7 +205,7 @@ Runs at a natural session boundary when at least one drift trigger fired. Fixed 
 
 0. **Lenses first.** If an earlier belief was proven wrong this session, write a correction lens (Rule 6) instead of editing history; refresh `## CURRENT PHASE`.
 1. **`MEMORY.md`** - append dated entries for everything new: stakeholder statements (who / when / verbatim), technical findings, new evidence cases. Update the "Current status" line with today's date. **Dedup on append** (Rule 5): update an existing line in place rather than writing a near-duplicate.
-2. **Insight pass** (Rule 9) - the reactive shapes (contradiction, answered question) were already handled at append time in step 1. The synthesis shapes (pattern, implication, cross-task link) run only if enough new material accumulated since the `_Last insight pass_` marker (~7+ new dated entries / ~2 KB, or a phase boundary) - below that, skip silently. When it runs: findings -> dated, source-linked entries in `## Insights`; update the marker. Zero findings - update the marker and move on.
+2. **Insight pass** (Rule 9) - the reactive shapes (contradiction, answered question) were already handled at append time in step 1. The synthesis shapes (pattern, implication, cross-task link) run only if enough new material accumulated since the `_Last insight pass_` marker (~7+ new dated entries / ~2 KB, or a phase boundary) - below that, skip silently. When it runs: each finding -> a dated file in `<workspace_root>/Insights/` + a pointer line in `## Insights` of every involved task (Rule 9 format); update the marker. Zero findings - update the marker and move on.
 3. **`DECISIONS.md`** - revised decisions get a `D<N>.<M>` block (never delete the original); new decisions get the next `D<N>`.
 4. **`CLAUDE.md`** - only if scope or stable anchors changed: rewrite the affected charter sections to the *current* state. Most sessions this file is untouched.
 5. **`TASKS.md`** - check off completed items; mark invalidated checkboxes `(obsolete, see D<N>.<M>)`; add new items and blockers.

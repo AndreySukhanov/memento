@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.3.0 - Insights as dated files
+
+Every insight is now saved as its own file in the workspace-level `Insights/`
+folder - `Insights/YYYY-MM-DD-<slug>.md` with frontmatter (date, tasks,
+status, sources) and the statement as the body. The task's `## Insights`
+section keeps a short dated pointer line to the file.
+
+- A **cross-task** insight is stored once and pointed to from every involved
+  task's log - found from all ends, no duplication.
+- Status changes (confirmed / refuted) update the file's `status` field with a
+  date; the file is never deleted - a refuted insight documents a dead end,
+  which is also memory.
+- Workspace init now creates the `Insights/` folder; if it is missing, it is
+  created on the first insight.
+
 ## 2.2.1 - Insight synthesis gated by volume
 
 The insight pass no longer fires on every new fact. Two tiers:
