@@ -91,6 +91,19 @@ An auto-activating **skill** teaches the agent the method itself - the threshold
 - **Closing.** When a task is done, the agent proposes the close (confirmation required - closing is semantic), records the final outcome and decision, and moves the index row to Completed. Folders are never deleted - closed tasks are your long-term archive.
 - **Status.** Ask "how are my tasks doing?" and get a read-only overview with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own files.
 
+## What makes it different
+
+File-based agent memory is a crowded category in 2026: markdown-first memory runtimes, tiered session logs, SQLite observation stores, `AGENTS.md` as a standard. Some of them also *reflect* - synthesize conclusions from accumulated facts. Memento shares the file-based foundation, and its insight synthesis has good company.
+
+The difference is what happens **after** the memory writes something down. The known central risk of reflective memory is **self-reinforcing error**: the agent derives a conclusion, stores it, later retrieves it as if it were a fact, and builds the next conclusion on top. Industry reviews call the quality gates for this "still underdeveloped". Memento's answer is structural, not aspirational:
+
+- **The author never grades their own work.** A hypothesis cannot be promoted by the agent that wrote it - only by a real-world fact or an outside observer's verdict.
+- **Outside observers are different model families, reading cold.** Independent models get the files and nothing else - no session context, no summaries. Their errors are uncorrelated with the author's, and the cold read doubles as a standing test that the memory actually speaks for itself.
+- **Decisions get mined for rot.** The Sapper mandate re-examines what recorded decisions *rest on* - assumptions that were never proven, or that newer facts have quietly contradicted.
+- **Verification leaves a trail.** Observer reports are stored verbatim and never deleted; disagreements are recorded with both positions, not resolved by silence.
+
+Storage is table stakes. Not trusting your own memory is the feature.
+
 ## Why it works
 
 - **Decisions are append-only.** When a decision is revised, the old block stays and a `D1.1` block explains what changed, why, and what happens to artifacts built under the old decision. A month later you can reconstruct the whole path - and nobody re-litigates a settled question.
