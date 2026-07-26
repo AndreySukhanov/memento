@@ -17,7 +17,7 @@ The result is familiar to anyone doing multi-day, multi-stakeholder work with an
 
 ## The idea
 
-Memento is not a database, not a vector store, not an MCP server. It is a **method plus automation**: a disciplined file layout that turns each task into a self-describing memory unit, and commands that keep it truthful.
+Memento is not a database, not a vector store, not an MCP server. It is a **method plus automation**: a disciplined file layout that turns each task into a self-describing memory unit, and a skill that keeps it truthful automatically. One command bootstraps a task folder; from there the agent maintains the memory itself.
 
 Every non-trivial task gets a folder with five files, each with one strict role:
 
@@ -68,24 +68,27 @@ session auto-memory/         # cross-task layer (one fact per file)
 /plugin install memento@memento
 ```
 
-## Commands
+## One command
 
 | Command | What it does |
 |---|---|
 | `/memento:init <folder>` | Turn a folder of raw materials (chat exports, screenshots, notes, logs) into the 5-file memory set. Reads **everything** including images, extracts dated stakeholder quotes and evidence, never invents facts - gaps become open questions. Optionally pulls the ticket from your tracker. |
-| `/memento:sync` | End-of-session ritual: propagate what happened into the memory files **in a fixed order** (correction lenses -> log -> decisions -> charter -> plan -> index -> auto-memory), so nothing drifts. Writes a lens instead of editing history when past entries turn out to be wrong. |
-| `/memento:compact` | Seal the oldest entries of a task's `MEMORY.md` into a compressed summary block so the log stays loadable - keeps still-relevant facts, drops resolved noise, never touches the charter or decisions. Runs automatically inside sync when the log crosses its size budget. |
-| `/memento:status` | Read-only overview of all active tasks with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own status. |
-| `/memento:close` | Close a finished task: completion block, final decision record, index row moves to Completed. The folder stays - closed tasks are your long-term archive. |
 
-Plus an auto-activating **skill** that teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, the sync discipline, the compaction rule (seal the log, don't grow it forever), correction lenses (refract wrong history, never rewrite it), status glyphs, and the shape of session auto-memory - whenever it works inside a Memento folder.
+Initialization is the only command, because bootstrapping a folder is a deliberate, user-initiated act. Everything after that is not.
 
-The skill also **offers the sync instead of waiting to be asked**: it watches for drift triggers during the session (a decision made or revised, a stakeholder statement, an artifact changed, a phase moved, new evidence, a standing preference, a belief proven wrong) and, at a natural boundary, names what changed and proposes `/memento:sync`. Once per boundary, never nagging - and silent when the session was pure Q&A.
+## Automatic maintenance
+
+An auto-activating **skill** teaches the agent the method itself - the threshold rule (not every task deserves a folder), the file roles, the decision-revision format, correction lenses (refract wrong history, never rewrite it), status glyphs, the shape of session auto-memory - and makes maintenance the agent's duty, not yours:
+
+- **Sync.** The agent watches for drift triggers during the session (a decision made or revised, a stakeholder statement, an artifact changed, a phase moved, new evidence, a standing preference, a belief proven wrong) and, at a natural boundary, writes the memory files **in a fixed order** (lenses -> log -> decisions -> charter -> plan -> index -> auto-memory), announcing a diff-style summary of what was written. Nothing fired - nothing touched.
+- **Compaction.** When a log crosses its size budget (~250 lines / ~12 KB), the oldest entries are sealed into a compressed summary block that keeps still-relevant facts and drops resolved noise - the log stays loadable without losing the thread. Large seals get a heads-up first.
+- **Closing.** When a task is done, the agent proposes the close (confirmation required - closing is semantic), records the final outcome and decision, and moves the index row to Completed. Folders are never deleted - closed tasks are your long-term archive.
+- **Status.** Ask "how are my tasks doing?" and get a read-only overview with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own files.
 
 ## Why it works
 
 - **Decisions are append-only.** When a decision is revised, the old block stays and a `D1.1` block explains what changed, why, and what happens to artifacts built under the old decision. A month later you can reconstruct the whole path - and nobody re-litigates a settled question.
-- **Every fact has a date and a source.** "The API returns 403" is a trap; "the API returned 403 on 2026-06-12, per Jane's message in #backend" is memory. Staleness becomes measurable - `/memento:status` literally measures it.
+- **Every fact has a date and a source.** "The API returns 403" is a trap; "the API returned 403 on 2026-06-12, per Jane's message in #backend" is memory. Staleness becomes measurable - the status overview literally measures it.
 - **Evidence is triaged explicitly.** During init, every screenshot and log gets an explicit keep/mention/skip decision, and even skipped files are listed - nothing silently disappears.
 - **Memory stays bounded.** An append-only log eventually grows too big to load - which defeats the point. Compaction seals the oldest entries into a compressed, still-readable summary (keeping what's load-bearing, dropping resolved noise), so the log stays loadable without losing the thread.
 - **Wrong history is refracted, not rewritten.** When past entries turn out to be factually wrong, you add a correction lens at the top of the log instead of editing dozens of scattered lines. What you believed - and when - stays auditable, while every future read is corrected automatically.
@@ -99,7 +102,7 @@ Extracted from months of daily prompt-engineering work on a production AI produc
 ## FAQ
 
 **Does it need Claude Code specifically?**
-The commands and auto-loading of `CLAUDE.md` are Claude Code features. The method - five files, litmus test, append-only decisions, sync order - works with any agent or with no agent at all.
+The `/memento:init` command, the auto-activating skill and the auto-loading of `CLAUDE.md` are Claude Code features. The method - five files, litmus test, append-only decisions, sync order - works with any agent or with no agent at all.
 
 **How is this different from a TODO app or a wiki?**
 Task trackers store *state*, wikis store *documents*. Memento stores *working memory*: dated facts, superseded decisions with rationale, and evidence - the things you need to resume thinking, not just to report progress.
@@ -109,7 +112,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v1.2.0** - correction lenses, status glyphs, atomic auto-memory.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.0.0** - one command, automatic maintenance.
 
 ## License
 
