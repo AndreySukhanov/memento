@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.5.0 - Ad-hoc observer panel
+
+New command `/memento:observers <question>` - run any question (plus attached
+material files) through the Rule 10 outside-observer pool on demand, not just
+on the scheduled triggers. Use for draft reviews, contested decisions,
+hypothesis checks, "what am I missing?".
+
+- Same pool (`Observers/CONFIG.md`), same key convention (model id without
+  `/` -> provider's own API, with `/` -> OpenRouter; keys from env vars only),
+  same storage (`Observers/adhoc/YYYY-MM-DD-<slug>-<model>.md`, never deleted).
+- The agent synthesizes instead of retelling: consensus, disagreements (the
+  zone of genuine uncertainty), unique findings, own recommendation - siding
+  against the panel is allowed but must be argued explicitly.
+- Guardrails: refuse trivial questions (the panel costs money), continue past
+  a failed model, apply Rule 10 statuses when a verdict touches a recorded
+  insight.
+
 ## 2.4.0 - Outside observers
 
 **New Rule 10: the author never grades their own work.** Independent models

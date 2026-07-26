@@ -70,13 +70,14 @@ session auto-memory/         # cross-task layer (one fact per file)
 /plugin install memento@memento
 ```
 
-## One command, run once
+## Commands
 
 | Command | What it does |
 |---|---|
 | `/memento:init <workspace>` | **One-time workspace initialization.** Creates the `INDEX.md` registry and registers existing task folders (bootstrapping the 5-file set for those that only have raw materials). Pointed at a task folder inside an initialized workspace, it bootstraps just that folder - a manual escape hatch you rarely need. |
+| `/memento:observers <question>` | **Ad-hoc multi-model panel.** Runs any question (plus attached materials) through the outside-observer pool and synthesizes consensus, disagreements and unique findings. For anything where a second model family's view is worth the tokens: draft reviews, contested decisions, "what am I missing?". |
 
-Initialization is the only command, and you run it once per workspace. Everything after that - including creating folders for new tasks - is automatic.
+You run init once per workspace; observers - whenever a question deserves a panel. All *maintenance* - including creating folders for new tasks - is automatic, no commands.
 
 ## Automatic maintenance
 
@@ -117,7 +118,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.4.0** - outside observers.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.5.0** - ad-hoc observer panel.
 
 ## License
 
