@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.6.0 - Dead-end recall + memory health score
+
+Two zero-new-entity additions from the backlog - both activate data the
+system already stores.
+
+**Dead-end recall.** Refuted insights and won't-do items must be *consulted*,
+not just kept: before recording any new decision, plan or approach, the agent
+scans `Insights/` for `status: refuted` and the relevant won't-do items, and
+states the result ("no known dead ends touch this" / which ones do and why
+the new plan differs). The sync report gains a `Dead-ends` line. Storage
+without retrieval is decoration.
+
+**Memory health score.** Every observer report now ends with a mandatory
+**Memory quality** section: could the task be reconstructed from the files
+alone, what was missing, and a 0-10 score. The latest score per task surfaces
+in the status overview (with a warning on <=5 or a drop), and a task cannot
+close over a low score without one repair pass - the archive is only worth
+keeping if a future reader can use it.
+
 ## 2.5.0 - Ad-hoc observer panel
 
 New command `/memento:observers <question>` - run any question (plus attached

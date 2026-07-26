@@ -89,7 +89,8 @@ An auto-activating **skill** teaches the agent the method itself - the threshold
 - **Observers.** The author never grades their own work: independent models (over the OpenRouter API, key via env var, models via `Observers/CONFIG.md`) are connected automatically when 3+ unverified insights accumulate, before a release handoff, or at a task close. They read the memory **cold** - files only, no session context - which doubles as a live test of memory quality, and report under four mandates: insight verifier, **Sapper** (finds mines under decisions: outdated or unproven assumptions), pattern scout, memory auditor. Reports are saved verbatim and never deleted; a hypothesis can only be promoted by a real-world fact or an observer's verdict; disagreements are recorded, not discarded.
 - **Compaction.** When a log crosses its size budget (~250 lines / ~12 KB), the oldest entries are sealed into a compressed summary block that keeps still-relevant facts and drops resolved noise - the log stays loadable without losing the thread. Large seals get a heads-up first.
 - **Closing.** When a task is done, the agent proposes the close (confirmation required - closing is semantic), records the final outcome and decision, and moves the index row to Completed. Folders are never deleted - closed tasks are your long-term archive.
-- **Status.** Ask "how are my tasks doing?" and get a read-only overview with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own files.
+- **Status.** Ask "how are my tasks doing?" and get a read-only overview with staleness detection - which memories haven't been synced in a week, where the index contradicts the task's own files - plus each task's **memory health score**: every observer report grades whether a cold reader could reconstruct the task from the files alone (0-10), and a task cannot close over a low score without a repair pass.
+- **Dead-end recall.** Refuted insights and won't-do items are not just kept - they are *consulted*: before any new decision or plan is recorded, the agent checks the stored dead ends and states either "no known dead ends touch this" or which ones do. The accidental rollback to a rejected option is the failure this whole method exists to prevent.
 
 ## What makes it different
 
@@ -131,7 +132,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.5.0** - ad-hoc observer panel.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.6.0** - dead-end recall + memory health score.
 
 ## Roadmap
 
