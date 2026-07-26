@@ -43,6 +43,7 @@ Alongside task memory there is a second, **cross-task layer**: session auto-memo
 ```
 workspace/
 ├── INDEX.md                 # registry of all task folders: active / completed / timeline
+├── Insights/                # one insight per dated file: 2026-07-26-deploy-window-freeze.md
 ├── task-one/
 │   ├── CLAUDE.md            # charter    - scope, environments, stable IDs, stakeholders
 │   ├── MEMORY.md            # log        - dated facts with sources, findings, evidence, open questions
@@ -82,7 +83,7 @@ An auto-activating **skill** teaches the agent the method itself - the threshold
 
 - **Bootstrap.** When a task crosses the folder threshold (more than a day / 2+ stakeholders / release artifact / 2+ phases), the agent announces it and creates the 5-file folder itself: reads **everything** in the materials including images, extracts dated stakeholder quotes and evidence, never invents facts - gaps become open questions - and registers the folder in the index in the same operation.
 - **Sync.** The agent watches for drift triggers during the session (a decision made or revised, a stakeholder statement, an artifact changed, a phase moved, new evidence, a standing preference, a belief proven wrong) and, at a natural boundary, writes the memory files **in a fixed order** (lenses -> log -> insights -> decisions -> charter -> plan -> index -> auto-memory), announcing a diff-style summary of what was written. Nothing fired - nothing touched.
-- **Insights.** New entries are checked against everything already recorded - this task's log and decisions, the other active tasks, cross-task auto-memory - in two tiers. Direct matches (a contradiction, an answer to a recorded open question) are caught the moment an entry is appended. The heavier synthesis - repeated failures becoming generalized rules, combinations that change the plan (a deadline collision, an invalidated approach, a merge risk between tasks) - runs only once enough new material has accumulated, because connections need critical mass: forcing the search on every new fact produces noise, not insight. Findings are recorded as dated, source-linked insights - hypotheses until verified, never silently promoted to fact. Zero insights is a valid outcome.
+- **Insights.** New entries are checked against everything already recorded - this task's log and decisions, the other active tasks, cross-task auto-memory - in two tiers. Direct matches (a contradiction, an answer to a recorded open question) are caught the moment an entry is appended. The heavier synthesis - repeated failures becoming generalized rules, combinations that change the plan (a deadline collision, an invalidated approach, a merge risk between tasks) - runs only once enough new material has accumulated, because connections need critical mass: forcing the search on every new fact produces noise, not insight. Each finding is saved as a **dated file in the workspace-level `Insights/` folder** (one insight per file, with sources and status: hypothesis / confirmed / refuted), and every involved task's log gets a pointer line - a cross-task insight is stored once and found from all ends. Hypotheses until verified, never silently promoted to fact; refuted insights stay - a documented dead end is also memory. Zero insights is a valid outcome.
 - **Compaction.** When a log crosses its size budget (~250 lines / ~12 KB), the oldest entries are sealed into a compressed summary block that keeps still-relevant facts and drops resolved noise - the log stays loadable without losing the thread. Large seals get a heads-up first.
 - **Closing.** When a task is done, the agent proposes the close (confirmation required - closing is semantic), records the final outcome and decision, and moves the index row to Completed. Folders are never deleted - closed tasks are your long-term archive.
 - **Status.** Ask "how are my tasks doing?" and get a read-only overview with staleness detection: which memories haven't been synced in a week, where the index contradicts the task's own files.
@@ -114,7 +115,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.2.1** - insight synthesis, gated by volume.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.3.0** - insights as dated files.
 
 ## License
 

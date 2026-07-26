@@ -28,7 +28,7 @@ If the path looks like a general-purpose directory rather than a task workspace 
 
 ### Step 2. Create the index
 
-Create `<workspace_root>/INDEX.md` from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.md.tmpl`. If an `INDEX.md` already exists here, say the workspace is already initialized and stop (offer the task-folder escape hatch if the user meant to bootstrap one folder).
+Create `<workspace_root>/INDEX.md` from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.md.tmpl`, and an empty `<workspace_root>/Insights/` folder (dated insight files land there - see the skill's Rule 9). If an `INDEX.md` already exists here, say the workspace is already initialized and stop (offer the task-folder escape hatch if the user meant to bootstrap one folder).
 
 ### Step 3. Register what already exists
 
