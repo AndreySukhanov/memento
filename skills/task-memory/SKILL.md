@@ -1,11 +1,11 @@
 ---
 name: task-memory
-description: Rules and automatic maintenance for Memento task memory. Use when working inside a task folder that contains the 5-file memory set (CLAUDE.md, MEMORY.md, TASKS.md, DECISIONS.md, BRIEF.md), when a task crosses the folder threshold and needs a folder bootstrapped automatically (auto-init in an initialized workspace), when recording or revising decisions, when a session produced decisions/stakeholder statements/artifact changes and is wrapping up (run the sync), when a task's MEMORY.md outgrows its size budget (seal it), when the user asks how their tasks are doing (status overview), when a task is finished (close it), or when the user mentions task memory, memory sync, or decision history.
+description: Rules and automatic maintenance for Memento task memory. Use when working inside a task folder that contains the 5-file memory set (CLAUDE.md, MEMORY.md, TASKS.md, DECISIONS.md, BRIEF.md), when a task crosses the folder threshold and needs a folder bootstrapped automatically (auto-init in an initialized workspace), when recording or revising decisions, when a session produced decisions/stakeholder statements/artifact changes and is wrapping up (run the sync), when new information combined with recorded memory yields an insight - a contradiction, an answered question, a pattern, an implication, a cross-task link (record it), when a task's MEMORY.md outgrows its size budget (seal it), when the user asks how their tasks are doing (status overview), when a task is finished (close it), or when the user mentions task memory, memory sync, or decision history.
 ---
 
 # Memento task-memory method
 
-Eight rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
+Nine rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
 
 The only command is `/memento:init`, and it is run **once per workspace** - it creates the `INDEX.md` registry and registers what already exists. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
 
@@ -128,6 +128,34 @@ Keep an index `MEMORY.md` in the same directory - grouped by glyph, one line per
 
 **Division of labour:** folder files (`CLAUDE.md`, `MEMORY.md`, ...) hold *task* memory, synced by the Rule 4 ritual. Auto-memory holds *cross-task* memory - rules of engagement, stable references, who the user is - and accretes continuously as such facts surface.
 
+## Rule 9: Insight synthesis - stored facts must talk to each other
+
+A memory that only accumulates entries is an archive, not a memory. An **insight** is a conclusion that follows from combining *new* information with something *already recorded* - and that nobody has written down yet. Whenever new facts land (every sync, and any time you notice one while reading), run them against existing memory: this task's log and decisions, the other active tasks in `INDEX.md`, and cross-task auto-memory. Look for five shapes:
+
+- **Contradiction** - a new fact contradicts a recorded one. Decide which is right: wrong history gets a correction lens (Rule 6); genuinely unresolved goes to "Open questions" naming both sides.
+- **Answered question** - the new information resolves an entry in "Open questions": record the answer next to it and close it. An open question that stays open after its answer arrived is drift.
+- **Pattern** - the same failure, behaviour or request appears for the 2nd-3rd time, in this log or across tasks: generalize it - a charter constraint, or an auto-memory `feedback_*`/`reference_*` fact (Rule 8).
+- **Implication** - new fact + existing constraint = a consequence that changes the plan and is written nowhere: a deadline collision, an invalidated approach, a merge risk between two tasks touching the same artifact.
+- **Cross-task link** - the fact involves an entity central to another active task (same person, system, table, prompt, deadline - check the `INDEX.md` rows): leave a dated pointer in that task's `MEMORY.md` too, so the insight is found from both ends.
+
+Record insights in a dedicated `MEMORY.md` section, clearly marked as derived:
+
+```markdown
+## Insights (derived - verify before acting on)
+
+- 💡 **2026-07-26 - deploy window collides with the freeze.** Jane's window
+  (26.07, see Stakeholder facts) falls inside the release freeze recorded in
+  `platform-migration/CLAUDE.md`. One of the two must move.
+  Derived from: fact 26.07 + platform-migration charter. Status: hypothesis.
+```
+
+Guardrails - what keeps this signal, not noise:
+- an insight must cite **at least two sources** (that is the definition - a restated single fact is not an insight);
+- record only **actionable** insights - ones that would change a decision, a plan or a risk assessment; interesting-but-inert observations stay unwritten;
+- an insight is a **hypothesis until verified** - never silently promote it to fact; when confirmed, update its status with a date, and only then may it feed a decision block or a charter edit;
+- dedup against existing insights before appending (Rule 5 discipline applies);
+- **zero insights is a valid outcome** - most syncs will find none, and a forced insight is worse than silence.
+
 ---
 
 # Automatic operations
@@ -155,18 +183,20 @@ Runs at a natural session boundary when at least one drift trigger fired. Fixed 
 
 0. **Lenses first.** If an earlier belief was proven wrong this session, write a correction lens (Rule 6) instead of editing history; refresh `## CURRENT PHASE`.
 1. **`MEMORY.md`** - append dated entries for everything new: stakeholder statements (who / when / verbatim), technical findings, new evidence cases. Update the "Current status" line with today's date. **Dedup on append** (Rule 5): update an existing line in place rather than writing a near-duplicate.
-2. **`DECISIONS.md`** - revised decisions get a `D<N>.<M>` block (never delete the original); new decisions get the next `D<N>`.
-3. **`CLAUDE.md`** - only if scope or stable anchors changed: rewrite the affected charter sections to the *current* state. Most sessions this file is untouched.
-4. **`TASKS.md`** - check off completed items; mark invalidated checkboxes `(obsolete, see D<N>.<M>)`; add new items and blockers.
-5. **`<workspace_root>/INDEX.md`** - fix the task's one-line status if it no longer reflects reality; add a Timeline line for significant events.
-6. **Session auto-memory** (if the environment has one) - update the task's project note (status + date); write any new `feedback_*`/`reference_*` facts that surfaced (Rule 8).
-7. **Compaction check** (Rule 5) - if `MEMORY.md` now exceeds ~250 lines / ~12 KB, seal the oldest entries. Under budget - skip.
+2. **Insight pass** (Rule 9) - run the just-appended entries against existing memory: this task's log and decisions, the other active tasks in `INDEX.md`, cross-task auto-memory. Contradictions -> lens or open question; answers -> close the open question; patterns -> generalize; implications and cross-task links -> dated, source-linked entries in `## Insights`. Zero findings - move on.
+3. **`DECISIONS.md`** - revised decisions get a `D<N>.<M>` block (never delete the original); new decisions get the next `D<N>`.
+4. **`CLAUDE.md`** - only if scope or stable anchors changed: rewrite the affected charter sections to the *current* state. Most sessions this file is untouched.
+5. **`TASKS.md`** - check off completed items; mark invalidated checkboxes `(obsolete, see D<N>.<M>)`; add new items and blockers.
+6. **`<workspace_root>/INDEX.md`** - fix the task's one-line status if it no longer reflects reality; add a Timeline line for significant events.
+7. **Session auto-memory** (if the environment has one) - update the task's project note (status + date); write any new `feedback_*`/`reference_*` facts that surfaced (Rule 8).
+8. **Compaction check** (Rule 5) - if `MEMORY.md` now exceeds ~250 lines / ~12 KB, seal the oldest entries. Under budget - skip.
 
 Finish with a compact diff-style report:
 
 ```
 Synced <task name>:
   MEMORY.md    +2 facts, +1 case, 1 dup merged, status line updated
+  Insights     +1: deploy window collides with the freeze (hypothesis)
   DECISIONS.md +D3.1 (revision of D3)
   CLAUDE.md    untouched (no scope change)
   TASKS.md     2 checked, 1 marked obsolete, +1 blocker
@@ -178,7 +208,7 @@ Registration is atomic: a new task folder that is not in `INDEX.md` within the s
 
 ## Sealing an oversized log (Rule 5 in action)
 
-Normally happens inside sync step 7. For a **large** seal (the file is far over budget and triage will take real work), tell the user what you are about to do first - a seal rewrites the shape of the log, and scale deserves a heads-up:
+Normally happens inside sync step 8. For a **large** seal (the file is far over budget and triage will take real work), tell the user what you are about to do first - a seal rewrites the shape of the log, and scale deserves a heads-up:
 
 1. Read the whole `MEMORY.md`. The newest ~1/3 of dated entries stays raw (L0); keep the "Current status" line as-is.
 2. Triage the older two-thirds line by line: still load-bearing -> compress to one clause and seal; noise -> drop; decision rationale -> belongs in `DECISIONS.md`, flag if missing there.
