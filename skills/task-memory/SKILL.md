@@ -201,6 +201,8 @@ Four mandates - different lenses, not one "check everything":
 
 Reports land in `<workspace_root>/Observers/` as `YYYY-MM-DD-<model>-<mandate>.md` and are never deleted - they are the audit history.
 
+Besides the scheduled passes, the panel is available on demand via `/memento:observers <question>` - ad-hoc multi-model analysis of any question, with the same pool, storage and trust rules.
+
 Observers run automatically - see "Observer pass" in Automatic operations.
 
 ---
