@@ -1,5 +1,31 @@
 # Changelog
 
+## 2.2.0 - Insight synthesis
+
+**New Rule 9: stored facts must talk to each other.** A memory that only
+accumulates entries is an archive, not a memory. Every sync now includes an
+**insight pass**: the just-appended entries are run against everything already
+recorded - this task's log and decisions, the other active tasks in `INDEX.md`,
+cross-task auto-memory - looking for five shapes:
+
+- **contradiction** -> correction lens or open question naming both sides;
+- **answered question** -> the open question gets its answer and closes;
+- **pattern** (2nd-3rd occurrence) -> generalized into a charter constraint or
+  an auto-memory fact;
+- **implication** (new fact + existing constraint = unwritten consequence) ->
+  recorded in a dedicated `## Insights` section;
+- **cross-task link** -> a dated pointer written into the other task's log too,
+  so the insight is found from both ends.
+
+Guardrails: an insight must cite at least two sources, must be actionable,
+stays a **hypothesis until verified** (never silently promoted to fact), is
+deduped before appending - and zero insights is a valid outcome; a forced
+insight is worse than silence.
+
+Sync order is now: lenses -> log -> **insights** -> decisions -> charter ->
+plan -> index -> auto-memory -> compaction. The sync report gained an
+`Insights` line.
+
 ## 2.1.0 - Init once, bootstrap automatically
 
 `/memento:init` is now a **one-time workspace initialization**: it creates the
