@@ -28,7 +28,19 @@ If the path looks like a general-purpose directory rather than a task workspace 
 
 ### Step 2. Create the index
 
-Create `<workspace_root>/INDEX.md` from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.md.tmpl`, and an empty `<workspace_root>/Insights/` folder (dated insight files land there - see the skill's Rule 9). If an `INDEX.md` already exists here, say the workspace is already initialized and stop (offer the task-folder escape hatch if the user meant to bootstrap one folder).
+Create `<workspace_root>/INDEX.md` from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.md.tmpl`, an empty `<workspace_root>/Insights/` folder (dated insight files land there - see the skill's Rule 9), and `<workspace_root>/Observers/` with a `CONFIG.md` stub for outside-observer models (Rule 10):
+
+```markdown
+# Observers config
+
+Models used for observer passes (2-3, prefer different families).
+API key comes from the OPENROUTER_API_KEY environment variable - never put it here.
+
+- model: <openrouter model id>
+- model: <openrouter model id>
+```
+
+Tell the user: observer passes activate once `OPENROUTER_API_KEY` is set and models are filled in; until then they are skipped silently. If an `INDEX.md` already exists here, say the workspace is already initialized and stop (offer the task-folder escape hatch if the user meant to bootstrap one folder).
 
 ### Step 3. Register what already exists
 
