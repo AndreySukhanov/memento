@@ -1,11 +1,11 @@
 ---
 name: task-memory
-description: Rules and automatic maintenance for Memento task memory. Use when working inside a task folder that contains the 5-file memory set (CLAUDE.md, MEMORY.md, TASKS.md, DECISIONS.md, BRIEF.md), when a task crosses the folder threshold and needs a folder bootstrapped automatically (auto-init in an initialized workspace), when recording or revising decisions, when a session produced decisions/stakeholder statements/artifact changes and is wrapping up (run the sync), when new information combined with recorded memory yields an insight - a contradiction, an answered question, a pattern, an implication, a cross-task link (record it), when a task's MEMORY.md outgrows its size budget (seal it), when the user asks how their tasks are doing (status overview), when a task is finished (close it), or when the user mentions task memory, memory sync, or decision history.
+description: Rules and automatic maintenance for Memento task memory. Use when working inside a task folder that contains the 5-file memory set (CLAUDE.md, MEMORY.md, TASKS.md, DECISIONS.md, BRIEF.md), when a task crosses the folder threshold and needs a folder bootstrapped automatically (auto-init in an initialized workspace), when recording or revising decisions, when a session produced decisions/stakeholder statements/artifact changes and is wrapping up (run the sync), when new information combined with recorded memory yields an insight - a contradiction, an answered question, a pattern, an implication, a cross-task link (record it), when a task's MEMORY.md outgrows its size budget (seal it), when the user asks how their tasks are doing (status overview), when unverified insights accumulate and outside observer models should verify them (observer pass), when a task is finished (close it), or when the user mentions task memory, memory sync, or decision history.
 ---
 
 # Memento task-memory method
 
-Nine rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
+Ten rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
 
 The only command is `/memento:init`, and it is run **once per workspace** - it creates the `INDEX.md` registry and registers what already exists. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
 
@@ -150,7 +150,7 @@ A memory that only accumulates entries is an archive, not a memory. An **insight
 date: 2026-07-26
 title: Deploy window collides with the freeze
 tasks: [checkout-latency-bug, platform-migration]
-status: hypothesis   # hypothesis | confirmed <date> | refuted <date>
+status: hypothesis   # hypothesis | verified by <model> <date> | confirmed <date> | refuted <date>
 sources:
   - checkout-latency-bug/MEMORY.md - Jane's window fact (26.07)
   - platform-migration/CLAUDE.md - release freeze section
@@ -174,15 +174,40 @@ A **cross-task** insight lives as one file; every involved task's log gets its o
 Guardrails - what keeps this signal, not noise:
 - an insight must cite **at least two sources** (that is the definition - a restated single fact is not an insight);
 - record only **actionable** insights - ones that would change a decision, a plan or a risk assessment; interesting-but-inert observations stay unwritten;
-- an insight is a **hypothesis until verified** - never silently promote it to fact; when confirmed, update its status with a date, and only then may it feed a decision block or a charter edit;
+- an insight is a **hypothesis until verified** - never silently promote it to fact; and the author never verifies their own hypothesis (Rule 10): promotion requires a real-world fact or an outside observer's verdict. When confirmed, update its status with a date, and only then may it feed a decision block or a charter edit;
 - dedup against existing insights before appending (Rule 5 discipline applies);
 - **zero insights is a valid outcome** - most syncs will find none, and a forced insight is worse than silence.
+
+## Rule 10: Outside observers - the author never grades their own work
+
+The agent that maintains the memory has correlated blind spots: it tends to confirm its own hypotheses, reads the files through the lens of what it did today, and its errors are systematic, not random. A different model errs *differently* - so verification comes from outside. **Outside observers** are independent models, connected periodically, that read the memory cold and report on it.
+
+Principles:
+
+- **The observer is cold.** It sees no sessions, no chat - only the memory files. Double duty: an independent verdict, plus a live test of memory quality (if a cold model cannot reconstruct the task from the files, the memory has failed its core purpose).
+- **Read-only.** An observer writes nothing into the memory - only a report. Triaging the report and editing the files is the main agent's job, under the usual rules (lenses, D-blocks, statuses).
+- **Diversity over repetition.** Different model families err differently; three models one pass each beat one model three passes. And repeated review cycles on the same material hit diminishing returns after the second - observation is periodic, not a convergence loop.
+- **No self-confirmation.** `hypothesis -> confirmed` requires a real-world fact or an observer's verdict; the insight's author cannot promote it alone. An observer's verdict is recorded as `verified by <model>, <date>`.
+- **Disagreement is a record, not a discard.** If the main agent disagrees with a verdict, both positions go into the insight file and the user decides. Silently dropping a verdict is forbidden.
+
+Four mandates - different lenses, not one "check everything":
+
+| Mandate | What it does | Input |
+|---|---|---|
+| **Insight verifier** | Each hypothesis: confirm / refute / insufficient evidence, strictly against the sources cited in the file | `Insights/*.md` + cited sources |
+| **Sapper** | Finds mines planted under decisions: which active D-blocks rest on assumptions that are outdated, contradicted by newer facts, or were never proven | `DECISIONS.md` + logs |
+| **Pattern scout** | Cross-task links and patterns the main agent missed - a fresh read of the whole board | `INDEX.md` + active task logs |
+| **Memory auditor** | Contradictions between files, stale statuses, duplicates, broken pointers | the whole structure |
+
+Reports land in `<workspace_root>/Observers/` as `YYYY-MM-DD-<model>-<mandate>.md` and are never deleted - they are the audit history.
+
+Observers run automatically - see "Observer pass" in Automatic operations.
 
 ---
 
 # Automatic operations
 
-The rules above say *why*; this section says *how*. All five operations are performed by the agent on its own initiative - no commands.
+The rules above say *why*; this section says *how*. All six operations are performed by the agent on its own initiative - no commands.
 
 ## Auto-init (Rule 1 in action)
 
@@ -245,6 +270,25 @@ Report numbers: lines/KB before and after, how many entries sealed, dropped, kep
 When the session establishes that a task is done (artifact delivered, user confirms the outcome), close it - but closing is semantic, so **confirm first**: "Closing <task> - final outcome: <one-liner>. Correct?" Check `TASKS.md` for unchecked items and open blockers; never close silently over them - list them and ask whether they become "won't do" (record why) or the task stays active.
 
 Then: prepend `**Completed <date>:** <outcome>` to MEMORY.md "Current status"; set the TASKS.md status header to Completed; record a final D-block if the close itself reflects a decision; move the INDEX.md row from Active to Completed with a link to the final artifact; add a Timeline line; update the auto-memory project note. The folder stays where it is - closed task folders are the long-term archive. Delete nothing.
+
+## Observer pass (Rule 10 in action)
+
+Runs **automatically** when a trigger fires - no user confirmation needed:
+
+- **3+ unverified insights** have accumulated (`status: hypothesis` across `Insights/`);
+- a **release artifact is about to be handed off** or a major decision is about to be recorded;
+- a **task is being closed** (final audit before the archive);
+- the user asks for it.
+
+Mechanics (external models over the OpenRouter API):
+
+1. **Key and models.** The API key comes from the `OPENROUTER_API_KEY` environment variable - **never stored in any file**. The model list lives in `<workspace_root>/Observers/CONFIG.md` (aim for 2-3 models from *different families*). No key or no config -> skip with a one-line note; never block the sync on an unavailable observer.
+2. **Per mandate, one request.** Pack the mandate's instruction plus its input files (see the Rule 10 table) into a single prompt and POST it to `https://openrouter.ai/api/v1/chat/completions` (header `Authorization: Bearer $OPENROUTER_API_KEY`, body `{"model": "<from CONFIG>", "messages": [...]}`). The observer gets files only - no session context, no summaries of "what we did": the files must speak for themselves.
+3. **Save the raw report** to `Observers/YYYY-MM-DD-<model>-<mandate>.md` verbatim, before any triage. Reports are never deleted.
+4. **Triage** (main agent): update insight statuses (`verified by <model>, <date>` / refuted with the reason), open questions for "insufficient evidence" verdicts, record disagreements in the insight file (both positions) and surface them to the user. Sapper findings that invalidate a decision's premise -> a `D<N>.<M>` revision proposal, never a silent edit.
+5. **Report to the user** in one block: which mandates ran, on which models, verdict counts (confirmed / refuted / insufficient), and anything escalated.
+
+Rotate mandates by need, not all four every time: insight verification runs on the insight trigger; Sapper - before major decisions and closes; pattern scout and memory auditor - on the calendar (an active workspace deserves a pass every week or two).
 
 ## Status overview
 

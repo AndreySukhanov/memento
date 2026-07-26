@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.4.0 - Outside observers
+
+**New Rule 10: the author never grades their own work.** Independent models
+are connected periodically to read the memory **cold** (files only, no
+session context) and report on it - which doubles as a live test of memory
+quality: if a cold model cannot reconstruct the task from the files, the
+memory has failed its purpose.
+
+- Four mandates: **insight verifier** (hypothesis -> confirm / refute /
+  insufficient evidence, strictly against cited sources), **Sapper** (finds
+  mines under decisions - outdated or unproven assumptions in active
+  D-blocks), **pattern scout** (missed cross-task links), **memory auditor**
+  (contradictions, stale statuses, duplicates, broken pointers).
+- **Observer pass** runs automatically: 3+ unverified insights, a release
+  handoff, a task close, or on request. External models over the OpenRouter
+  API - key via `OPENROUTER_API_KEY` env var (never stored in files), model
+  list in `Observers/CONFIG.md` (prefer different families). No key -> the
+  pass is skipped with a note, never blocking the sync.
+- Reports saved verbatim to `Observers/YYYY-MM-DD-<model>-<mandate>.md`,
+  never deleted. Insight statuses gain `verified by <model>, <date>`;
+  promotion of a hypothesis now requires a real-world fact or an observer's
+  verdict - self-confirmation is forbidden. Disagreements are recorded (both
+  positions) and surfaced to the user, never silently dropped.
+- Workspace init now also creates `Observers/` with a `CONFIG.md` stub.
+
 ## 2.3.0 - Insights as dated files
 
 Every insight is now saved as its own file in the workspace-level `Insights/`
