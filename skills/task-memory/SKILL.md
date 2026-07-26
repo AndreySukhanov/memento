@@ -130,13 +130,18 @@ Keep an index `MEMORY.md` in the same directory - grouped by glyph, one line per
 
 ## Rule 9: Insight synthesis - stored facts must talk to each other
 
-A memory that only accumulates entries is an archive, not a memory. An **insight** is a conclusion that follows from combining *new* information with something *already recorded* - and that nobody has written down yet. Whenever new facts land (every sync, and any time you notice one while reading), run them against existing memory: this task's log and decisions, the other active tasks in `INDEX.md`, and cross-task auto-memory. Look for five shapes:
+A memory that only accumulates entries is an archive, not a memory. An **insight** is a conclusion that follows from combining *new* information with something *already recorded* - and that nobody has written down yet. The search space is all of existing memory: this task's log and decisions, the other active tasks in `INDEX.md`, and cross-task auto-memory. Look for five shapes:
 
 - **Contradiction** - a new fact contradicts a recorded one. Decide which is right: wrong history gets a correction lens (Rule 6); genuinely unresolved goes to "Open questions" naming both sides.
 - **Answered question** - the new information resolves an entry in "Open questions": record the answer next to it and close it. An open question that stays open after its answer arrived is drift.
 - **Pattern** - the same failure, behaviour or request appears for the 2nd-3rd time, in this log or across tasks: generalize it - a charter constraint, or an auto-memory `feedback_*`/`reference_*` fact (Rule 8).
 - **Implication** - new fact + existing constraint = a consequence that changes the plan and is written nowhere: a deadline collision, an invalidated approach, a merge risk between two tasks touching the same artifact.
 - **Cross-task link** - the fact involves an entity central to another active task (same person, system, table, prompt, deadline - check the `INDEX.md` rows): leave a dated pointer in that task's `MEMORY.md` too, so the insight is found from both ends.
+
+**When to search - two tiers.** The shapes have different costs, and connections need critical mass:
+
+- **Reactive, at append time** - *contradiction* and *answered question*. These are direct matches against the section you are already scanning for dedup (Rule 5); they jump out the moment the entry is written and are never postponed - a fact that contradicts memory, or answers a recorded question, must not sit unprocessed.
+- **Batch synthesis, on accumulation** - *pattern*, *implication*, *cross-task link*. Run this pass only when enough new material has piled up since the last one: rule of thumb **~7+ new dated entries or ~2 KB of new log material**, or a **phase boundary** (a phase completed, a decision landed). Track it with a `_Last insight pass: <date>_` marker line in the Insights section - everything dated after the marker is unprocessed material. Below the threshold, skip silently: synthesis over two facts produces noise, and rereading the whole memory for every new line is waste, not diligence. When the pass runs, update the marker.
 
 Record insights in a dedicated `MEMORY.md` section, clearly marked as derived:
 
@@ -183,7 +188,7 @@ Runs at a natural session boundary when at least one drift trigger fired. Fixed 
 
 0. **Lenses first.** If an earlier belief was proven wrong this session, write a correction lens (Rule 6) instead of editing history; refresh `## CURRENT PHASE`.
 1. **`MEMORY.md`** - append dated entries for everything new: stakeholder statements (who / when / verbatim), technical findings, new evidence cases. Update the "Current status" line with today's date. **Dedup on append** (Rule 5): update an existing line in place rather than writing a near-duplicate.
-2. **Insight pass** (Rule 9) - run the just-appended entries against existing memory: this task's log and decisions, the other active tasks in `INDEX.md`, cross-task auto-memory. Contradictions -> lens or open question; answers -> close the open question; patterns -> generalize; implications and cross-task links -> dated, source-linked entries in `## Insights`. Zero findings - move on.
+2. **Insight pass** (Rule 9) - the reactive shapes (contradiction, answered question) were already handled at append time in step 1. The synthesis shapes (pattern, implication, cross-task link) run only if enough new material accumulated since the `_Last insight pass_` marker (~7+ new dated entries / ~2 KB, or a phase boundary) - below that, skip silently. When it runs: findings -> dated, source-linked entries in `## Insights`; update the marker. Zero findings - update the marker and move on.
 3. **`DECISIONS.md`** - revised decisions get a `D<N>.<M>` block (never delete the original); new decisions get the next `D<N>`.
 4. **`CLAUDE.md`** - only if scope or stable anchors changed: rewrite the affected charter sections to the *current* state. Most sessions this file is untouched.
 5. **`TASKS.md`** - check off completed items; mark invalidated checkboxes `(obsolete, see D<N>.<M>)`; add new items and blockers.
