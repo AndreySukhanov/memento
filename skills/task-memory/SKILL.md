@@ -34,6 +34,8 @@ When a recorded decision changes, do **not** edit or remove the old block in `DE
 
 Then propagate: mark invalidated checkboxes in `TASKS.md` with `(obsolete, see D1.1)` and add the new ones; rewrite the affected `CLAUDE.md` sections to the *current* state only. Without this, a month later nobody can tell why "this way" became "that way" - and someone will accidentally roll back to the rejected option.
 
+**Dead-end check - refuted memory must be consulted, not just kept.** Before recording a new decision, plan, or approach, scan the stored dead ends: `Insights/` files with `status: refuted`, and won't-do items in the relevant tasks' `TASKS.md`. State the result explicitly - either "no known dead ends touch this" or which ones do and why the new plan differs. Storage without retrieval is decoration: the whole point of keeping refuted insights is to prevent exactly this rollback, and a list nobody reads prevents nothing.
+
 ## Rule 4: Sync discipline - the agent syncs, automatically
 
 A ritual that depends on the user remembering it will be skipped exactly when the session was busiest. So the sync is not a command the user runs - it is a duty the agent performs.
@@ -201,6 +203,8 @@ Four mandates - different lenses, not one "check everything":
 
 Reports land in `<workspace_root>/Observers/` as `YYYY-MM-DD-<model>-<mandate>.md` and are never deleted - they are the audit history.
 
+**Memory health score.** Every observer report ends with a mandatory short **Memory quality** section: could the task be reconstructed from the files alone; what was missing; a **0-10 score**. The cold read is a standing test of the memory itself, and the score turns that side effect into a tracked signal - the latest score per task surfaces in the status overview, and a task cannot close over a low score without a repair pass. If the scores are low, the memory is failing at its one job, whatever the task status says.
+
 Besides the scheduled passes, the panel is available on demand via `/memento:observers <question>` - ad-hoc multi-model analysis of any question, with the same pool, storage and trust rules.
 
 Observers run automatically - see "Observer pass" in Automatic operations.
@@ -233,7 +237,7 @@ Runs at a natural session boundary when at least one drift trigger fired. Fixed 
 0. **Lenses first.** If an earlier belief was proven wrong this session, write a correction lens (Rule 6) instead of editing history; refresh `## CURRENT PHASE`.
 1. **`MEMORY.md`** - append dated entries for everything new: stakeholder statements (who / when / verbatim), technical findings, new evidence cases. Update the "Current status" line with today's date. **Dedup on append** (Rule 5): update an existing line in place rather than writing a near-duplicate.
 2. **Insight pass** (Rule 9) - the reactive shapes (contradiction, answered question) were already handled at append time in step 1. The synthesis shapes (pattern, implication, cross-task link) run only if enough new material accumulated since the `_Last insight pass_` marker (~7+ new dated entries / ~2 KB, or a phase boundary) - below that, skip silently. When it runs: each finding -> a dated file in `<workspace_root>/Insights/` + a pointer line in `## Insights` of every involved task (Rule 9 format); update the marker. Zero findings - update the marker and move on.
-3. **`DECISIONS.md`** - revised decisions get a `D<N>.<M>` block (never delete the original); new decisions get the next `D<N>`.
+3. **`DECISIONS.md`** - revised decisions get a `D<N>.<M>` block (never delete the original); new decisions get the next `D<N>`. Every new or revised decision gets the **dead-end check** (Rule 3): scan refuted insights and won't-do items, state the result.
 4. **`CLAUDE.md`** - only if scope or stable anchors changed: rewrite the affected charter sections to the *current* state. Most sessions this file is untouched.
 5. **`TASKS.md`** - check off completed items; mark invalidated checkboxes `(obsolete, see D<N>.<M>)`; add new items and blockers.
 6. **`<workspace_root>/INDEX.md`** - fix the task's one-line status if it no longer reflects reality; add a Timeline line for significant events.
@@ -247,6 +251,7 @@ Synced <task name>:
   MEMORY.md    +2 facts, +1 case, 1 dup merged, status line updated
   Insights     +1: deploy window collides with the freeze (hypothesis)
   DECISIONS.md +D3.1 (revision of D3)
+  Dead-ends    checked for D3.1: none touch it
   CLAUDE.md    untouched (no scope change)
   TASKS.md     2 checked, 1 marked obsolete, +1 blocker
   INDEX.md     status line updated
@@ -271,6 +276,8 @@ Report numbers: lines/KB before and after, how many entries sealed, dropped, kep
 
 When the session establishes that a task is done (artifact delivered, user confirms the outcome), close it - but closing is semantic, so **confirm first**: "Closing <task> - final outcome: <one-liner>. Correct?" Check `TASKS.md` for unchecked items and open blockers; never close silently over them - list them and ask whether they become "won't do" (record why) or the task stays active.
 
+Also check the task's latest **memory health score** (Rule 10): if it is <=5 or the observer named concrete gaps, run one repair pass on the files (fill the gaps, fix the reading order) before archiving - the archive is only worth keeping if a future reader can use it.
+
 Then: prepend `**Completed <date>:** <outcome>` to MEMORY.md "Current status"; set the TASKS.md status header to Completed; record a final D-block if the close itself reflects a decision; move the INDEX.md row from Active to Completed with a link to the final artifact; add a Timeline line; update the auto-memory project note. The folder stays where it is - closed task folders are the long-term archive. Delete nothing.
 
 ## Observer pass (Rule 10 in action)
@@ -288,7 +295,7 @@ Mechanics (external models over the OpenRouter API):
 2. **Per mandate, one request.** Pack the mandate's instruction plus its input files (see the Rule 10 table) into a single prompt and POST it to `https://openrouter.ai/api/v1/chat/completions` (header `Authorization: Bearer $OPENROUTER_API_KEY`, body `{"model": "<from CONFIG>", "messages": [...]}`). The observer gets files only - no session context, no summaries of "what we did": the files must speak for themselves.
 3. **Save the raw report** to `Observers/YYYY-MM-DD-<model>-<mandate>.md` verbatim, before any triage. Reports are never deleted.
 4. **Triage** (main agent): update insight statuses (`verified by <model>, <date>` / refuted with the reason), open questions for "insufficient evidence" verdicts, record disagreements in the insight file (both positions) and surface them to the user. Sapper findings that invalidate a decision's premise -> a `D<N>.<M>` revision proposal, never a silent edit.
-5. **Report to the user** in one block: which mandates ran, on which models, verdict counts (confirmed / refuted / insufficient), and anything escalated.
+5. **Report to the user** in one block: which mandates ran, on which models, verdict counts (confirmed / refuted / insufficient), the memory health scores, and anything escalated.
 
 Rotate mandates by need, not all four every time: insight verification runs on the insight trigger; Sapper - before major decisions and closes; pattern scout and memory auditor - on the calendar (an active workspace deserves a pass every week or two).
 
@@ -298,6 +305,7 @@ When the user asks how their tasks are doing ("where are my tasks", "what's acti
 
 1. Read `INDEX.md` Active rows; for each, read the top of the task's `MEMORY.md` (Current status + date) and `TASKS.md` (phase, unchecked items, blockers).
 2. Compute staleness: days since the most recent dated entry.
-3. Warn about: **stale memory** (active task, no entries for 7+ days - suggest a sync or parking), **index drift** (INDEX.md contradicts the task's own status - quote both), **missing files** (an active folder lacking one of the 5 - suggest `/memento:init` to repair).
+3. Read the latest observer report for the task (if any) and pick up its **memory health score** (Rule 10).
+4. Warn about: **stale memory** (active task, no entries for 7+ days - suggest a sync or parking), **index drift** (INDEX.md contradicts the task's own status - quote both), **missing files** (an active folder lacking one of the 5 - suggest `/memento:init` to repair), **low or dropping memory health** (score <=5, or lower than the previous report - name the gap the observer cited).
 
-One block per task (status, phase, blockers, warnings), one-line verdict at the end: how many healthy / stale / drifted.
+One block per task (status, phase, blockers, memory health, warnings), one-line verdict at the end: how many healthy / stale / drifted.
