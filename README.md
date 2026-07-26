@@ -133,6 +133,10 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.5.0** - ad-hoc observer panel.
 
+## Roadmap
+
+See [BACKLOG.md](BACKLOG.md) - prioritized candidates (verified skill distillation, dead-end recall, panel voting, memory health score, retrieval interop) and, just as deliberately, what Memento will **not** do.
+
 ## License
 
 MIT
