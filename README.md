@@ -107,6 +107,10 @@ Task trackers store *state*, wikis store *documents*. Memento stores *working me
 **What about vector databases / RAG memory?**
 Complementary, not competing. Memento is deliberately low-tech: for a single workspace of tasks, structured files beat embeddings on precision, auditability, and zero infrastructure. If you outgrow it, the files are perfect RAG source material.
 
+## Full-system spec (Russian)
+
+[docs/MEMORY_SYSTEM_SPEC.ru.md](docs/MEMORY_SYSTEM_SPEC.ru.md) - the complete memory system Memento was extracted from: three memory levels (project charter, cross-session auto-memory, task folders), auto-write triggers, sealing, borrowed concepts, and the session-end backup hook. Useful as a handoff document when implementing the whole system, not just the plugin, in another environment.
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md). Latest: **v1.2.0** - correction lenses, status glyphs, atomic auto-memory.
