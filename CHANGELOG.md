@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.2.1 - Insight synthesis gated by volume
+
+The insight pass no longer fires on every new fact. Two tiers:
+
+- **Reactive, at append time** - contradiction and answered-question: direct
+  matches against the section already being scanned for dedup; never postponed.
+- **Batch synthesis, on accumulation** - pattern, implication, cross-task
+  link: runs only when enough new material piled up since the last pass
+  (~7+ new dated entries / ~2 KB, or a phase boundary), tracked by a
+  `_Last insight pass: <date>_` marker in the Insights section.
+
+Rationale: connections need critical mass - synthesis over two facts produces
+noise, and rereading the whole memory for every new line is waste, not
+diligence.
+
 ## 2.2.0 - Insight synthesis
 
 **New Rule 9: stored facts must talk to each other.** A memory that only
