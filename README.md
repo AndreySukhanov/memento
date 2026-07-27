@@ -132,7 +132,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.7.0** - panel voting, verification graduated by stakes.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.7.1** - write-immediately tier: long sessions must not starve memory.
 
 ## Roadmap
 

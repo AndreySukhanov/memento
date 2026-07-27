@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.7.1 - Write-immediately tier (field bug fix)
+
+**Field bug, found in production use:** Rule 4 framed all memory writing as a
+sync "at a natural session boundary". In a session that runs for days or weeks,
+the boundary never arrives - so the agent, faithfully following the rule,
+wrote memory only when explicitly asked. Before the plugin, the same agent
+wrote continuously; the skill had *downgraded* its memory discipline.
+
+Fix: Rule 4 gains a **write-immediately tier**. High-value material is written
+the moment it lands, without waiting for any boundary: decisions (D-blocks),
+correction lenses, standing preferences and durable facts for session
+auto-memory (which accretes continuously by design). The boundary sync is
+demoted to a sweep that reconciles the files and catches whatever slipped.
+
 ## 2.7.0 - Panel voting: verification graduated by stakes
 
 Rule 10 gains two verification tiers. A single observer's verdict stays the
