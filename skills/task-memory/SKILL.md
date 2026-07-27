@@ -56,6 +56,8 @@ A ritual that depends on the user remembering it will be skipped exactly when th
 
 If the user objects, revert and respect it for the rest of the session - a declined sync is a valid outcome. **If nothing fired, do nothing silently**: a session of pure question-answering needs no sync, and touching files anyway erodes trust in the log. Purely informational sessions, quick lookups and aborted experiments do **not** count as triggers.
 
+**Write-immediately tier - long sessions must not starve memory.** The boundary sync is a *sweep*, not the only channel. High-value material is written **the moment it lands**, without waiting for any boundary: a decision made or revised (D-block), a correction lens (Rule 6), a standing preference or durable fact for session auto-memory (Rule 8 - it accretes continuously by design). In a session that runs for days, "at the end of the session" means **never** - deferring all writes to the boundary is exactly how weeks of work stay unrecorded (observed in the field: a two-week session where memory only moved when the user asked). The boundary sync then reconciles the files and catches whatever slipped.
+
 ## Rule 5: Compaction - seal the log, don't grow it forever
 
 `MEMORY.md` is append-only by Rule 4, so it grows every session until it no longer fits the context window it was meant to save. A memory file too big to load is the same failure as no memory at all. Bound it by **sealing**, never by silent deletion.
