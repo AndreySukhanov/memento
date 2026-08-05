@@ -154,7 +154,11 @@ A memory that only accumulates entries is an archive, not a memory. An **insight
 date: 2026-07-26
 title: Deploy window collides with the freeze
 tasks: [checkout-latency-bug, platform-migration]
-status: hypothesis   # hypothesis | verified by <model> <date> | confirmed <date> | refuted <date>
+status: hypothesis   # hypothesis | interpretation | verified by <model> <date> | confirmed <date> | refuted <date>
+falsifier: the freeze calendar shows the window outside the frozen range
+depends_on:
+  - Jane named 12.08 as the window (26.07)
+  - the freeze runs 10.08-20.08 (charter, platform-migration)
 sources:
   - checkout-latency-bug/MEMORY.md - Jane's window fact (26.07)
   - platform-migration/CLAUDE.md - release freeze section
@@ -174,6 +178,14 @@ The task's `MEMORY.md` `## Insights` section gets the short dated pointer line:
 ```
 
 A **cross-task** insight lives as one file; every involved task's log gets its own pointer line - found from all ends, stored once. When an insight's status changes (confirmed, refuted), update the file's `status` field with a date and the pointer lines; never delete the file - a refuted insight documents a dead end, which is also memory. If the `Insights/` folder does not exist yet, create it on the first insight.
+
+**Two fields make a hypothesis checkable - `falsifier` and `depends_on`.** A conclusion with no stated way to die is not a hypothesis, it is an opinion wearing a status field, and it will quietly harden into an assumption nobody revisits.
+
+- **`falsifier`** names the *recognizable fact* that would kill it: a line in a log, a value in a field, the result of a run, a sentence from a stakeholder. "Further investigation shows otherwise" is not a falsifier - it names no observation.
+- **`depends_on`** lists the facts it stands on. This is what makes memory reactive instead of archival: when a new fact lands, check it against the `depends_on` of live hypotheses and update their statuses **immediately**, in the same session. A hypothesis whose foundation was refuted three weeks ago and still reads `hypothesis` is worse than no memory - it is a confident wrong answer waiting to be quoted.
+- **If no falsifier can be named, it is not a hypothesis** - it is an *interpretation*: a way of reading the facts that no observation distinguishes from its alternatives. Record it as `status: interpretation` and never let a decision rest on it. Interpretations are not worthless - they are how understanding starts - but they must be labelled, because the failure mode is silent promotion: an interpretation that sits in memory long enough starts getting cited as a finding.
+
+A refuted hypothesis is never deleted (Rule 3's logic applies to claims too): `status: refuted <date>` plus what killed it. The store of dead ends is the thing that stops a future session from re-proposing an option that was already tried and rejected.
 
 Guardrails - what keeps this signal, not noise:
 - an insight must cite **at least two sources** (that is the definition - a restated single fact is not an insight);
@@ -217,6 +229,31 @@ Reports land in `<workspace_root>/Observers/` as `YYYY-MM-DD-<model>-<mandate>.m
 Besides the scheduled passes, the panel is available on demand via `/memento:observers <question>` - ad-hoc multi-model analysis of any question, with the same pool, storage and trust rules.
 
 Observers run automatically - see "Observer pass" in Automatic operations.
+
+**Observers are not the only outside view, and not the right one for every question.** They verify what is already written, cold and after the fact. When the question is "what breaks if we do this?" and the answer spans several areas at once, the tool is a **consilium** - parallel in-session agents, each on a different lens, plus a mandatory skeptic whose job is to find the prior rejection. Verification after versus perspective before; the consilium skill fires on its own when the situation matches.
+
+## Rule 11: Checkpoint long operations - the session can die mid-way
+
+Some work does not fit in one turn and is expensive to lose: a bulk edit across many files or locales, an evaluation run, a data load, a sweep audit, a release package. Context runs out, a tool times out, a machine reboots - and the next session inherits no idea whether step 4 of 9 finished.
+
+Before starting such an operation, write `<workspace_root>/CHECKPOINT.yml`, and update it **after each step** - not at the end, which is precisely the moment that never arrives:
+
+```yaml
+operation: rebuild prompt locale set
+task: prompt-restructuring
+status: active          # active | done | abandoned <date + why>
+started: 2026-08-05
+steps:
+  - [x] dump current state to backup
+  - [x] build replacement for 6 RU rows
+  - [ ] verify fragments match before applying   # <- next
+  - [ ] apply and restart the service
+notes: source dump is dumps/prod/2026-08-05.sql; guard clause makes re-runs safe
+```
+
+Two rules keep it honest. **At session start, if the file is `active`, say so before anything else** - name the operation, the step it stopped on, and offer to continue. A checkpoint nobody reads is a diary entry. And **finish it**: `status: done` on completion, or `abandoned` with a reason. An `active` checkpoint from three weeks ago trains the reader to ignore the file, which costs more than never having it.
+
+Do not checkpoint ordinary work. If losing the operation would mean redoing under ten minutes, the file is ceremony.
 
 ---
 
