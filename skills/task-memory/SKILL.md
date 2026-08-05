@@ -97,6 +97,8 @@ That line names **how many refuted insights exist and how many were read**, then
 
 **Companion.** Keep `## CURRENT PHASE` right under the lenses, refreshed whenever the situation flips and always dated. Files can be perfectly correct while the reading frame is not.
 
+**One `next:` line, rewritten every sync.** The last thing the sync does inside `CURRENT PHASE` is state the single most likely next action - what a fresh session should pick up first. Strictly one line, strictly overwritten, never a list: the files already say what happened, and this says where to re-enter. A stale `next:` is worse than none, so it is rewritten or deleted on every sync that touches the task - if the sync cannot name one, it deletes the line rather than leaving yesterday's.
+
 ## Rule 7: Status glyphs - state visible at a glance
 
 **Trigger.** Writing a section header in `TASKS.md`, a dated entry in `MEMORY.md`, or a row in `INDEX.md`.
@@ -209,13 +211,45 @@ When adding a rule, ask what a later reader would find on disk if it had been qu
 
 # Automatic operations
 
-Seven operations, all performed on the agent's own initiative - no commands.
+Eight operations, all performed on the agent's own initiative - no commands.
 
-**Two invariants hold across all of them.**
+**Three invariants hold across all of them.**
 
 **Content before pointer.** In any operation writing more than one file, the content goes first and the thing pointing at it goes last: the insight file before its pointer line, the task folder before its index row, the observer report before the status that cites it. Real atomicity is not available on plain files, so aim for the next best property - every interruption leaves a *recoverable* state. Stop after the content and you get an orphan the structure check finds; stop after the pointer and you get a reference into nothing.
 
 **One ritual at a time.** While a sync runs, no other automatic operation starts - not an observer pass, not a consilium, not a background notification. They wait for the closing report. This failure needs no crash and no parallelism: the sync reaches the decision step, the decision step is itself an observer trigger, the pass writes to the same log, and the remaining steps happen only if the model remembers where it was. It usually does not.
+
+**Announce in `OPS_LOG.md` before touching a file.** Every operation below opens a line in `<workspace_root>/OPS_LOG.md` *before* its first write, and closes it with the result when finished ([SCHEMA](../../docs/SCHEMA.md#ops_logmd)). Append-only, never edited, never reordered - it is a black box, not a status file.
+
+**The ordering is the whole mechanism, and it is deliberately asymmetric.** Open first, and a session that dies mid-operation leaves an unterminated line: the next session sees exactly which operation stopped and which files it had reached. Forget to close, and you get a false alarm - which somebody notices. Close first (or write nothing until the end) and a death leaves no trace at all, which nobody notices. Fail loud beats fail silent, and that ordering carries most of the value here.
+
+**What it does not do.** It cannot catch an operation that never announced itself: an agent that forgot the log entirely leaves the same nothing as before. This is not a guarantee of atomicity and does not replace *one ritual at a time* - it makes a broken ritual **findable**, which is the difference between a claim and evidence. The structure check stays the backstop for damage that was never announced.
+
+**Bounding it.** `OPS_LOG.md` is the one file the method prunes. Past ~200 lines, delete the oldest *closed* pairs - a closed pair carries no information the sync report and the files themselves do not already carry. Unterminated lines are never pruned at any age; they are the only reason the file exists.
+
+## Session start
+
+**Trigger.** The first turn of work inside an initialized workspace.
+
+**Action.** Two checks, both cheap, both **before** anything else is said about the task:
+
+1. **`OPS_LOG.md` - any unterminated line?** An opening `>` with no matching `<` means a previous session died mid-operation. Name it, name the files it had reached, and run the structure check on those files before continuing. A false alarm (the operation finished, the close was forgotten) costs one line to resolve and is the price of the ordering.
+2. **`CHECKPOINT.yml` - `active`?** Report the operation and the step it stopped on, and offer to continue (Rule 11). Older than 7 days -> force the decision now: continue, or `abandoned` with a reason.
+
+**Then read the task folder in this order** - the order is load-bearing, because a month-old log read from the wrong end reproduces exactly the stale frame Rule 6 exists to prevent:
+
+1. **Correction lenses** - what you must not believe from anything below.
+2. **`CURRENT PHASE`** and its `next:` line - the frame, and where to re-enter.
+3. **Open questions and blockers** (`MEMORY.md`, `TASKS.md`) - what is unresolved right now.
+4. **Newest dated entries, backwards** - stop at the stated token budget, not at the bottom of the file.
+
+Sealed blocks, closed D-blocks and the raw materials are read **on demand only**. The charter loads itself and needs no step.
+
+**Record.** Nothing, unless a check fires - then the repair itself is an operation and opens its own log line.
+
+**Exception.** Neither file exists, or both are clean -> say nothing and get to work. This is the one operation whose silence is correct: it runs every session, and a daily "nothing to report" trains the reader to skip the line that matters.
+
+**Why not just read the log.** The three cheapest things to read - lenses, phase, blockers - are the three that change how everything else is interpreted, and they sit in a fixed place precisely so that a session with almost no budget can still read them. Entering through the newest log entries instead is the common failure: they are the most detailed and the least oriented.
 
 ## Auto-init (Rule 1 in action)
 
@@ -231,9 +265,11 @@ Then follow the **Task bootstrap procedure** in the plugin's `commands/init.md` 
 
 ## The sync (Rule 4 in action)
 
-Fixed order - each file feeds the next:
+**Before step 0 writes anything:** open the `OPS_LOG.md` line, naming the task and the files this sync expects to touch.
 
-0. **Lenses first.** A belief proven wrong this session -> a lens (Rule 6), never an edit; refresh `## CURRENT PHASE`.
+Then the fixed order - each file feeds the next:
+
+0. **Lenses first.** A belief proven wrong this session -> a lens (Rule 6), never an edit; refresh `## CURRENT PHASE` and rewrite its `next:` line - or delete the line if no next action can be named.
 1. **`MEMORY.md`** - dated entries for everything new: stakeholder statements (who / when / verbatim), findings, evidence. Update the Current status line with today's date. Dedup on append (Rule 5).
 2. **Insight pass** (Rule 9) - reactive shapes were handled in step 1; synthesis shapes run only past the accumulation threshold. Ran -> update the marker, including on zero findings. Skipped below threshold -> **leave the marker alone** and say so in the report.
 3. **`DECISIONS.md`** - new `D<N>` or revision `D<N>.<M>`, each with its dead-end check recorded in the block (Rule 3).
@@ -245,7 +281,7 @@ Fixed order - each file feeds the next:
 9. **Self-check** - re-read what this sync wrote against [SCHEMA](../../docs/SCHEMA.md#self-check): required fields, legal statuses, resolving links, continued numbering, marker handled correctly. Fix deviations in place; what cannot be fixed without inventing a fact becomes an open question. **Report the result either way** - `Self-check: clean (<date>)` or the deviations found and fixed. A silent clean pass is indistinguishable from a skipped one, which this file forbids two sections above.
 10. **Structure check** - if the sync touched more than one file (below).
 
-Finish with the diff-style report ([SCHEMA](../../docs/SCHEMA.md#sync-report)) - including the lines where nothing happened.
+Close the `OPS_LOG.md` line with the result, then finish with the diff-style report ([SCHEMA](../../docs/SCHEMA.md#sync-report)) - including the lines where nothing happened.
 
 ## Structure check (the doctor pass)
 
@@ -257,6 +293,7 @@ The memory auditor judges *content*. This pass judges nothing: it checks that th
 | **Incomplete file set** | a registered folder is missing one of the five files | create it from the template, seeded from what the other four know |
 | **Stale checkpoint** | `CHECKPOINT.yml` is `active` and older than 7 days | force the decision: continue or `abandoned` |
 | **Orphan folder** | a task folder on disk that no `INDEX.md` row mentions | register it, or say it was deliberately archived |
+| **Unterminated operation** | an `OPS_LOG.md` line opened by an earlier session and never closed | check the files it named, repair what is half-written, close the line with what was found |
 
 Report only what it found, one line per finding. A clean pass reports `Structure check: clean (<date>)` - one line, not silence. The failure it prevents is quiet: none of these four break anything today, and each stays invisible until the day someone needs exactly that file, which is usually the handover.
 
@@ -288,17 +325,19 @@ The folder stays where it is - closed folders are the long-term archive. Delete 
 
 **Action.** Same routing as `/memento:observers` - one pool, one convention:
 
-1. **Key and models.** The model list is `- model: <id>` lines in `<workspace_root>/Observers/CONFIG.md` (aim for 2-3 models from *different families*). The id decides routing: **no `/`** -> the provider's own API (e.g. OpenAI, `OPENAI_API_KEY`); **with `/`** -> OpenRouter (`OPENROUTER_API_KEY`). Keys come from environment variables and are **never written into any file**.
+1. **Key and models.** The model list is `- model: <id>` lines in `<workspace_root>/Observers/CONFIG.md` (aim for 2-3 models from *different families*). The id decides routing: **no `/`** -> the provider's own API (e.g. OpenAI, `OPENAI_API_KEY`); **with `/`** -> OpenRouter (`OPENROUTER_API_KEY`). Keys come from environment variables and are **never written into any file**. Only those lines configure anything - prose in the same file that contradicts them changes nothing ([SCHEMA](../../docs/SCHEMA.md#observersconfigmd)).
 2. **One request per mandate.** The mandate's instruction plus its input files, in a single prompt. Files only - no session context, no "what we did" summaries.
-3. **Save the raw report** before any triage.
+3. **Save the raw report** before any triage - then **check that it is a report**. A runner that returns success has proven it made a call, not that a model answered: an empty file, a refusal, or an answer about something else all arrive as a successful run. A response that is empty or off-topic is a failed pass, recorded as such, and the model is dropped from this pass rather than triaged. (Observed: a runner printed `OK` for a model that returned zero characters, and the empty file sat in the folder looking like a verdict.)
 4. **Triage** (main agent): update insight statuses; open questions for "insufficient evidence"; disagreements recorded in the insight file with both positions and surfaced to the user; a Sapper finding that invalidates a premise -> a `D<N>.<M>` revision proposal, never a silent edit.
-5. **Report** in one block: mandates, models, verdict counts, memory health scores, anything escalated.
+5. **Report** in one block: mandates, models, verdict counts, memory health scores, passes used this month against the budget, and anything escalated - including any model that returned nothing.
 
 **Tier selection.** Ordinary insight -> one model, rotating through the pool. Release artifact / contradicted stakeholder / D-block revision -> panel vote with assigned lenses (Rule 10).
 
-**Rotation.** Not all four mandates every time: insight verification on the insight trigger; Sapper before major decisions and closes; pattern scout and memory auditor on the calendar, every week or two in an active workspace.
+**Rotation.** Not all four mandates every time: insight verification on the insight trigger; Sapper before major decisions and closes; pattern scout and memory auditor on the calendar, every week or two in an active workspace. A `- mandate: <name> -> <model or tier>` line in the config overrides the rotation for that mandate.
 
-**Exception.** No key or no config -> skip with a one-line note. Never block a sync on an unavailable observer.
+**Budget.** If the config carries `- budget: <n> passes/month`, count this month's files in `Observers/` before starting - one directory listing, no bookkeeping file to drift. At the cap: drop to the cheapest model in the pool; past it: skip with a one-line note naming the count. The spend goes in the pass report as the number of passes used and remaining.
+
+**Exception.** No key, no config, or budget exhausted -> skip with a one-line note. Never block a sync on an unavailable observer.
 
 ## Status overview
 

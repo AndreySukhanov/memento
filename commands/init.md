@@ -28,7 +28,7 @@ If the path looks like a general-purpose directory rather than a task workspace 
 
 ### Step 2. Create the index
 
-Create `<workspace_root>/INDEX.md` from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.md.tmpl`, an empty `<workspace_root>/Insights/` folder (dated insight files land there - see the skill's Rule 9), and `<workspace_root>/Observers/` with a `CONFIG.md` stub for outside-observer models (Rule 10):
+Create `<workspace_root>/INDEX.md` from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.md.tmpl`, an empty `<workspace_root>/Insights/` folder (dated insight files land there - see the skill's Rule 9), an `<workspace_root>/OPS_LOG.md` holding just its title line (automatic operations announce themselves there before writing anything), and `<workspace_root>/Observers/` with a `CONFIG.md` stub for outside-observer models (Rule 10):
 
 ```markdown
 # Observers config
@@ -36,8 +36,13 @@ Create `<workspace_root>/INDEX.md` from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.m
 Models used for observer passes (2-3, prefer different families).
 API key comes from the OPENROUTER_API_KEY environment variable - never put it here.
 
+Only the "- model:", "- budget:" and "- mandate:" lines configure anything.
+Notes elsewhere in this file change nothing about what runs.
+
 - model: <openrouter model id>
 - model: <openrouter model id>
+
+- budget: 20 passes/month
 ```
 
 Tell the user: observer passes activate once `OPENROUTER_API_KEY` is set and models are filled in; until then they are skipped silently. If an `INDEX.md` already exists here, say the workspace is already initialized and stop (offer the task-folder escape hatch if the user meant to bootstrap one folder).

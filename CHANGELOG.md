@@ -1,5 +1,63 @@
 # Changelog
 
+## 2.10.0 - Evidence instead of promises: an operations log, a next-action line, a fixed reading order, and a countable observer budget
+
+Four backlog items, all of them small, all of them aimed at the same gap: the
+method kept making claims that nothing on disk could support.
+
+**`OPS_LOG.md` - a black box for automatic operations.** Every operation opens
+one line *before* it touches a file and closes it with the result afterwards.
+The ordering is asymmetric on purpose: a session that dies mid-sync leaves an
+unterminated line naming the operation and the files it had reached, so the
+next session repairs exactly those. Forgetting to close a line raises a false
+alarm somebody notices; writing nothing until the end leaves a silent
+half-finished workspace nobody does.
+
+The honest limits are written next to it. It cannot catch an operation that
+never announced itself, it does not make anything atomic, and it does not
+replace *one ritual at a time* - the structure check stays the backstop for
+damage nobody announced. What it does is turn a broken ritual from a claim into
+evidence. This is also the one file the method prunes: past ~200 lines the
+oldest *closed* pairs go, since a closed pair says nothing the sync report and
+the files do not. Unterminated lines are never pruned at any age.
+
+**A `next:` line in `CURRENT PHASE`.** One line, rewritten by every sync that
+touches the task, naming the single most likely next action. Not a file, not a
+list: a separate `NEXT.md` is one more thing to remember, and the only thing
+worse than no next-action is yesterday's. A sync that cannot name one deletes
+the line rather than leaving the old one.
+
+**Session start is now an operation.** It checks `OPS_LOG.md` for unterminated
+lines and `CHECKPOINT.yml` for staleness, then reads the task folder in a fixed
+order: lenses -> `CURRENT PHASE` and its `next:` -> open questions and blockers
+-> newest entries backwards within a budget. Sealed blocks and materials on
+demand only. The three cheapest things to read are the three that change how
+everything else is interpreted, which is why they sit in fixed places; entering
+through the newest log entries is the failure this prevents - they are the most
+detailed and the least oriented. This is the one operation whose silence is
+correct: a daily "nothing to report" trains the reader to skip the line that
+matters.
+
+**Observer economics, counted in passes rather than money.**
+`Observers/CONFIG.md` gains `- budget: <n> passes/month` and
+`- mandate: <name> -> <model or tier>`. The budget is counted in passes because
+money cannot be verified from inside a workspace while `Observers/` is a dated
+folder one listing away - the ledger is the folder itself, with no counter file
+to drift.
+
+Two field lessons ship with it, both from real workspaces:
+
+- **Prose in the config configures nothing.** One config documented at length a
+  decision to stop calling two paid models while every pass kept calling them
+  and failing on payment errors. The file looked configured and was not. Only
+  the `- model:` / `- budget:` / `- mandate:` lines do anything, and the format
+  now says so.
+- **A runner's `OK` is not a result.** A model returned zero characters, the
+  runner reported success, and the empty file sat in `Observers/` looking like a
+  verdict. A pass now checks that a report is a report before triaging it -
+  the same rule the method already applies to itself: verify the outcome, not
+  the invocation.
+
 ## 2.9.1 - What the panel found in 2.9.0
 
 The compression in 2.9.0 came with a debt the backlog wrote down explicitly:
