@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.8.2 - Exits and a structure check
+
+Two of the six findings from the external review, the two that needed no
+contract change.
+
+**Every state now has a way out (backlog 17).** An `active` `CHECKPOINT.yml`
+older than **7 days** stops being something the session mentions and becomes
+a decision it forces: continue now, or close it `abandoned` with a reason.
+"Finish it" relied on somebody remembering, and the method exists because
+nobody does. Likewise `status: interpretation` gained its two exits - it
+becomes a hypothesis the moment a falsifier can be named
+(`hypothesis (was interpretation, <date>)`), or it is closed when the
+question stopped mattering. A permanent interpretation is still an
+unexamined belief in memory, only with a badge.
+
+**Structure check - the doctor pass (backlog 16).** A seventh automatic
+operation that judges nothing and costs nothing: no model call, no key, four
+greps. It verifies the structure holds - insight pointers that lead nowhere,
+registered tasks missing one of the five files, a checkpoint left active past
+a week, folders on disk no index row mentions. Runs at the end of a
+multi-file sync and before every close. **A clean pass prints nothing.**
+
+None of those four break anything on the day they appear; they surface on the
+day someone needs exactly that file, which is usually the handover.
+
 ## 2.8.1 - Documentation drift found by external review
 
 An outside code review of the whole repository (gpt-5.3-codex) found four

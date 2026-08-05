@@ -143,7 +143,7 @@ _External review (06.08.2026) arrived at the same idea from the cold-start angle
 
 **Cost.** M.
 
-### 16. Doctor pass - structural repair, not content review 🔴 from external review
+### 16. Doctor pass - structural repair, not content review ✅ shipped in v2.8.2
 
 **Problem.** Structural rot accumulates below the level any current pass looks at: pointer lines to insight files that were renamed, task folders missing one of the five files, an `active` checkpoint from three weeks ago, a folder on disk that no index row mentions.
 
@@ -153,7 +153,7 @@ _External review (06.08.2026) arrived at the same idea from the cold-start angle
 
 **Cost.** S.
 
-### 17. Exits for states that currently have none 🔴 from external review
+### 17. Exits for states that currently have none ✅ shipped in v2.8.2
 
 **Problem.** Two states can be entered and not left. An `active` `CHECKPOINT.yml` has a "finish it" rule but no escalation if nobody does - after a few weeks it becomes furniture. And `status: interpretation` (Rule 9) forbids a claim from carrying a decision but never says how an interpretation becomes a hypothesis, so it can sit forever, neither usable nor removable.
 
