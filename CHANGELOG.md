@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.8.1 - Documentation drift found by external review
+
+An outside code review of the whole repository (gpt-5.3-codex) found four
+places where the docs no longer matched the plugin. All four are corrected
+here; the structural findings went to the backlog as items 12-17.
+
+- The method skill opened with "Ten rules" while shipping eleven - Rule 11
+  (checkpoints) arrived in 2.8.0 and the intro was never updated.
+- `templates/INDEX.md.tmpl` and `templates/TASKS.md.tmpl` still referenced
+  `/memento:sync` and `/memento:close`, removed back in 2.0.0. A fresh
+  workspace was being seeded with pointers to commands that do not exist.
+- The observer pass was documented as OpenRouter-only in the skill while
+  `/memento:observers` routes by model id (no `/` -> provider's own API,
+  `/` -> OpenRouter). One pool, two descriptions; the skill now defers to
+  the same convention.
+
+The review's main verdict is not fixed here and is recorded openly in
+BACKLOG.md: atomicity is currently a promise rather than a procedure, and
+nothing coordinates concurrent writes - which v2.8.0 made more likely by
+adding parallel agents.
+
 ## 2.8.0 - Falsifiable hypotheses, checkpoints, consilium
 
 Three additions, all field-driven. The first two harden what memory already
