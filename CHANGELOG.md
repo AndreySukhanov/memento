@@ -1,5 +1,45 @@
 # Changelog
 
+## 2.9.0 - Trigger, action, record - and a schema the method checks itself against
+
+The external review's headline complaint was length: 43 KB of skill file, too
+much explanatory prose, too few machine-checkable obligations. An agent under
+load retains the philosophy and quietly drops the small duties - markers,
+thresholds, status formats. This release answers that, and the answer is a
+split rather than a deletion.
+
+**Three files, three jobs.** `skills/task-memory/SKILL.md` is now the
+operational path only: every rule is trigger, action, what gets recorded, and
+the exception. 43 KB -> 27 KB, with nothing removed from the method.
+
+- **[`docs/SCHEMA.md`](docs/SCHEMA.md)** (new) owns every required shape -
+  insight frontmatter and the full legal `status` vocabulary, the D-block with
+  its `dead_ends_checked:` line, pointer lines, the correction lens, the
+  checkpoint YAML, auto-memory frontmatter, index rows, the observer report's
+  mandatory score line, the sync report. Required fields are marked. The rules
+  now point here instead of restating formats inline.
+- **[`docs/RATIONALE.md`](docs/RATIONALE.md)** (new) owns the arguments: what
+  failure each rule came from, why two insight tiers instead of one, why
+  dissent is never averaged, why an interpretation gets its own status. Read
+  when a rule looks arbitrary - not while executing one.
+
+**Duplication removed.** Rule 4 no longer restates the sync order that "The
+sync" owns; Rule 5 no longer states dedup twice; Rule 10 no longer says cold /
+read-only / diversity in three separate places.
+
+**Format self-check (new sync step 9).** The sync's second-to-last step
+re-reads *what it just wrote* against the schema: required fields present,
+`status` from the legal vocabulary, at least two sources on an insight, links
+that resolve, D-numbering that continues, the insight-pass marker updated,
+thresholds reported as the number used. Deviations are fixed in place; what
+cannot be fixed without inventing a fact becomes an open question - the schema
+never outranks the truth of the log. Scope is deliberately narrow: this checks
+one sync's output, while the structure check sweeps the workspace.
+
+**`commands/init.md` stops promising atomicity it cannot deliver.** Registering
+a task in the index is now explicitly *last*, after the five files exist - the
+ordering is the guarantee, since plain files offer no atomicity to promise.
+
 ## 2.8.3 - Ordering instead of locking; obligations that leave a trace
 
 A panel review of the proposed locking design (backlog 12) rejected half of it

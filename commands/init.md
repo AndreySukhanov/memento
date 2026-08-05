@@ -111,7 +111,7 @@ For each of `CLAUDE.md`, `MEMORY.md`, `TASKS.md`, `DECISIONS.md`, `BRIEF.md`:
 
 ### Step B4. Register in the index
 
-Add a row to `INDEX.md` "🟢 Active" and a Timeline line. Treat "write CLAUDE.md" + "update INDEX.md" as one atomic operation - an unregistered task folder is how memory drifts.
+Add a row to `INDEX.md` "🟢 Active" and a Timeline line - **after** the five files exist, never before. Plain files give no atomicity to promise, so the order is the guarantee: stop halfway here and you leave a folder the structure check finds and registers, rather than an index row pointing at nothing. An unregistered task folder is how memory drifts, so the row is written in the same operation, last.
 
 ### Step B5. Report
 
