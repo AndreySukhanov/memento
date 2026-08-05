@@ -146,7 +146,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.9.0** - the method compressed to trigger -> action -> record, with a schema it can check itself against.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.9.1** - a three-lens outside read of that compression, and what it found.
 
 ## Roadmap
 

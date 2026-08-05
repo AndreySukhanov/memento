@@ -39,14 +39,16 @@ Otherwise a one-line note in the workspace index is enough.
 
 ## Rule 3: Decisions are never deleted, only revised
 
-**Trigger.** A recorded decision changes, or a new decision is made.
+**Trigger.** A decision is made or changes - and equally, **a plan or an approach is about to be recorded**. The dead-end check is owed by all three; only a decision also gets a D-block.
 
 **Action.**
-1. New decision -> the next `D<N>`. Changed decision -> a new `D<N>.<M>` block; the original is neither edited nor removed.
+1. New decision -> the next `D<N>`. Changed decision -> a new `D<N>.<M>` block; the original is neither edited nor removed. A revision states why, **with the stakeholder quote if there was one**, and what happens to artifacts built under the old decision.
 2. **Dead-end check before writing it:** grep `Insights/` for `status: refuted` and the relevant `TASKS.md` won't-do items.
 3. Propagate: mark invalidated `TASKS.md` checkboxes `(obsolete, see D<N>.<M>)`, add the replacements, rewrite affected `CLAUDE.md` sections to current state only.
 
-**Record.** The D-block per [SCHEMA](../../docs/SCHEMA.md#decision-block), including a `dead_ends_checked:` line naming the files scanned or `none found`, with the date. Not a sentence in the chat - that costs seven tokens and is indistinguishable from having actually looked.
+**Record.** The D-block per [SCHEMA](../../docs/SCHEMA.md#decision-block), including a `dead_ends_checked:` line with the date. A plan or approach with no D-block records the same line under its `TASKS.md` entry.
+
+That line names **how many refuted insights exist and how many were read**, then which ones touch this - `scanned 4 refuted, 1 relevant: Insights/...`, or `scanned 4 refuted, none touch this`. A bare `none found` is what an unrun check also produces: the folder's contents are countable, so state the count and the claim becomes checkable against them.
 
 ## Rule 4: Sync discipline - the agent syncs, automatically
 
@@ -71,19 +73,19 @@ Otherwise a one-line note in the workspace index is enough.
 
 ## Rule 5: Compaction - seal the log, don't grow it forever
 
-**Trigger.** `MEMORY.md` crosses ~250 lines or ~12 KB (checked as the last content step of every sync).
+**Trigger.** `MEMORY.md` crosses ~250 lines or ~12 KB - **or** loading it starts to crowd the session, which can happen earlier and is a trigger in its own right. Checked as the last content step of every sync.
 
 **Action.** Compact the **oldest** material, never the newest:
 - collapse old dated entries into `## Sealed (before <date>)` above `File history` - a few lines per period, keeping only what is still load-bearing;
-- drop resolved noise (superseded numbers, finished smoke runs, chatter); litmus: *"compressed to one clause, does the task still make sense next month?"*;
+- drop resolved noise (superseded numbers, finished smoke runs, chatter); litmus: *"compressed to one clause, does the task still make sense next month?"*. Three outcomes, not two: still load-bearing -> seal; already irrelevant -> drop; **still drives what you would do today -> leave it live and do not seal it**;
 - levels, not a wipe: recent stays raw (L0), a season folds to a paragraph (L1), old sealed blocks fold to one line per quarter (L2);
 - never seal `CLAUDE.md` or `DECISIONS.md` - the charter is already current-only, decisions are append-only.
 
 **Dedup on append** (runs on every append, not only at the threshold): before adding a dated entry, scan the target section for a line making the same claim; found -> update that line's date and detail in place. Rule 2 catches a fact living in two files; this catches it living twice in one.
 
-**Record.** Lines and KB before and after, entries sealed / dropped / kept raw.
+**Record.** Lines and KB before and after, entries sealed / dropped / kept raw. **Measure the file, do not estimate it** - the number goes in the report, so a guess becomes a false statement on the record rather than a harmless approximation.
 
-**Exception.** Under budget -> skip and report the number used. Premature sealing loses detail for no gain.
+**Exception.** Under budget -> skip and report the measured number. Premature sealing loses detail for no gain.
 
 ## Rule 6: Correction lenses - never rewrite history, refract it
 
@@ -109,7 +111,7 @@ Otherwise a one-line note in the workspace index is enough.
 
 **Action.** Write **one fact = one file** in the session-memory directory, typed `feedback_*` / `project_*` / `reference_*` / `user_*`, and add its index row.
 
-**Record.** Frontmatter and index row per [SCHEMA](../../docs/SCHEMA.md#auto-memory-file). The `description` field is the retrieval unit - it must make the file's relevance decidable without opening it.
+**Record.** Frontmatter and index row per [SCHEMA](../../docs/SCHEMA.md#auto-memory-file), the index **grouped by glyph** so the map stays scannable. The `description` field is the retrieval unit - it must make the file's relevance decidable without opening it.
 
 **Division of labour.** Folder files hold *task* memory, synced by the Rule 4 ritual. Auto-memory holds *cross-task* memory and accretes continuously, in the write-immediately tier.
 
@@ -130,16 +132,20 @@ An **insight** is a conclusion that follows from combining *new* information wit
 **Two tiers, because connections need critical mass:**
 
 - **Reactive, at append time** - contradiction and answered question. Direct matches against the section already being scanned for dedup; never postponed.
-- **Batch synthesis, on accumulation** - pattern, implication, cross-task link. Runs only past **~7 new dated entries / ~2 KB of new log**, or at a phase boundary. Below that, skip.
+- **Batch synthesis, on accumulation** - pattern, implication, cross-task link. Runs only past **~7 new dated entries / ~2 KB of new log**, or at a phase boundary - a phase completed, **a decision landed**. Below that, skip.
 
-**Record.** One insight = one dated file in `Insights/`, plus a pointer line in every task named in `tasks:`; the `_Last insight pass: <date>_` marker updated whether or not the pass found anything ([SCHEMA](../../docs/SCHEMA.md#insight-file)). Status changes update the file and every pointer line. Files are never deleted - a refuted insight documents a dead end, which is also memory.
+**Record.** One insight = one dated file in `Insights/` - create the folder if this is the first one - plus a pointer line in every task named in `tasks:` ([SCHEMA](../../docs/SCHEMA.md#insight-file)). Status changes update the file and every pointer line. Files are never deleted - a refuted insight documents a dead end, which is also memory.
+
+**The marker moves only when the pass actually ran.** A pass that ran and found nothing writes `_Last insight pass: <date> (0 found)_`; a pass skipped below the threshold **leaves the marker where it is**, so the untouched gap between it and the newest entry keeps growing until the threshold is met. Stamping today's date on a skip is the one edit that destroys the marker's entire purpose: it makes "checked, nothing there" and "never looked" identical, and it resets the backlog that was supposed to accumulate into a trigger.
 
 **Two fields make a hypothesis checkable.**
 - **`falsifier`** - the recognizable fact that would kill it. A conclusion with no stated way to die is an opinion wearing a status field.
 - **`depends_on`** - the facts it stands on. When a new fact lands, check it against the `depends_on` of live hypotheses and update their statuses **in the same session**. A hypothesis whose foundation was refuted three weeks ago and still reads `hypothesis` is a confident wrong answer waiting to be quoted.
 - **No falsifier -> `status: interpretation`**, and no decision may rest on it. It has exactly two exits, one of which must eventually be taken: it becomes a hypothesis the moment a falsifier can be named (`hypothesis (was interpretation, <date>)`), or it is closed when its question stops mattering. A permanent `interpretation` is an unexamined belief with a badge.
 
-**Guardrails.** At least two sources, or it is a restated fact and not an insight. Only actionable findings - ones that would change a decision, a plan or a risk assessment. A hypothesis is never silently promoted (Rule 10). Dedup before appending. **Zero insights is a valid outcome** - most syncs find none.
+**Guardrails.** At least two sources, or it is a restated fact and not an insight. Only actionable findings - ones that would change a decision, a plan or a risk assessment. Dedup before appending. **Zero insights is a valid outcome** - most syncs find none.
+
+**An unverified insight may not carry weight.** A hypothesis is never silently promoted (Rule 10), and until its status says otherwise it **may not feed a D-block or a charter edit**. Only once it reads `confirmed` or `verified by ...`, with a date, may a decision rest on it. This is the whole mechanism against self-reinforcing error: without it the system quietly cites its own guesses back to itself as findings.
 
 ## Rule 10: Outside observers - the author never grades their own work
 
@@ -149,7 +155,7 @@ The agent maintaining the memory has correlated blind spots: it confirms its own
 - **cold** - files only, no session context, no summaries (this doubles as a live test: a cold model that cannot reconstruct the task means the memory failed its job);
 - **read-only** - the observer produces a report, never an edit; triage is the main agent's job;
 - **diverse** - three models one pass each beat one model three passes, and repeated cycles on the same material stop paying after the second;
-- **no self-confirmation** - `hypothesis -> confirmed` requires a real-world fact or an observer's verdict.
+- **no self-confirmation** - promotion out of `hypothesis` requires a real-world fact (-> `confirmed <date>`) or an observer's verdict (-> `verified by <model>, <date>`); the two are different statuses and neither is written by the author alone. A verdict of *insufficient evidence* promotes nothing: the insight stays `hypothesis` and an open question records what evidence is missing.
 
 **Disagreement is a record, not a discard.** Main agent disagrees with a verdict -> both positions go into the insight file and the user decides.
 
@@ -166,7 +172,7 @@ The agent maintaining the memory has correlated blind spots: it confirms its own
 - **single verdict (default)** - one model from the pool;
 - **panel vote** - when the claim touches a release artifact, contradicts a stakeholder statement, or would revise a D-block. Same brief to every pool model, each with a *different lens*: correctness of the cited sources / strongest alternative explanation / consequence check. Majority decides, a tie escalates to the user, the dissent is recorded by name and never averaged away.
 
-**Record.** Reports in `Observers/YYYY-MM-DD-<model>-<mandate>.md`, verbatim, never deleted. Every report ends with a **Memory quality** section and a 0-10 score, which the status overview reads and a close cannot ignore ([SCHEMA](../../docs/SCHEMA.md#observer-report)).
+**Record.** Reports in `Observers/YYYY-MM-DD-<model>-<mandate>.md`, verbatim, never deleted. Every report ends with a **Memory quality** section answering all three: could the task be reconstructed from the files alone, what was missing, and a 0-10 score - which the status overview reads and a close cannot ignore ([SCHEMA](../../docs/SCHEMA.md#observer-report)).
 
 **Not the only outside view.** Observers verify what is already written, cold and after the fact. When the question is "what breaks if we do this?" and the answer spans several areas at once, the tool is a **consilium** - parallel in-session agents, each on a lens, plus a mandatory skeptic looking for the prior rejection. Verification after versus perspective before; the consilium skill fires on its own. On demand, the panel is `/memento:observers <question>`.
 
@@ -221,7 +227,7 @@ Seven operations, all performed on the agent's own initiative - no commands.
 
 Then follow the **Task bootstrap procedure** in the plugin's `commands/init.md` - read that file for the full discipline: classify and read all materials including every image, extract dated stakeholder quotes and evidence with explicit keep/mention/skip decisions, fill the templates from `${CLAUDE_PLUGIN_ROOT}/templates/`, never invent facts (gaps become open questions), and register the folder in `INDEX.md` in the same operation. No materials yet -> bootstrap from session context; everything unknown becomes an open question.
 
-**Exception.** No `INDEX.md` at the workspace root -> do not silently create structure; suggest `/memento:init` once.
+**Exception.** No `INDEX.md` at the workspace root -> do not silently create structure; suggest `/memento:init` once. Name the folder plainly after the task; the user can rename it later.
 
 ## The sync (Rule 4 in action)
 
@@ -229,14 +235,14 @@ Fixed order - each file feeds the next:
 
 0. **Lenses first.** A belief proven wrong this session -> a lens (Rule 6), never an edit; refresh `## CURRENT PHASE`.
 1. **`MEMORY.md`** - dated entries for everything new: stakeholder statements (who / when / verbatim), findings, evidence. Update the Current status line with today's date. Dedup on append (Rule 5).
-2. **Insight pass** (Rule 9) - reactive shapes were handled in step 1; synthesis shapes run only past the accumulation threshold. Update the `_Last insight pass_` marker either way.
+2. **Insight pass** (Rule 9) - reactive shapes were handled in step 1; synthesis shapes run only past the accumulation threshold. Ran -> update the marker, including on zero findings. Skipped below threshold -> **leave the marker alone** and say so in the report.
 3. **`DECISIONS.md`** - new `D<N>` or revision `D<N>.<M>`, each with its dead-end check recorded in the block (Rule 3).
 4. **`CLAUDE.md`** - only if scope or stable anchors changed. Most sessions: untouched.
 5. **`TASKS.md`** - check off completed, mark invalidated `(obsolete, see D<N>.<M>)`, add new items and blockers.
 6. **`INDEX.md`** - fix the task's status row if it no longer reflects reality; add a Timeline line for significant events.
 7. **Session auto-memory** - update the task's project note (status + date); write any new `feedback_*`/`reference_*` facts (Rule 8).
 8. **Compaction check** (Rule 5) - over budget -> seal the oldest; under -> skip, reporting the number.
-9. **Self-check** - re-read what this sync wrote against [SCHEMA](../../docs/SCHEMA.md#self-check): required fields, legal statuses, resolving links, continued numbering, updated marker. Fix deviations in place; what cannot be fixed without inventing a fact becomes an open question.
+9. **Self-check** - re-read what this sync wrote against [SCHEMA](../../docs/SCHEMA.md#self-check): required fields, legal statuses, resolving links, continued numbering, marker handled correctly. Fix deviations in place; what cannot be fixed without inventing a fact becomes an open question. **Report the result either way** - `Self-check: clean (<date>)` or the deviations found and fixed. A silent clean pass is indistinguishable from a skipped one, which this file forbids two sections above.
 10. **Structure check** - if the sync touched more than one file (below).
 
 Finish with the diff-style report ([SCHEMA](../../docs/SCHEMA.md#sync-report)) - including the lines where nothing happened.
@@ -252,7 +258,7 @@ The memory auditor judges *content*. This pass judges nothing: it checks that th
 | **Stale checkpoint** | `CHECKPOINT.yml` is `active` and older than 7 days | force the decision: continue or `abandoned` |
 | **Orphan folder** | a task folder on disk that no `INDEX.md` row mentions | register it, or say it was deliberately archived |
 
-A clean pass reports `Structure check: clean (<date>)` - one line, not silence. The failure it prevents is quiet: none of these four break anything today, and each stays invisible until the day someone needs exactly that file, which is usually the handover.
+Report only what it found, one line per finding. A clean pass reports `Structure check: clean (<date>)` - one line, not silence. The failure it prevents is quiet: none of these four break anything today, and each stays invisible until the day someone needs exactly that file, which is usually the handover.
 
 **The index is a shadow, not a source.** [`docs/RETRIEVAL.md`](../../docs/RETRIEVAL.md) states this for external indexers - markdown is truth, the index is derived and rebuildable - and it holds inside the method too. `INDEX.md` rows are reconstructible from the folders; the auto-memory index from its files' frontmatter. So a lost or contradictory row is a repair this pass performs, not an incident. That matters because those two aggregates are the only files where two writers can collide at all - everything else is already one-fact-per-file. The cure for the aggregates is not to guard them, it is to keep them cheap to rebuild.
 
@@ -303,6 +309,25 @@ The folder stays where it is - closed folders are the long-term archive. Delete 
 1. Read `INDEX.md` Active rows; per task, the top of `MEMORY.md` (Current status + date) and `TASKS.md` (phase, unchecked items, blockers).
 2. Compute staleness: days since the most recent dated entry.
 3. Pick up the memory health score from the latest observer report, if any.
-4. Warn about: **stale memory** (active, no entries for 7+ days - suggest a sync or parking); **index drift** (`INDEX.md` contradicts the task's own files - quote both, the folder wins); **missing files** (an active folder lacking one of the five); **low or dropping health** (score <=5, or below the previous report - name the gap the observer cited).
+4. Warn about: **stale memory** (active, no entries for 7+ days - suggest a sync or parking); **index drift** (`INDEX.md` contradicts the task's own files - quote both, the folder wins); **missing files** (an active folder lacking one of the five - suggest `/memento:init` on that folder to repair); **low or dropping health** (score <=5, or below the previous report - name the gap the observer cited).
 
 **Record.** Nothing. One block per task on screen (status, phase, blockers, health, warnings) and a one-line verdict: how many healthy / stale / drifted.
+
+---
+
+## The fields you will otherwise get wrong
+
+Everything above points at [`docs/SCHEMA.md`](../../docs/SCHEMA.md) for shapes, and that file is worth opening whenever you write something you write rarely - a lens, a checkpoint, an observer report. But a handful of fields come up in almost every sync, and an extra file read at exactly the busy moment is a read that does not happen. Those live here, in full:
+
+**Insight file** - `Insights/YYYY-MM-DD-slug.md`: `date`, `title`, `tasks`, `status`, `sources` (>= 2), and either `falsifier` + `depends_on` or `status: interpretation`.
+
+**Legal `status` values, in full** - anything else is a defect:
+`hypothesis` · `hypothesis (was interpretation, <date>)` · `interpretation` · `verified by <model>, <date>` · `verified by <n>/<m> panel (<models>), <date>; dissent: <model> - <reason>` · `confirmed <date> - <what confirmed it>` · `refuted <date> - <what killed it>` · `closed <date> - question no longer live`
+
+**Pointer line** - `- 💡 **<date>** - <title> -> [<path>](<relative path>) (<status>)`
+
+**D-block** - `D<N>` new, `D<N>.<M>` revision naming its original; decision, why revised (+ the quote), artifact fate, `dead_ends_checked:` with counts.
+
+**Marker** - `_Last insight pass: <date>_`, moved only when the pass ran.
+
+**Dated log entry** - date plus a source for anything that came from a person or a run.

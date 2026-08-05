@@ -2,7 +2,7 @@
 
 Every shape the method requires, in one place. `skills/task-memory/SKILL.md` says when to write something; this file says what it has to look like.
 
-It exists because these formats are the kind only a human notices when broken. Nothing crashes when `falsifier:` goes missing or a pointer line loses its status suffix - the drift is silent until a cold reader trips over it, which is usually the handover. The sync's last step re-reads what it just wrote against this file (see **Self-check** at the bottom).
+It exists because these formats are the kind only a human notices when broken. Nothing crashes when `falsifier:` goes missing or a pointer line loses its status suffix - the drift is silent until a cold reader trips over it, which is usually the handover. After its content steps, the sync re-reads what it just wrote against this file (see **Self-check** at the bottom).
 
 Required fields are marked **R**. Anything not listed is free text.
 
@@ -26,15 +26,17 @@ Any 4-glyph set works as long as the legend is in the file. Applied to: `TASKS.m
 
 ## Task folder
 
-Five files, no more, no less. A registered folder missing one of them is a finding for the structure check.
+Five **memory** files, always all five - a registered folder missing one is a finding for the structure check. Raw materials, exports, screenshots and release artifacts live in the same folder alongside them and are not counted here.
 
 | File | Role |
 |---|---|
 | `CLAUDE.md` | charter - current state only |
-| `MEMORY.md` | dated log, append-only |
+| `MEMORY.md` | dated log, append-first (see below) |
 | `TASKS.md` | phases, checkboxes, blockers |
 | `DECISIONS.md` | D-blocks, append-only |
 | `BRIEF.md` | original problem statement, verbatim |
+
+**"Append-first", not "append-only".** New material is always appended, and history is never rewritten to say something it did not say. Three in-place changes are legal and only these three: a dedup merge that updates an existing line's date and detail (Rule 5), sealing that compresses the oldest entries into a dated block, and a straight fix for a typo or a single wrong line. Anything that would change what a past entry *claimed* is a correction lens instead (Rule 6).
 
 ### `MEMORY.md` section order
 
@@ -101,12 +103,12 @@ Waiting on Jane's freeze-calendar answer. Everything below dated before
 **Decision.** The release ships 21.08, after the freeze.
 **Why revised.** Jane, 26.07: "12.08 is inside the freeze, we can't."
 **Artifacts.** The 12.08 checklist is obsolete; the migration script is unaffected.
-dead_ends_checked: Insights/2026-06-02-parallel-window.md (refuted), platform-migration/TASKS.md won't-do - none block this (2026-07-26)
+dead_ends_checked: scanned 4 refuted + 2 won't-do lists; 1 relevant - Insights/2026-06-02-parallel-window.md, does not block this (2026-07-26)
 ```
 
 - **R** `D<N>` for a new decision, **R** `D<N>.<M>` for a revision, numbered sequentially.
 - A revision **R** names the block it supersedes, **R** states why, **R** states what happens to artifacts built under the old decision: rebuild / obsolete / still valid.
-- **R** `dead_ends_checked:` - the files actually scanned (or `none found`) plus the date. A sentence in the chat is not this line.
+- **R** `dead_ends_checked:` - **how many** refuted insights and won't-do lists exist, how many were read, which ones touch this decision, plus the date. The counts are what make it checkable: the folder can be counted independently. A bare `none found` is also what an unrun check produces, and a sentence in the chat is not this line at all.
 - The superseded block is never edited or deleted.
 
 ---
@@ -148,6 +150,8 @@ platform-migration. One of the two must move.
 | `confirmed <date> - <what confirmed it>` | a real-world fact settled it |
 | `refuted <date> - <what killed it>` | kept forever; this is the dead-end store |
 | `closed <date> - question no longer live` | the only other exit from `interpretation` |
+
+The author writes only `hypothesis`, `interpretation` and `refuted`. `confirmed` requires a real-world fact, `verified by ...` requires an observer - and a verdict of *insufficient evidence* is neither: the status stays `hypothesis` and the missing evidence becomes an open question.
 
 `falsifier` **R** names a recognizable observation - a log line, a field value, a run result, a stakeholder sentence. "Further investigation shows otherwise" names no observation and is not a falsifier.
 
@@ -247,7 +251,7 @@ Missing: what the moderator actually returned.
 Score: 6/10
 ```
 
-**R** the 0-10 score on its own line - the status overview reads it.
+**R** all three: whether the task is reconstructible from the files alone, what was missing, and the 0-10 score on its own line - the status overview reads the score, and a close reads the gaps.
 
 ---
 
@@ -255,14 +259,18 @@ Score: 6/10
 
 ```
 Synced <task name>:
+  Lenses       none needed; CURRENT PHASE refreshed
   MEMORY.md    +2 facts, +1 case, 1 dup merged, status line updated
   Insights     +1: deploy window collides with the freeze (hypothesis)
+               marker moved to 2026-07-26 (pass ran)
   DECISIONS.md +D3.1 (revision of D3)
-  Dead-ends    checked for D3.1: none touch it
+  Dead-ends    D3.1: scanned 4 refuted, none touch it
   CLAUDE.md    untouched (no scope change)
   TASKS.md     2 checked, 1 marked obsolete, +1 blocker
   INDEX.md     status line updated
-  Compaction   under budget, skipped (188 lines)
+  Auto-memory  +1 reference_ fact; project note dated
+  Compaction   under budget, skipped (188 lines measured)
+  Self-check   clean (2026-07-26)
   Structure    clean (2026-07-26)
 ```
 
@@ -272,7 +280,7 @@ Every line reports a result, including "nothing happened" - `untouched`, `skippe
 
 ## Self-check
 
-Last step of a sync, on what this sync wrote - not on the whole workspace:
+Runs after the sync's content steps, on what **this sync** wrote - not on the whole workspace, which is the structure check's job. Any file the structure check then creates is built from a template and conforms by construction.
 
 1. every new insight file: **R** fields present, `status` from the vocabulary, `sources` count >= 2, `falsifier` present or `status: interpretation`;
 2. every new pointer line: date, link resolves, status matches the file it points at;
@@ -282,3 +290,5 @@ Last step of a sync, on what this sync wrote - not on the whole workspace:
 6. thresholds that were applied are reported as the number used, not as a judgement ("188 lines", not "still small").
 
 Deviations are fixed in place and reported in one line. What cannot be fixed without inventing a fact becomes an open question instead - the schema never wins over the truth of the log.
+
+A clean pass **R** still reports: `Self-check: clean (<date>)`. The rule it would otherwise break is the method's own - a check whose success leaves no trace is indistinguishable from a check that never ran.
