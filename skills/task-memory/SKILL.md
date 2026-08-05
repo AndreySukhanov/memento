@@ -184,6 +184,7 @@ A **cross-task** insight lives as one file; every involved task's log gets its o
 - **`falsifier`** names the *recognizable fact* that would kill it: a line in a log, a value in a field, the result of a run, a sentence from a stakeholder. "Further investigation shows otherwise" is not a falsifier - it names no observation.
 - **`depends_on`** lists the facts it stands on. This is what makes memory reactive instead of archival: when a new fact lands, check it against the `depends_on` of live hypotheses and update their statuses **immediately**, in the same session. A hypothesis whose foundation was refuted three weeks ago and still reads `hypothesis` is worse than no memory - it is a confident wrong answer waiting to be quoted.
 - **If no falsifier can be named, it is not a hypothesis** - it is an *interpretation*: a way of reading the facts that no observation distinguishes from its alternatives. Record it as `status: interpretation` and never let a decision rest on it. Interpretations are not worthless - they are how understanding starts - but they must be labelled, because the failure mode is silent promotion: an interpretation that sits in memory long enough starts getting cited as a finding.
+- **An interpretation is not a life sentence.** It has exactly two ways out, and one of them must eventually be taken. It becomes a **hypothesis** the moment a falsifier can be named - often after a new fact narrows the field - recorded as `status: hypothesis (was interpretation, <date>)`; from there the normal path applies. Or it is **closed** when the question it answered stopped mattering: `status: closed <date> - question no longer live`. Without these two exits the label just relocates the problem: a permanent `interpretation` is still an unexamined belief sitting in memory, only now with a badge.
 
 A refuted hypothesis is never deleted (Rule 3's logic applies to claims too): `status: refuted <date>` plus what killed it. The store of dead ends is the thing that stops a future session from re-proposing an option that was already tried and rejected.
 
@@ -253,13 +254,15 @@ notes: source dump is dumps/prod/2026-08-05.sql; guard clause makes re-runs safe
 
 Two rules keep it honest. **At session start, if the file is `active`, say so before anything else** - name the operation, the step it stopped on, and offer to continue. A checkpoint nobody reads is a diary entry. And **finish it**: `status: done` on completion, or `abandoned` with a reason. An `active` checkpoint from three weeks ago trains the reader to ignore the file, which costs more than never having it.
 
+**Staleness has a deadline.** "Finish it" relies on somebody remembering, and the whole method exists because nobody does. So an `active` checkpoint **older than 7 days** stops being a mention and becomes a decision the session must force: continue it now, or close it as `abandoned` with the reason. No third option - "still active, we'll get to it" is how the file dies. The check runs at session start, alongside the report above.
+
 Do not checkpoint ordinary work. If losing the operation would mean redoing under ten minutes, the file is ceremony.
 
 ---
 
 # Automatic operations
 
-The rules above say *why*; this section says *how*. All six operations are performed by the agent on its own initiative - no commands.
+The rules above say *why*; this section says *how*. All seven operations are performed by the agent on its own initiative - no commands.
 
 ## Auto-init (Rule 1 in action)
 
@@ -305,6 +308,21 @@ Synced <task name>:
 ```
 
 Registration is atomic: a new task folder that is not in `INDEX.md` within the same operation will be forgotten - write the charter and the index row back to back.
+
+## Structure check (the doctor pass)
+
+The observer's memory auditor judges *content* - contradictions, stale statuses, thin evidence. This pass judges nothing: it checks that the structure still holds together. No model call, no API key, no cost - four greps and a directory listing. Run it as the last step of a sync when the sync touched more than one file, and always before a close.
+
+| Check | Symptom | Repair |
+|---|---|---|
+| **Broken pointers** | a `## Insights` line points at an `Insights/*.md` that no longer exists (renamed, moved, never written) | re-point it, or drop the line if the insight itself is gone |
+| **Incomplete file set** | a registered task folder is missing one of the five files | create it from the template, seeded from what the other four know |
+| **Stale checkpoint** | `CHECKPOINT.yml` is `active` and older than 7 days (Rule 11) | force the decision: continue or `abandoned` |
+| **Orphan folder** | a task folder on disk that no `INDEX.md` row mentions | register it, or - if it was deliberately archived - say so in the report |
+
+Report only what it found, in one line each. **A clean pass prints nothing** - a structure check that announces its own success every session is noise, and noise is what gets filtered out first.
+
+The failure this prevents is quiet: none of these four break anything today. A pointer to a missing file, a folder nobody registered, a task with no `BRIEF.md` - each stays invisible until the day someone needs exactly that file, which is usually the day the task is being handed over.
 
 ## Sealing an oversized log (Rule 5 in action)
 
