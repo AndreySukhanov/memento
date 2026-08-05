@@ -48,7 +48,7 @@ Otherwise a one-line note in the workspace index is enough.
 
 **Record.** The D-block per [SCHEMA](../../docs/SCHEMA.md#decision-block), including a `dead_ends_checked:` line with the date. A plan or approach with no D-block records the same line under its `TASKS.md` entry.
 
-That line names **how many refuted insights exist and how many were read**, then which ones touch this - `scanned 4 refuted, 1 relevant: Insights/...`, or `scanned 4 refuted, none touch this`. A bare `none found` is what an unrun check also produces: the folder's contents are countable, so state the count and the claim becomes checkable against them.
+That line names **how many refuted insights exist, how many were read, and which files** - `scanned 4 refuted (parallel-window, batch-import, eager-cache, tz-normalize), 1 relevant: Insights/2026-06-02-parallel-window.md`. The paths are not optional even when nothing is relevant: a count alone can be invented, while a count plus names can be compared against a folder listing in one step. A bare `none found` is what an unrun check also produces.
 
 ## Rule 4: Sync discipline - the agent syncs, automatically
 
@@ -69,7 +69,7 @@ That line names **how many refuted insights exist and how many were read**, then
 
 **Record.** The diff-style report ([SCHEMA](../../docs/SCHEMA.md#sync-report)). Nothing fired -> write nothing, and say so in one line: "no drift triggers fired, memory untouched".
 
-**Exception.** The user objects -> revert and respect it for the rest of the session; a declined sync is a valid outcome. Informational sessions, quick lookups and aborted experiments are not triggers.
+**Exception.** The user objects -> revert, close the `OPS_LOG.md` line as `declined by user`, and respect it for the rest of the session. A declined sync is a valid outcome, but an unrecorded one is indistinguishable from a sync that never ran - and the next session will wonder why a day of work left no entries. Informational sessions, quick lookups and aborted experiments are not triggers.
 
 ## Rule 5: Compaction - seal the log, don't grow it forever
 
@@ -219,13 +219,13 @@ Eight operations, all performed on the agent's own initiative - no commands.
 
 **One ritual at a time.** While a sync runs, no other automatic operation starts - not an observer pass, not a consilium, not a background notification. They wait for the closing report. This failure needs no crash and no parallelism: the sync reaches the decision step, the decision step is itself an observer trigger, the pass writes to the same log, and the remaining steps happen only if the model remembers where it was. It usually does not.
 
-**Announce in `OPS_LOG.md` before touching a file.** Every operation below opens a line in `<workspace_root>/OPS_LOG.md` *before* its first write, and closes it with the result when finished ([SCHEMA](../../docs/SCHEMA.md#ops_logmd)). Append-only, never edited, never reordered - it is a black box, not a status file.
+**Announce in `OPS_LOG.md` before touching a file.** Every operation **that writes** opens a line in `<workspace_root>/OPS_LOG.md` *before* its first write and closes it with the result ([SCHEMA](../../docs/SCHEMA.md#ops_logmd)). Read-only operations - session start when nothing fires, the status overview - write nothing and log nothing; the journal is about writes, and filling it with reads would bury the lines that matter.
 
-**The ordering is the whole mechanism, and it is deliberately asymmetric.** Open first, and a session that dies mid-operation leaves an unterminated line: the next session sees exactly which operation stopped and which files it had reached. Forget to close, and you get a false alarm - which somebody notices. Close first (or write nothing until the end) and a death leaves no trace at all, which nobody notices. Fail loud beats fail silent, and that ordering carries most of the value here.
+Open first, close last: a session that dies mid-operation then leaves an unterminated line naming the operation and the files it had reached. A forgotten close is a false alarm somebody notices; writing nothing until the end is silence nobody notices.
 
-**What it does not do.** It cannot catch an operation that never announced itself: an agent that forgot the log entirely leaves the same nothing as before. This is not a guarantee of atomicity and does not replace *one ritual at a time* - it makes a broken ritual **findable**, which is the difference between a claim and evidence. The structure check stays the backstop for damage that was never announced.
+**What it does not do:** it cannot catch an operation that never announced itself. This is not atomicity and does not replace *one ritual at a time* - it makes a broken ritual **findable**, and the structure check stays the backstop for damage nobody announced. (The full argument is in [`docs/RATIONALE.md`](../../docs/RATIONALE.md).)
 
-**Bounding it.** `OPS_LOG.md` is the one file the method prunes. Past ~200 lines, delete the oldest *closed* pairs - a closed pair carries no information the sync report and the files themselves do not already carry. Unterminated lines are never pruned at any age; they are the only reason the file exists.
+**Bounding it.** This is the one file the method prunes: past ~200 lines the oldest *closed* pairs go. Unterminated lines are never pruned at any age.
 
 ## Session start
 
@@ -233,7 +233,7 @@ Eight operations, all performed on the agent's own initiative - no commands.
 
 **Action.** Two checks, both cheap, both **before** anything else is said about the task:
 
-1. **`OPS_LOG.md` - any unterminated line?** An opening `>` with no matching `<` means a previous session died mid-operation. Name it, name the files it had reached, and run the structure check on those files before continuing. A false alarm (the operation finished, the close was forgotten) costs one line to resolve and is the price of the ordering.
+1. **`OPS_LOG.md` - any unterminated line?** An opening `>` with no matching `<` means a previous session died mid-operation. Name it, run the structure check on the files it listed, and close the line as a recovery: `< recovery <operation>: checked <files>, <what was repaired or "nothing to repair">`. Leaving it open is not an option - the next session would repeat the same investigation, and the third would learn to ignore the file. A false alarm (finished, close forgotten) resolves in one line and is the price of the ordering.
 2. **`CHECKPOINT.yml` - `active`?** Report the operation and the step it stopped on, and offer to continue (Rule 11). Older than 7 days -> force the decision now: continue, or `abandoned` with a reason.
 
 **Then read the task folder in this order** - the order is load-bearing, because a month-old log read from the wrong end reproduces exactly the stale frame Rule 6 exists to prevent:
@@ -335,7 +335,7 @@ The folder stays where it is - closed folders are the long-term archive. Delete 
 
 **Rotation.** Not all four mandates every time: insight verification on the insight trigger; Sapper before major decisions and closes; pattern scout and memory auditor on the calendar, every week or two in an active workspace. A `- mandate: <name> -> <model or tier>` line in the config overrides the rotation for that mandate.
 
-**Budget.** If the config carries `- budget: <n> passes/month`, count this month's files in `Observers/` before starting - one directory listing, no bookkeeping file to drift. At the cap: drop to the cheapest model in the pool; past it: skip with a one-line note naming the count. The spend goes in the pass report as the number of passes used and remaining.
+**Budget.** If the config carries `- budget: <n> passes/month`, count this month's files in `Observers/` before starting - one directory listing, no bookkeeping file to drift. At the cap, drop to the model named by `- cheapest:`; past it, skip. Either way the pass records `budget_action: normal | degraded | skipped` with the count, in the report and in the closing `OPS_LOG.md` line. Naming the cheap model in the config rather than judging it per pass is what makes the degraded case checkable - otherwise "dropped to the cheapest" and "used whatever was convenient" look the same.
 
 **Exception.** No key, no config, or budget exhausted -> skip with a one-line note. Never block a sync on an unavailable observer.
 

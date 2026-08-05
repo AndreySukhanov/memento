@@ -84,6 +84,18 @@ The agent that wrote the memory is the worst available verifier of it. Its error
 
 **Memory health scores** exist because the cold read was already happening and its result was evaporating into prose. Scoring it turns a side effect into a tracked signal, and gives the method an honest metric against itself: if the scores are low, Memento is failing at its one job, whatever the task statuses say.
 
+## The operations log
+
+Three of the method's stated guarantees - *one ritual at a time*, *content before pointer*, and automatic operation itself - are enforced by nothing except the model remembering the rule. A skeptic lens put it exactly: the explanation of the failure ends with *"the remaining steps happen only if the model remembers where it was. It usually does not"* - and is then followed by a rule whose execution again depends on the model remembering that rule.
+
+`OPS_LOG.md` is the only proposal that breaks that circle, and it breaks it only partly. An operation that opens a line before its first write leaves evidence of itself regardless of what happens next. That does not make anything atomic and does not help if the agent forgot the log entirely - but it converts "the ritual might have been interrupted" from a worry into a finding.
+
+**Why open-before-write and not close-after.** The two orderings fail in opposite directions. Opening first means a forgotten close produces a false alarm: somebody investigates, finds the work was fine, closes the line. Cost: one wasted look. Writing only at the end means a death mid-operation produces nothing at all: the workspace is half-written and looks untouched. Cost: an undetected corruption that surfaces weeks later, usually at handover. A signal that occasionally fires wrongly beats one that occasionally fails to fire.
+
+**Why it is the one file that gets pruned.** Everything else the method writes is kept forever, because refuted insights and superseded decisions carry information. A *closed* pair of log lines does not: whatever it recorded is also in the sync report, in the files themselves, and in their dates. Unterminated lines are the exception and are never pruned at any age - they are the only reason the file exists.
+
+**A rejected addition: a "session start primed" marker.** A review proposed recording, in the first sync of a session, whether the session-start reading order had been followed. It was rejected on this method's own test. The line would change a byte on disk, but nothing on disk could contradict it: unlike `_Last insight pass:`, which can be compared against the newest dated entry, a self-reported "yes, I read the lenses first" has no counter-evidence anywhere. That is precisely the honour-system sentence the verifiability test was written to exclude, and adding it would have made the file *look* more rigorous while measuring nothing.
+
 ## Rule 11 - checkpoints
 
 Context runs out, tools time out, machines reboot. The next session then inherits a half-finished bulk operation with no way to tell whether step 4 of 9 completed - and re-running a step is sometimes worse than skipping one.

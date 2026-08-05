@@ -20,7 +20,9 @@ Four states, one character each, defined once in the file header that uses them:
 🔥 active / burning · ⏳ waiting on a condition · 🔄 in progress, calm · ✅ closed
 ```
 
-Any 4-glyph set works as long as the legend is in the file. Applied to: `TASKS.md` section headers, `MEMORY.md` dated entries, `INDEX.md` rows.
+Any 4-glyph set works as long as the legend is in the file, and **the bundled templates ship an ASCII one** - `[!]` burning, `[~]` waiting, `[>]` in progress, `[x]` closed. Pick one set per workspace and keep its legend in the header of every file that uses it; mixing sets across files is the drift this rule exists to prevent.
+
+Applied to: `TASKS.md` section headers, `MEMORY.md` dated entries, `INDEX.md` rows. Section *headings* (`## Active`, `## Completed`) may carry any decoration - they are not status glyphs and are not read as such.
 
 ---
 
@@ -107,12 +109,12 @@ next: ask Jane whether 21.08 clears the freeze, then rebuild the checklist
 **Decision.** The release ships 21.08, after the freeze.
 **Why revised.** Jane, 26.07: "12.08 is inside the freeze, we can't."
 **Artifacts.** The 12.08 checklist is obsolete; the migration script is unaffected.
-dead_ends_checked: scanned 4 refuted + 2 won't-do lists; 1 relevant - Insights/2026-06-02-parallel-window.md, does not block this (2026-07-26)
+dead_ends_checked: scanned 4 refuted (parallel-window, batch-import, eager-cache, tz-normalize) + 2 won't-do lists; 1 relevant - Insights/2026-06-02-parallel-window.md, does not block this (2026-07-26)
 ```
 
 - **R** `D<N>` for a new decision, **R** `D<N>.<M>` for a revision, numbered sequentially.
 - A revision **R** names the block it supersedes, **R** states why, **R** states what happens to artifacts built under the old decision: rebuild / obsolete / still valid.
-- **R** `dead_ends_checked:` - **how many** refuted insights and won't-do lists exist, how many were read, which ones touch this decision, plus the date. The counts are what make it checkable: the folder can be counted independently. A bare `none found` is also what an unrun check produces, and a sentence in the chat is not this line at all.
+- **R** `dead_ends_checked:` - **how many** refuted insights and won't-do lists exist, **their names**, which ones touch this decision, plus the date. Names are required even when nothing is relevant: a count on its own can be invented, a count with names is one folder listing away from being checked. A bare `none found` is also what an unrun check produces, and a sentence in the chat is not this line at all.
 - The superseded block is never edited or deleted.
 
 ---
@@ -212,6 +214,16 @@ The opening line is written **before the first file is touched**; the closing li
 
 In the sample above, two operations are open. The 15:40 observer pass never closed, and the 16:15 seal started anyway - which is also a *one ritual at a time* violation, visible only because both lines are here.
 
+Three closings carry a required shape, because each records something that would otherwise vanish:
+
+```markdown
+- 2026-08-06 17:20 < sync checkout-latency-bug: declined by user
+- 2026-08-06 18:04 < observer pass platform-migration: budget_action: skipped (20/20 this month)
+- 2026-08-07 09:12 < recovery sync checkout-latency-bug: checked MEMORY.md, DECISIONS.md, INDEX.md - index row was missing, added
+```
+
+A declined sync, a pass skipped on budget and a recovery all look like "nothing happened" from outside. These three lines are the difference between nothing happening and nothing being recorded.
+
 Never edited, never reordered, never deduplicated. Past ~200 lines, the oldest **closed pairs** may be deleted - the one place the method prunes, because a closed pair says nothing the sync report and the files do not. Unterminated lines are never pruned at any age.
 
 ## Auto-memory file
@@ -273,6 +285,7 @@ Keys come from environment variables and are never written here.
 - model: minimax/minimax-m3
 
 - budget: 20 passes/month
+- cheapest: minimax/minimax-m3
 - mandate: insight verifier -> gpt-5.6-sol
 - mandate: memory auditor -> cheapest
 ```
@@ -282,6 +295,8 @@ Keys come from environment variables and are never written here.
 **Prose in this file configures nothing.** A table that disagrees with the `- model:` lines does not change what runs - it only makes the file look configured while the old pool keeps being called. Observed in the field: a workspace whose config had documented, in full prose, a decision to stop calling two paid models, while every pass kept calling them and failing on payment errors. Changing the pool means changing these lines.
 
 **`budget:` is counted in passes, not money** - the ledger is the `Observers/` folder itself, and the count is one directory listing, checkable by anyone. Prices change and cannot be verified from here; file counts can. Over budget -> drop to the cheapest model in the pool, then skip with a one-line note. Never block a sync on the budget.
+
+**`- cheapest:` is required whenever `- budget:` is set.** The degraded tier has to be named in advance, not judged per pass - otherwise "dropped to the cheapest model" and "used whichever model was convenient" produce identical records.
 
 **`mandate:` lines are hints, not routing rules.** `-> <model id>` names a preference; `-> cheapest` / `-> strongest` names a tier. An unlisted mandate rotates through the pool.
 

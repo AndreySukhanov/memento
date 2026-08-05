@@ -113,6 +113,25 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 > **Shipped 06.08.2026, 43 KB -> 27 KB.** Three files instead of one: `SKILL.md` keeps the operational path (trigger / action / record / exception per rule), `docs/SCHEMA.md` owns every required shape, `docs/RATIONALE.md` owns the arguments. Nothing was dropped - the prose moved. The restatements did go: Rule 4 no longer repeats the sync order, Rule 5 no longer repeats dedup twice, Rule 10 no longer states cold / read-only / diversity in three places. The nuance risk is real and the mitigation is the same one the method prescribes for itself - an outside read, still owed.
 
+### 18. Repo review, second pass (gpt-5.3-codex, 06.08.2026 on v2.10.0) - triaged
+
+The first external review produced items 12-17. This is the second, run on the repository after 2.9.0-2.10.1. Everything actionable was applied the same day; what follows is the record of what was applied, what was rejected, and why - so neither half comes back around uninvestigated.
+
+**Applied in v2.10.1.**
+- *The index contradicted itself across files.* `templates/INDEX.md.tmpl` called itself "single source of truth" while the skill and schema call it a derived, rebuildable shadow. The template now says derived, and the README no longer promises "always one file away" without the qualifier.
+- *`dead_ends_checked:` accepted a bare count.* Names are now required even when nothing is relevant: a count alone can be invented, a count plus names is one folder listing from being checked.
+- *"Drop to the cheapest model" was unverifiable.* The config now carries a required `- cheapest:` line whenever `- budget:` is set, and every pass records `budget_action: normal | degraded | skipped`. Otherwise "degraded correctly" and "used whatever was convenient" produce identical records.
+- *Three outcomes vanished silently:* a sync the user declined, a pass skipped on budget, and a recovery after an unterminated log line. All three now have a required closing shape in `OPS_LOG.md` - they are exactly the cases that look like "nothing happened" from outside.
+- *`OPS_LOG.md` was over-promised.* The README said "every automatic operation"; session start and the status overview are read-only and log nothing. Scoped to operations that write, in both files.
+- *Rationale had crept back into the skill.* The three-paragraph argument for the log's ordering moved to `docs/RATIONALE.md`, leaving the obligation and the honest limit in the operational path.
+- *`README.md` overstated automaticity.* "All maintenance is automatic" now names its own exceptions - a declined sync, a missing key, an exhausted budget, a session that only answered questions.
+
+**Rejected: a "session start primed: yes/no" line in the sync report.** It fails this method's own verifiability test. The line would change a byte on disk, but nothing on disk could ever contradict it - unlike `_Last insight pass:`, which can be compared against the newest dated entry. A self-reported "I read the lenses first" is precisely the honour-system sentence the test exists to exclude, and adding it would make the file look more rigorous while measuring nothing. Recorded in `docs/RATIONALE.md` so the idea does not return as a fresh suggestion.
+
+**Dismissed as an artifact of the review setup.** The reviewer reported `commands/init.md` as a link into nothing. The file exists; the runner had been packing attachments under their base names, so the model could not see the tree. Fixed in the runner - it now passes full relative paths - and worth remembering as a general trap: a review of a repository is only as good as the reviewer's picture of its layout.
+
+**Not adopted, glyphs.** The templates ship an ASCII glyph set while the schema's example is emoji. The schema always allowed any four-glyph set with a legend in the file, so this is not drift - but the schema now says so explicitly and separates status glyphs from section-heading decoration, which is what made it look like a conflict.
+
 ---
 
 ## Next - worth doing, needs more shaping
