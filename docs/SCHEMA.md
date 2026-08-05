@@ -17,10 +17,10 @@ Required fields are marked **R**. Anything not listed is free text.
 Four states, one character each, defined once in the file header that uses them:
 
 ```
-🔥 active / burning · ⏳ waiting on a condition · 🔄 in progress, calm · ✅ closed
+[!] active / burning · [~] waiting on a condition · [>] in progress, calm · [x] closed
 ```
 
-Any 4-glyph set works as long as the legend is in the file, and **the bundled templates ship an ASCII one** - `[!]` burning, `[~]` waiting, `[>]` in progress, `[x]` closed. Pick one set per workspace and keep its legend in the header of every file that uses it; mixing sets across files is the drift this rule exists to prevent.
+This is the set the bundled templates ship and the one every example in this file uses. Any other 4-glyph set works - emoji are common - as long as its legend is in the file. Pick one set per workspace and keep its legend in the header of every file that uses it; mixing sets across files is the drift this rule exists to prevent.
 
 Applied to: `TASKS.md` section headers, `MEMORY.md` dated entries, `INDEX.md` rows. Section *headings* (`## Active`, `## Completed`) may carry any decoration - they are not status glyphs and are not read as such.
 
@@ -62,7 +62,7 @@ A lens or a phase block below the first dated entry is a defect: it corrects rea
 ### Dated log entry
 
 ```markdown
-### 🔄 2026-07-26 - Jane confirmed the deploy window
+### [>] 2026-07-26 - Jane confirmed the deploy window
 
 Jane, in #backend: "12.08, after the freeze lifts" (verbatim).
 Source: chat export `materials/backend-2026-07-26.md`.
@@ -169,7 +169,7 @@ The author writes only `hypothesis`, `interpretation` and `refuted`. `confirmed`
 
 _Last insight pass: 2026-07-26_
 
-- 💡 **2026-07-26** - deploy window collides with the freeze ->
+- [>] **2026-07-26** - deploy window collides with the freeze ->
   [Insights/2026-07-26-deploy-window-freeze.md](../Insights/2026-07-26-deploy-window-freeze.md) (hypothesis)
 ```
 
@@ -195,6 +195,8 @@ notes: source dump is dumps/prod/2026-08-05.sql; guard clause makes re-runs safe
 ```
 
 **R** `operation`, `status`, `started`, `steps`. **R** exactly one `# <- next` marker while `status: active`. `abandoned` **R** carries a reason - an abandoned operation with no reason is indistinguishable from a forgotten one.
+
+The file is **not deleted** when the operation ends: it is set to `done` or `abandoned` and stays until the next long operation overwrites it. A workspace therefore holds at most one checkpoint, and reading it answers both "is something running?" and "what was the last long thing we did?".
 
 ---
 
@@ -259,10 +261,10 @@ Index row in the directory's `MEMORY.md`:
 
 ```markdown
 ## Active
-- 🔥 [checkout-latency-bug](checkout-latency-bug/) - repro found, waiting on Jane's window (2026-07-26)
+- [!] [checkout-latency-bug](checkout-latency-bug/) - repro found, waiting on Jane's window (2026-07-26)
 
 ## Completed
-- ✅ [locale-audit](locale-audit/) - shipped 2026-06-30 -> [release/audit-final.sql](locale-audit/release/audit-final.sql)
+- [x] [locale-audit](locale-audit/) - shipped 2026-06-30 -> [release/audit-final.sql](locale-audit/release/audit-final.sql)
 
 ## Timeline
 - 2026-07-26 - deploy window collides with the freeze; D4 under revision
@@ -299,7 +301,7 @@ Keys come from environment variables and are never written here.
 - mandate: memory auditor -> cheapest
 ```
 
-**R** at least one `- model:` line. The `- model:`, `- budget:` and `- mandate:` lines are the **machine-readable configuration**; anything else in the file is a note for humans.
+**R** at least one `- model:` line. The `- model:`, `- budget:`, `- cheapest:` and `- mandate:` lines are the **machine-readable configuration**; anything else in the file is a note for humans.
 
 **Prose in this file configures nothing.** A table that disagrees with the `- model:` lines does not change what runs - it only makes the file look configured while the old pool keeps being called. Observed in the field: a workspace whose config had documented, in full prose, a decision to stop calling two paid models, while every pass kept calling them and failing on payment errors. Changing the pool means changing these lines.
 

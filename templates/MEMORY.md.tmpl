@@ -1,26 +1,55 @@
 # {{TASK_NAME}} - Memory Log
 
-> **Living log.** Append-heavy, dated, chronological. Every fact gets a date and a source.
+> **Living log.** Append-first, dated, chronological. Every fact gets a date and a source.
 > Stable context (scope, environments, IDs) lives in [CLAUDE.md](CLAUDE.md).
+>
+> **Status glyphs (Rule 7):** [!] burning · [~] waiting on a condition · [>] in progress, calm · [x] closed
+>
+> Section order below is fixed (see `docs/SCHEMA.md`): lenses and phase are read
+> *before* anything older, so they never move down the file.
 
-## Correction lenses
+## CORRECTION LENSES (read before any older entry)
 
 <!-- Rule 6: when past entries turn out to be factually wrong, do NOT edit them.
-     Add a lens here; everything older is read through it.
+     Add a lens here; everything older is read through it. Every lens states an
+     explicit rewrite clause: "any earlier entry saying X must be read as Y".
      Format: - **LENS N (DATE) - short title.** What was wrong, how to read old entries. -->
 
 _(none yet)_
 
-## Current phase
+## CURRENT PHASE ({{DATE}})
 
 <!-- Rule 6 companion: volatile state that changes the reading frame of the whole log.
-     Refresh whenever the situation flips, so nobody reasons from a stale frame. -->
+     Refresh whenever the situation flips - the date in the heading is what makes a
+     stale frame visible. Optional last line: "next: <the single most likely next
+     action>", rewritten by every sync that touches this task, or deleted when no
+     single next action can be named. One line, never a list. -->
 
-**{{DATE}}:** {{INITIAL_STATUS}}
+{{INITIAL_STATUS}}
 
 ## Current status
 
 **{{DATE}}:** {{INITIAL_STATUS}}
+
+## Open questions
+
+{{OPEN_QUESTIONS}}
+
+## Risks
+
+{{RISKS}}
+
+## Insights (derived - verify before acting on)
+
+<!-- Pointer lines to dated insight files in <workspace_root>/Insights/ (Rule 9):
+     "- (glyph) **date** - title -> [link] (status)". The insight itself lives in
+     the file: 2+ sources, a falsifier, and a status from the vocabulary in
+     docs/SCHEMA.md - hypothesis / interpretation / verified by <model> / confirmed /
+     refuted / closed. Zero insights is a valid state. The synthesis pass runs on
+     accumulation (~7 new entries / ~2 KB since the marker below), not on every new
+     fact - and the marker moves only when the pass actually ran. -->
+
+_Last insight pass: {{DATE}}_
 
 ## Stakeholder facts
 
@@ -43,24 +72,14 @@ _(none yet)_
 
 {{DEBUG_FACTS}}
 
-## Insights (derived - verify before acting on)
+## Sealed (before <date>)
 
-<!-- Pointer lines to dated insight files in <workspace_root>/Insights/
-     (Rule 9): "- (glyph) **date** - title -> [link] (status)". The insight
-     itself lives in the file: sources (2+), status hypothesis/confirmed/
-     refuted. Zero insights is a valid state. The synthesis pass runs on
-     accumulation (~7+ new entries / ~2 KB since the marker below), not on
-     every new fact. -->
+<!-- Rule 5: when this file crosses ~250 lines / ~12 KB, the oldest dated material is
+     compressed into this block - a few lines per period, keeping only what is still
+     load-bearing. Never deleted wholesale, never sealed while it still drives what
+     you would do today. Stays empty until the first seal. -->
 
-_Last insight pass: {{DATE}}_
-
-## Open questions
-
-{{OPEN_QUESTIONS}}
-
-## Risks
-
-{{RISKS}}
+_(nothing sealed yet)_
 
 ## File history
 

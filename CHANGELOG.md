@@ -1,5 +1,57 @@
 # Changelog
 
+## 2.12.0 - The audit applied, and a worked example
+
+The method's own observer pass run on the method itself: memory auditor, sapper,
+cold reader, three model families. One of four models died on a payment error
+mid-run, which is itself a finding, recorded in `BACKLOG.md` item 20.
+
+**The templates did not satisfy the schema.** `MEMORY.md.tmpl` used its own
+section order, had no `Sealed` block, an undated `## Current phase` and no glyph
+legend. `TASKS.md.tmpl` wrote phase headers without glyphs. The observer config
+that `init` creates set a budget without the `- cheapest:` line the schema
+requires. Every new workspace started life failing its own self-check - the
+specification and the thing that produces files had drifted apart while both
+looked maintained. All fixed.
+
+**`mode: core` could be bypassed.** The layer rules and the consilium skill still
+described themselves as firing automatically, and nothing told them to check the
+mode at the trigger. Now one explicit paragraph in the skill, plus a check inside
+the consilium skill itself.
+
+**Contradictions closed:** the core was six rules in one file and seven in two
+others; the folder threshold read "more than two stakeholders" in one place and
+"2+" in others; `CHECKPOINT.yml` was documented as existing only during an
+operation; observers were "skipped silently" in `init.md` and "with a note" in
+the skill; the README described observers as OpenRouter-only, listed shipped
+features as roadmap candidates, counted four structure checks where there are
+five, and let the read-only status overview appear to maintain the index. Glyph
+examples across the schema now use the same ASCII set the templates ship.
+
+**Three things a cold reader could not have executed.** The session-start reading
+order said "stop at the stated token budget" and no budget was stated anywhere -
+now it names a default. The `next:` line had no tie-breaker: it is now what
+unblocks someone else, then what is on a deadline, then what the last session was
+in the middle of. And the sync trigger "a stakeholder statement arrived" did not
+exclude bare acknowledgements, so a diligent agent would have logged three lines
+of "ok".
+
+**[`examples/`](examples/) - the gap that was not a contradiction.** A cold read
+scored the repository 6/10 on restorability for one reason: everything in it is a
+specification, and nothing showed what any of it looks like after a month of use.
+The example is one task six weeks in - a decision revised without deleting its
+original, two correction lenses, a refuted insight that later stopped someone
+re-proposing it, six weeks of entries sealed into eleven lines, and an operations
+log with a session death and the next morning's recovery. Its README says what to
+look at and why.
+
+**Kept as live assumptions, not fixed.** The sapper named three things this
+method rests on that were never tested, only reasoned: that different model
+families err independently (the load-bearing assumption under Rule 10), that two
+sources plus a panel reduce false conclusions rather than legitimising weak
+causality, and that the compaction thresholds generalise. Each has a falsifier
+recorded in `BACKLOG.md`. None is falsified. Watching.
+
 ## 2.11.0 - A declared core, and layers that are allowed to be optional
 
 An outside evaluation of the method (gpt-5.3-codex) called it workable and

@@ -34,24 +34,27 @@ Create `<workspace_root>/INDEX.md` from `${CLAUDE_PLUGIN_ROOT}/templates/INDEX.m
 # Observers config
 
 Models used for observer passes (2-3, prefer different families).
-API key comes from the OPENROUTER_API_KEY environment variable - never put it here.
+API keys come from environment variables - never put one here.
 
-Only the "- model:", "- budget:" and "- mandate:" lines configure anything.
-Notes elsewhere in this file change nothing about what runs.
+The model id decides the route: a plain id goes to that provider's own API
+(OPENAI_API_KEY), an id with a slash goes through OpenRouter (OPENROUTER_API_KEY).
+Only the "- model:", "- budget:", "- cheapest:" and "- mandate:" lines configure
+anything. Notes elsewhere in this file change nothing about what runs.
 
-- model: <openrouter model id>
-- model: <openrouter model id>
+- model: <model id>
+- model: <model id from a different family>
 
 - budget: 20 passes/month
+- cheapest: <the id to fall back to at the cap>
 ```
 
-Tell the user: observer passes activate once `OPENROUTER_API_KEY` is set and models are filled in; until then they are skipped silently. If an `INDEX.md` already exists here, say the workspace is already initialized and stop (offer the task-folder escape hatch if the user meant to bootstrap one folder).
+Tell the user: observer passes activate once a key is set and models are filled in; until then every pass skips with a one-line note rather than silently. If an `INDEX.md` already exists here, say the workspace is already initialized and stop (offer the task-folder escape hatch if the user meant to bootstrap one folder).
 
 ### Step 3. Register what already exists
 
 List the immediate subfolders (skip hidden/system ones: `.git`, `.obsidian`, `.idea`, `.vscode`, `node_modules`, anything starting with a dot). For each that contains task-like materials, show the user the list and ask which to register. For each chosen folder:
 
-- if it already has the 5 memory files - just add its row to "🟢 Active";
+- if it already has the 5 memory files - just add its row to "Active";
 - if it has raw materials but no memory files - run the *Task bootstrap procedure* on it;
 - leave the rest untouched.
 
@@ -63,8 +66,8 @@ List the immediate subfolders (skip hidden/system ones: `.git`, `.obsidian`, `.i
    Registered: N existing tasks (M bootstrapped from raw materials)
 
 From here on, task folders are created automatically: when a task crosses
-the folder threshold (more than a day / 2+ stakeholders / release artifact /
-2+ phases), the agent will announce it and bootstrap the 5-file set itself.
+the folder threshold (more than a day / two or more stakeholders / a release
+artifact / two or more phases), the agent will announce it and bootstrap the 5-file set itself.
 ```
 
 After this, stop. Do not start working on any task until asked.
@@ -116,7 +119,7 @@ For each of `CLAUDE.md`, `MEMORY.md`, `TASKS.md`, `DECISIONS.md`, `BRIEF.md`:
 
 ### Step B4. Register in the index
 
-Add a row to `INDEX.md` "🟢 Active" and a Timeline line - **after** the five files exist, never before. Plain files give no atomicity to promise, so the order is the guarantee: stop halfway here and you leave a folder the structure check finds and registers, rather than an index row pointing at nothing. An unregistered task folder is how memory drifts, so the row is written in the same operation, last.
+Add a row to `INDEX.md` "Active" and a Timeline line - **after** the five files exist, never before. Plain files give no atomicity to promise, so the order is the guarantee: stop halfway here and you leave a folder the structure check finds and registers, rather than an index row pointing at nothing. An unregistered task folder is how memory drifts, so the row is written in the same operation, last.
 
 ### Step B5. Report
 
