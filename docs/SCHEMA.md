@@ -109,12 +109,13 @@ next: ask Jane whether 21.08 clears the freeze, then rebuild the checklist
 **Decision.** The release ships 21.08, after the freeze.
 **Why revised.** Jane, 26.07: "12.08 is inside the freeze, we can't."
 **Artifacts.** The 12.08 checklist is obsolete; the migration script is unaffected.
-dead_ends_checked: scanned 4 refuted (parallel-window, batch-import, eager-cache, tz-normalize) + 2 won't-do lists; 1 relevant - Insights/2026-06-02-parallel-window.md, does not block this (2026-07-26)
+dead_ends_checked: scanned 4 refuted (parallel-window, batch-import, eager-cache, tz-normalize) + 2 won't-do lists; 1 relevant - Insights/2026-06-02-parallel-window.md, does not block this (2026-07-26)   # high stakes: names required
+# routine form:  dead_ends_checked: scanned 4 refuted + 2 won't-do lists, none touch this (2026-07-26)
 ```
 
 - **R** `D<N>` for a new decision, **R** `D<N>.<M>` for a revision, numbered sequentially.
 - A revision **R** names the block it supersedes, **R** states why, **R** states what happens to artifacts built under the old decision: rebuild / obsolete / still valid.
-- **R** `dead_ends_checked:` - **how many** refuted insights and won't-do lists exist, **their names**, which ones touch this decision, plus the date. Names are required even when nothing is relevant: a count on its own can be invented, a count with names is one folder listing away from being checked. A bare `none found` is also what an unrun check produces, and a sentence in the chat is not this line at all.
+- **R** `dead_ends_checked:` - the **count** of refuted insights and won't-do lists scanned, the verdict, and the date. **Names are required when the stakes are high** - a release artifact, a contradicted stakeholder, a revised D-block - and optional on routine plans, where demanding them turns an audit into a ritual. A bare `none found` with no count fails at both levels: it is what an unrun check also produces, and a sentence in the chat is not this line at all.
 - The superseded block is never edited or deleted.
 
 ---
@@ -268,6 +269,14 @@ Index row in the directory's `MEMORY.md`:
 ```
 
 **R** glyph, **R** link, **R** one-line status, **R** date of that status. A Completed row **R** links the final artifact.
+
+The file header may carry one machine-readable mode line:
+
+```markdown
+mode: core
+```
+
+`full` (the default, and what an absent line means) runs the layered rules on their own triggers. `core` keeps rules 1-7 and the four core operations, and leaves the layers - auto-memory, insight synthesis, observers, checkpoints, consilium - to run only when asked for by name. Prose describing a mode configures nothing; this line does.
 
 Both this file and the auto-memory index are **derived**: their rows are reconstructible from the folders and the frontmatter they point at. A contradiction between an index row and the folder it names is a repair, not an incident - the folder wins.
 

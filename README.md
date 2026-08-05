@@ -100,6 +100,14 @@ An auto-activating **skill** teaches the agent the method itself - the threshold
 - **An operations log.** Every operation that *writes* opens a line in `OPS_LOG.md` *before* it touches a file, and closes it with the result afterwards - read-only passes stay out of it. The ordering is asymmetric on purpose: a session that dies mid-sync leaves an unterminated line naming the operation and the files it had reached, so the next session starts by repairing exactly those. Forgetting to close a line raises a false alarm someone notices; writing nothing until the end leaves a silent half-finished workspace nobody does. It is not atomicity - plain files cannot offer that - it is evidence instead of a promise.
 - **Checkpoints.** Operations too long for one turn (a bulk edit across locales, an eval run, a data load, a release package) get a `CHECKPOINT.yml` written before the first step and updated after each one. If a session starts with an active checkpoint, the agent says which operation stopped where before doing anything else. Context runs out, tools time out, machines reboot - the next session should not have to guess whether step 4 of 9 finished.
 
+## Core and layers
+
+Not every rule earns its keep on every task, and pretending otherwise is how a method gets abandoned instead of trimmed. Seven rules are the **core** - the threshold, the stable/volatile split, append-only decisions, the sync, compaction, correction lenses, glyphs - together with four operations: session start, sync, structure check, closing. They pay off on any task long enough to deserve a folder.
+
+The rest are **layers**, each with a condition under which it is worth its cost: cross-task auto-memory when preferences recur, insight synthesis when conclusions are the deliverable, outside observers when a wrong decision is expensive, checkpoints for operations that span turns, the consilium for changes crossing three or more areas. A workspace that wants only the core says so with one line - `mode: core` in `INDEX.md` - and the layers then run only when asked for by name.
+
+This is a direct answer to the strongest objection an outside evaluation raised: the risk is not a bug, it is a busy month. An all-or-nothing protocol does not get trimmed under pressure, it gets dropped, and the memory dies whole. The core is small enough to survive a stretch with no enthusiasm behind it.
+
 ## What makes it different
 
 File-based agent memory is a crowded category in 2026: markdown-first memory runtimes, tiered session logs, SQLite observation stores, `AGENTS.md` as a standard. Some of them also *reflect* - synthesize conclusions from accumulated facts. Memento shares the file-based foundation, and its insight synthesis has good company.
@@ -148,7 +156,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.10.1** - a second full-repo review, applied: contradictions removed, two obligations made checkable, two over-promises corrected.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.11.0** - a declared core and optional layers, after an outside evaluation called the method valuable but heavy.
 
 ## Roadmap
 

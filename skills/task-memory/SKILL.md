@@ -13,6 +13,40 @@ The only command is `/memento:init`, run **once per workspace**. From there ever
 
 ---
 
+## The core and the layers
+
+Six rules earn their keep on any task long enough to need a folder at all. The rest earn theirs on particular kinds of work, and on a task they do not fit they are cost without return. An outside evaluation of this method put it plainly: the value curve breaks after the core, and everything past it depends on the class of task and on how well it is executed.
+
+**The core - always on:**
+
+| | |
+|---|---|
+| Rule 1 | the threshold - most work never becomes a folder |
+| Rule 2 | stable vs volatile - one fact, one home |
+| Rule 3 | decisions append-only, with the dead-end check |
+| Rule 4 | the sync, on drift triggers |
+| Rule 5 | compaction and dedup, on size |
+| Rule 6 | correction lenses and `CURRENT PHASE` |
+| Rule 7 | status glyphs (free) |
+
+Operations: **session start**, **the sync**, **structure check**, **closing**. Plus `OPS_LOG.md`, which costs two lines and is what makes a broken operation findable.
+
+**The layers - each activates on its own trigger, and each is worth naming as optional:**
+
+| Layer | Earns its keep when | Dead weight when |
+|---|---|---|
+| Rule 8, auto-memory | preferences and references recur across tasks | a single task with no cross-task life |
+| Rule 9, insight synthesis | analysis, research, product work - conclusions are the deliverable | straightforward implementation, where the facts are the deliverable |
+| Rule 10, outside observers | a decision is expensive to get wrong; a release is about to ship | ordinary iterations - a panel per iteration is bureaucracy, not verification |
+| Rule 11, checkpoints | operations that span turns and are expensive to redo | anything recoverable in ten minutes |
+| Consilium | a change crosses three or more areas at once | a single formulation, a lookup |
+
+**Reduced mode.** A workspace can declare `mode: core` in its `INDEX.md` header; the default is `mode: full`. In core mode the layers do not fire on their own - they run only when the user asks for them by name. Nothing else changes: the same files, the same formats, the same sync.
+
+This exists because the honest failure of a method like this is not a bug, it is a busy month. Under pressure a protocol that asks for everything gets abandoned entirely rather than trimmed, and the whole memory dies with it. Declaring what is optional makes trimming a supported move instead of a defeat - and the core is small enough to survive a period of no enthusiasm at all, which is the only test that matters.
+
+---
+
 ## Rule 1: The threshold - not every task deserves a folder
 
 **Trigger.** A piece of work is starting and has no task folder.
@@ -48,7 +82,9 @@ Otherwise a one-line note in the workspace index is enough.
 
 **Record.** The D-block per [SCHEMA](../../docs/SCHEMA.md#decision-block), including a `dead_ends_checked:` line with the date. A plan or approach with no D-block records the same line under its `TASKS.md` entry.
 
-That line names **how many refuted insights exist, how many were read, and which files** - `scanned 4 refuted (parallel-window, batch-import, eager-cache, tz-normalize), 1 relevant: Insights/2026-06-02-parallel-window.md`. The paths are not optional even when nothing is relevant: a count alone can be invented, while a count plus names can be compared against a folder listing in one step. A bare `none found` is what an unrun check also produces.
+**Two levels, by the same stakes that decide the verification tier (Rule 10).** A routine plan or approach records the count and the verdict - `scanned 4 refuted, none touch this (2026-08-06)`. A decision that touches a **release artifact**, **contradicts a stakeholder statement** or **revises an earlier D-block** records the names too: `scanned 4 refuted (parallel-window, batch-import, eager-cache, tz-normalize), 1 relevant: Insights/2026-06-02-parallel-window.md`.
+
+Names make the claim checkable against a folder listing, and that is worth paying for where a wrong answer is expensive. Demanding them on every routine note is how an audit turns into a ritual - the same evaluation that asked for verifiability said so about this exact line. A bare `none found` with no count is not enough at either level: it is what an unrun check also produces.
 
 ## Rule 4: Sync discipline - the agent syncs, automatically
 
@@ -107,7 +143,7 @@ That line names **how many refuted insights exist, how many were read, and which
 
 *This is triage, not decoration - and it surfaces drift on its own: a "burning" marker three months old is itself a finding.*
 
-## Rule 8: Session auto-memory - atomic facts, not one growing file
+## Rule 8: Session auto-memory - atomic facts, not one growing file · *layer*
 
 **Trigger.** A fact surfaces that outlives the task: a standing preference, a stable reference, who the user is, the state of active work.
 
@@ -117,7 +153,7 @@ That line names **how many refuted insights exist, how many were read, and which
 
 **Division of labour.** Folder files hold *task* memory, synced by the Rule 4 ritual. Auto-memory holds *cross-task* memory and accretes continuously, in the write-immediately tier.
 
-## Rule 9: Insight synthesis - stored facts must talk to each other
+## Rule 9: Insight synthesis - stored facts must talk to each other · *layer*
 
 An **insight** is a conclusion that follows from combining *new* information with something *already recorded*, and that nobody has written down yet. The search space is this task's log and decisions, the other active tasks in `INDEX.md`, and cross-task auto-memory.
 
@@ -149,7 +185,7 @@ An **insight** is a conclusion that follows from combining *new* information wit
 
 **An unverified insight may not carry weight.** A hypothesis is never silently promoted (Rule 10), and until its status says otherwise it **may not feed a D-block or a charter edit**. Only once it reads `confirmed` or `verified by ...`, with a date, may a decision rest on it. This is the whole mechanism against self-reinforcing error: without it the system quietly cites its own guesses back to itself as findings.
 
-## Rule 10: Outside observers - the author never grades their own work
+## Rule 10: Outside observers - the author never grades their own work · *layer*
 
 The agent maintaining the memory has correlated blind spots: it confirms its own hypotheses and reads the files through the lens of what it did today. A different model errs differently.
 
@@ -178,7 +214,7 @@ The agent maintaining the memory has correlated blind spots: it confirms its own
 
 **Not the only outside view.** Observers verify what is already written, cold and after the fact. When the question is "what breaks if we do this?" and the answer spans several areas at once, the tool is a **consilium** - parallel in-session agents, each on a lens, plus a mandatory skeptic looking for the prior rejection. Verification after versus perspective before; the consilium skill fires on its own. On demand, the panel is `/memento:observers <question>`.
 
-## Rule 11: Checkpoint long operations - the session can die mid-way
+## Rule 11: Checkpoint long operations - the session can die mid-way · *layer*
 
 **Trigger.** An operation that does not fit one turn and is expensive to lose: a bulk edit across files or locales, an eval run, a data load, a sweep audit, a release package.
 
@@ -337,7 +373,7 @@ The folder stays where it is - closed folders are the long-term archive. Delete 
 
 **Budget.** If the config carries `- budget: <n> passes/month`, count this month's files in `Observers/` before starting - one directory listing, no bookkeeping file to drift. At the cap, drop to the model named by `- cheapest:`; past it, skip. Either way the pass records `budget_action: normal | degraded | skipped` with the count, in the report and in the closing `OPS_LOG.md` line. Naming the cheap model in the config rather than judging it per pass is what makes the degraded case checkable - otherwise "dropped to the cheapest" and "used whatever was convenient" look the same.
 
-**Exception.** No key, no config, or budget exhausted -> skip with a one-line note. Never block a sync on an unavailable observer.
+**Exception.** No key, no config, budget exhausted, or the workspace is in `mode: core` -> skip with a one-line note. Never block a sync on an unavailable observer.
 
 ## Status overview
 
@@ -365,7 +401,7 @@ Everything above points at [`docs/SCHEMA.md`](../../docs/SCHEMA.md) for shapes, 
 
 **Pointer line** - `- 💡 **<date>** - <title> -> [<path>](<relative path>) (<status>)`
 
-**D-block** - `D<N>` new, `D<N>.<M>` revision naming its original; decision, why revised (+ the quote), artifact fate, `dead_ends_checked:` with counts.
+**D-block** - `D<N>` new, `D<N>.<M>` revision naming its original; decision, why revised (+ the quote), artifact fate, `dead_ends_checked:` - count and verdict routinely, names too when the stakes are high.
 
 **Marker** - `_Last insight pass: <date>_`, moved only when the pass ran.
 
