@@ -89,9 +89,13 @@ Source: chat export `materials/backend-2026-07-26.md`.
 
 Waiting on Jane's freeze-calendar answer. Everything below dated before
 2026-07-20 describes the pre-migration architecture.
+
+next: ask Jane whether 21.08 clears the freeze, then rebuild the checklist
 ```
 
 **R** date of the last refresh. A phase block with no date cannot be judged stale.
+
+**R** at most one `next:` line, and it is the last line of the block. One action, not a list - a list is a plan and belongs in `TASKS.md`. Rewritten by every sync that touches the task, or deleted if no single next action can be named. Two `next:` lines, or one older than the block's own date, is a defect: the line's only value is being current.
 
 ---
 
@@ -191,6 +195,25 @@ notes: source dump is dumps/prod/2026-08-05.sql; guard clause makes re-runs safe
 
 ---
 
+## `OPS_LOG.md`
+
+One workspace-level file, append-only, two lines per operation:
+
+```markdown
+- 2026-08-06 14:02 > sync checkout-latency-bug -> MEMORY.md, DECISIONS.md, INDEX.md
+- 2026-08-06 14:05 < sync checkout-latency-bug: +2 facts, D3.1, index row, self-check clean
+- 2026-08-06 15:40 > observer pass platform-migration (sapper) -> Observers/
+- 2026-08-06 16:15 > seal platform-migration -> MEMORY.md
+```
+
+**R** date and time, **R** the direction marker - `>` opens, `<` closes - **R** the operation and its target, **R** on an opening line the files it expects to touch, **R** on a closing line the result or the failure.
+
+The opening line is written **before the first file is touched**; the closing line after the last. An opening line with no matching close is the signal the file exists for: at session start it names the operation that died and the files it had reached.
+
+In the sample above, two operations are open. The 15:40 observer pass never closed, and the 16:15 seal started anyway - which is also a *one ritual at a time* violation, visible only because both lines are here.
+
+Never edited, never reordered, never deduplicated. Past ~200 lines, the oldest **closed pairs** may be deleted - the one place the method prunes, because a closed pair says nothing the sync report and the files do not. Unterminated lines are never pruned at any age.
+
 ## Auto-memory file
 
 One fact per file, in the session-memory directory:
@@ -238,6 +261,30 @@ Both this file and the auto-memory index are **derived**: their rows are reconst
 
 ---
 
+## `Observers/CONFIG.md`
+
+```markdown
+# Observers config
+
+Keys come from environment variables and are never written here.
+
+- model: gpt-5.6-sol
+- model: deepseek/deepseek-v4-pro
+- model: minimax/minimax-m3
+
+- budget: 20 passes/month
+- mandate: insight verifier -> gpt-5.6-sol
+- mandate: memory auditor -> cheapest
+```
+
+**R** at least one `- model:` line. The `- model:`, `- budget:` and `- mandate:` lines are the **machine-readable configuration**; anything else in the file is a note for humans.
+
+**Prose in this file configures nothing.** A table that disagrees with the `- model:` lines does not change what runs - it only makes the file look configured while the old pool keeps being called. Observed in the field: a workspace whose config had documented, in full prose, a decision to stop calling two paid models, while every pass kept calling them and failing on payment errors. Changing the pool means changing these lines.
+
+**`budget:` is counted in passes, not money** - the ledger is the `Observers/` folder itself, and the count is one directory listing, checkable by anyone. Prices change and cannot be verified from here; file counts can. Over budget -> drop to the cheapest model in the pool, then skip with a one-line note. Never block a sync on the budget.
+
+**`mandate:` lines are hints, not routing rules.** `-> <model id>` names a preference; `-> cheapest` / `-> strongest` names a tier. An unlisted mandate rotates through the pool.
+
 ## Observer report
 
 `Observers/YYYY-MM-DD-<model>-<mandate>.md`, saved verbatim before any triage, never deleted. **R** final section:
@@ -259,7 +306,7 @@ Score: 6/10
 
 ```
 Synced <task name>:
-  Lenses       none needed; CURRENT PHASE refreshed
+  Lenses       none needed; CURRENT PHASE refreshed, next: rewritten
   MEMORY.md    +2 facts, +1 case, 1 dup merged, status line updated
   Insights     +1: deploy window collides with the freeze (hypothesis)
                marker moved to 2026-07-26 (pass ran)
@@ -286,7 +333,7 @@ Runs after the sync's content steps, on what **this sync** wrote - not on the wh
 2. every new pointer line: date, link resolves, status matches the file it points at;
 3. every new D-block: numbering continues, a revision names its original and the artifact fate, `dead_ends_checked:` present;
 4. `_Last insight pass:_` updated if the pass ran;
-5. any lens or phase block written this session sits above the first dated entry and carries a date;
+5. any lens or phase block written this session sits above the first dated entry and carries a date, and `CURRENT PHASE` holds at most one `next:` line;
 6. thresholds that were applied are reported as the number used, not as a judgement ("188 lines", not "still small").
 
 Deviations are fixed in place and reported in one line. What cannot be fixed without inventing a fact becomes an open question instead - the schema never wins over the truth of the log.

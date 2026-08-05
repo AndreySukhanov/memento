@@ -85,7 +85,7 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 >
 > **What stays open, now with a falsifier.** By this method's own Rule 9, "partly unworkable on long, parallel sessions" was an *interpretation*: no falsifier was named and no incident was ever observed - it came from reading the text, not from a broken workspace. It is now falsifiable: **an index row pointing at a folder that does not exist, or two interleaved entries inside one `MEMORY.md`**. The structure check looks for the first for free. If a month of use produces neither, this item closes as not needed.
 
-### 13. `OPS_LOG.md` - an append-only journal of automatic operations 🔴 from external review · **case strengthened by the v2.9.0 panel**
+### 13. `OPS_LOG.md` - an append-only journal of automatic operations ✅ shipped in v2.10.0
 
 **Problem.** The automatic operations (sync, seal, observer pass, close) touch several files in sequence. If the session dies mid-sequence, nothing records how far it got: the next session sees a partially updated workspace and cannot tell which half is missing.
 
@@ -98,6 +98,8 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 > **The skeptic lens (06.08.2026) arrived here from a different direction and made the case sharper.** Its complaint was that three things the method calls guarantees - "one ritual at a time", "content before pointer", and automatic operation itself - are enforced by nothing but the model remembering the rule. Its exact words about the ritual: *"the remaining steps happen only if the model remembers where it was. It usually does not"* - followed by a rule whose execution again depends on the model remembering that rule. That circularity is real and this item is the only proposed thing that breaks it: an operation that opens a log line before touching a file leaves evidence of itself independent of whether the model remembered anything afterwards. It does not make the ritual atomic; it makes a broken ritual **findable**, which is the difference between a guarantee and a claim.
 
 **Cost.** S-M. A line in each operation plus a session-start check.
+
+> **Shipped 06.08.2026.** Two lines per operation in `<workspace_root>/OPS_LOG.md`, opening line before the first write. Two things were decided during implementation and are worth recording. **The log is the one file the method prunes** - past ~200 lines the oldest *closed* pairs go, because a closed pair says nothing the sync report and the files do not; unterminated lines are never pruned at any age, they are the entire reason the file exists. And **the honest limit is stated in the skill itself**: the log cannot catch an operation that never announced itself, so it is not a substitute for *one ritual at a time* and not a guarantee of atomicity - the structure check remains the backstop for damage nobody announced. It converts a claim into evidence, which is all it was ever supposed to do.
 
 ### 14. Compress the method into trigger -> action -> record ✅ shipped in v2.9.0
 
@@ -125,7 +127,7 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 **Cost.** S (a doc), plus testing one reference pairing.
 
-### 6. Session-start priming order
+### 6. Session-start priming order ✅ shipped in v2.10.0
 
 **Problem.** What the agent reads first when entering a task folder is currently implicit (charter auto-loads; the rest is judgment). A month-old task read in the wrong order (old log before lenses) reproduces exactly the stale-frame failure Rule 6 exists to prevent.
 
@@ -133,7 +135,9 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 **Cost.** S.
 
-### 7. Observer economics - budget and rotation in CONFIG
+> **Shipped 06.08.2026 inside the new Session start operation**, which item 13 had just created for the `OPS_LOG.md` and checkpoint checks - so the reading order landed in an operation that already runs first, instead of becoming a paragraph somebody has to remember. The ordering argument is stated with it: the three cheapest things to read are the three that change how everything else is interpreted, which is why they sit in fixed places. Entering through the newest log entries is the failure being prevented - they are the most detailed and the least oriented.
+
+### 7. Observer economics - budget and rotation in CONFIG ✅ shipped in v2.10.0
 
 **Problem.** Observer passes cost real money and the spend is invisible. There is no policy for which mandate gets which model, and no cap.
 
@@ -141,13 +145,19 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 **Cost.** S-M.
 
-### 8. Next-session prep note
+> **Shipped 06.08.2026, with the budget counted in passes rather than money.** Money cannot be verified from inside the workspace - prices drift and nothing here can check them - while `Observers/` is a dated folder whose contents are one listing away. The ledger is the folder itself, so there is no counter file to drift out of sync with reality.
+>
+> Two field lessons shipped with it, both from the plugin author's own workspace on the same day. **Prose in the config configures nothing:** a config had documented at length a decision to stop calling two paid models, and every pass kept calling them and failing on payment errors - the file looked configured and was not. That is now stated in the config format itself. And **a runner's `OK` is not a result:** a model returned zero characters, the runner reported success, and the empty file sat in `Observers/` looking like a verdict. The pass now checks that a report is a report before triaging it, which is the same rule the method already applies to its own obligations - verify the outcome, not the invocation.
+
+### 8. Next-session prep note ✅ shipped in v2.10.0
 
 **Problem.** Each session re-derives "where was I" even with good memory - the files say what happened, not what to pick up first.
 
 **Sketch.** The sync's last step may append one line to `CURRENT PHASE`: *next: <the single most likely next action>*. Strictly one line, strictly overwritten each sync - a stale "next" is worse than none. (EverOS ships a whole "foresight" track; one honest line is the zero-cost version.)
 
 **Cost.** S.
+
+> **Shipped 06.08.2026 as one line inside `CURRENT PHASE`, not a file.** The deciding argument was staleness: a `next:` line living inside the block the sync already rewrites gets refreshed by an operation that runs anyway, while a separate `NEXT.md` is one more file to remember, and the one thing worse than no next-action is yesterday's next-action. The rule states the failure mode directly - if a sync cannot name a single next action, it deletes the line rather than leaving the old one.
 
 _External review (06.08.2026) arrived at the same idea from the cold-start angle and proposed a separate `NEXT.md` per task instead - next action, blocker, evidence needed - to cut the tokens a fresh session spends reconstructing state. Same problem, bigger footprint: worth deciding one line inside `CURRENT PHASE` versus a file, but not worth two entries._
 

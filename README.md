@@ -43,6 +43,7 @@ Alongside task memory there is a second, **cross-task layer**: session auto-memo
 ```
 workspace/
 ├── INDEX.md                 # registry of all task folders: active / completed / timeline
+├── OPS_LOG.md               # black box: every automatic operation opens a line before writing
 ├── CHECKPOINT.yml           # only while a long operation is running: which step it stopped on
 ├── Insights/                # one insight per dated file: 2026-07-26-deploy-window-freeze.md
 ├── Observers/               # outside-observer reports + CONFIG.md (model list; key via env var)
@@ -96,6 +97,7 @@ An auto-activating **skill** teaches the agent the method itself - the threshold
 - **Falsifiable hypotheses.** Every recorded conclusion carries two extra fields: `falsifier` - the recognizable fact that would kill it (a log line, a field value, a run result, a stakeholder sentence) - and `depends_on`, the facts it stands on. When a new fact lands, it is checked against the `depends_on` of live hypotheses and their statuses are updated immediately, so memory reacts instead of accumulating. A conclusion for which no falsifier can be named is not a hypothesis but an **interpretation**: labelled as such, and never allowed to carry a decision. The failure this prevents is silent promotion - an unfalsifiable reading that sits in memory long enough starts being quoted as a finding.
 - **Consilium.** When a change touches three or more areas at once - crosses languages or services, alters a contract someone depends on, or is a regression that appeared after a fix - a second skill fires on its own and splits the question across parallel read-only agents, each with its own lens and required reading, plus a **mandatory skeptic** whose job is to find the prior rejection. Disagreements between lenses are reported as disagreements, never averaged: two domains contradicting each other marks the zone of real uncertainty, which is the most useful thing the exercise produces. Observers verify what is already written; a consilium looks at what would break before it is written.
 - **Structure check.** A no-cost doctor pass that judges nothing and only verifies the structure holds: insight pointers that lead nowhere, registered tasks missing one of the five files, a checkpoint left `active` past a week, folders on disk that no index row mentions. Runs at the end of a multi-file sync and before every close; a clean pass prints one dated line, because "ran it, all clean" and "never ran it" must not look identical. None of these break anything today - they surface on the day someone needs exactly that file, which is usually the handover.
+- **An operations log.** Every automatic operation writes one line to `OPS_LOG.md` *before* it touches a file, and closes it with the result afterwards. The ordering is asymmetric on purpose: a session that dies mid-sync leaves an unterminated line naming the operation and the files it had reached, so the next session starts by repairing exactly those. Forgetting to close a line raises a false alarm someone notices; writing nothing until the end leaves a silent half-finished workspace nobody does. It is not atomicity - plain files cannot offer that - it is evidence instead of a promise.
 - **Checkpoints.** Operations too long for one turn (a bulk edit across locales, an eval run, a data load, a release package) get a `CHECKPOINT.yml` written before the first step and updated after each one. If a session starts with an active checkpoint, the agent says which operation stopped where before doing anything else. Context runs out, tools time out, machines reboot - the next session should not have to guess whether step 4 of 9 finished.
 
 ## What makes it different
@@ -146,7 +148,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.9.1** - a three-lens outside read of that compression, and what it found.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.10.0** - an operations log, a next-action line, a fixed session-start reading order, and a countable observer budget.
 
 ## Roadmap
 
