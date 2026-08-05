@@ -132,6 +132,18 @@ The first external review produced items 12-17. This is the second, run on the r
 
 **Not adopted, glyphs.** The templates ship an ASCII glyph set while the schema's example is emoji. The schema always allowed any four-glyph set with a legend in the file, so this is not drift - but the schema now says so explicitly and separates status glyphs from section-heading decoration, which is what made it look like a conflict.
 
+### 19. Core and layers - the method declares what is optional ✅ shipped in v2.11.0
+
+**Problem.** Every rule was presented as equally load-bearing. An outside evaluation of the method (gpt-5.3-codex, 06.08.2026) disagreed on both halves: the value curve **breaks after the core** - threshold, stable/volatile split, append-only decisions, sync, short log - while insight synthesis, observers and the consilium pay off depending on the class of task and are cost without return on tasks that do not fit them. And the strongest argument against the whole method is not a bug but a busy month: brittleness to a drop in execution discipline, after which it degrades into expensive ritual documentation where the form is maintained and the thinking is not.
+
+**Shipped.** Seven core rules and four core operations named as such; five layers named as optional with the condition under which each is worth its cost; `mode: core` as one machine-readable line in the `INDEX.md` header, default `full`. In core mode the layers fire only when asked for by name.
+
+**Why this and not a lighter method.** The failure mode of an all-or-nothing protocol is abandonment, not trimming - under pressure people stop it rather than reduce it, and the memory dies whole. Declaring a core makes trimming a supported move, and the core is small enough to survive a stretch with no enthusiasm behind it, which is the only test that matters.
+
+**Same evaluation, also applied:** the dead-end check became two-level. Names of the scanned files are required when the stakes are high - a release artifact, a contradicted stakeholder, a revised D-block - and optional on routine plans, where the evaluation called mandatory enumeration "ritual for the sake of ritual". The stakes triggers are the same ones that already select the verification tier, so this is one concept, not two.
+
+**What stays open, and is not closed by this.** The evaluation named a risk the split does not touch: formal compliance without semantic selection - the system honestly producing many entries whose conclusions are weak, with the form legitimising them. The method's detectors catch form and reconstructibility, not truth. Rule 10 is the nearest thing to an answer and only a partial one. Recorded here rather than in a changelog, because any future rule should be checked against it: does this help the thinking, or only the paperwork?
+
 ---
 
 ## Next - worth doing, needs more shaping

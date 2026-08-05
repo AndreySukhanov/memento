@@ -1,5 +1,51 @@
 # Changelog
 
+## 2.11.0 - A declared core, and layers that are allowed to be optional
+
+An outside evaluation of the method (gpt-5.3-codex) called it workable and
+above the average of file-based practices in 2026 - decision history, dead-end
+recall and recoverability specifically - and also **heavy**: "not a light
+plugin, a disciplinary protocol". Two of its findings are answered here.
+
+**The value curve breaks after the core.** Seven rules pay off on any task long
+enough to deserve a folder: the threshold, the stable/volatile split,
+append-only decisions, the sync, compaction, correction lenses, glyphs. With
+four operations - session start, sync, structure check, closing - that is the
+core, and it is now named as such.
+
+**The rest are layers, each with a stated condition.** Auto-memory when
+preferences recur across tasks; insight synthesis when conclusions are the
+deliverable rather than the facts; observers when a wrong decision is expensive
+or a release is shipping - a panel per ordinary iteration is bureaucracy, not
+verification; checkpoints for operations spanning turns; the consilium for
+changes crossing three or more areas. Each entry also says when the layer is
+dead weight, which is the half usually left out.
+
+**`mode: core`.** One machine-readable line in the `INDEX.md` header, default
+`full`. In core mode the layers stop firing on their own and run only when asked
+for by name. Nothing else changes - same files, same formats, same sync.
+
+The reasoning is in `docs/RATIONALE.md`: the honest failure of a method like
+this is not a bug, it is a busy month. An all-or-nothing protocol does not get
+trimmed under pressure, it gets dropped, and the memory dies whole. A declared
+core makes trimming a supported move, and this one is small enough to survive a
+stretch with no enthusiasm behind it.
+
+**The dead-end check is now two-level.** The same evaluation called mandatory
+enumeration of every scanned file "ritual for the sake of ritual" - directly
+contradicting the review that had asked for it one release earlier. Both are
+right in their own frame, so the line follows the stakes: count and verdict on
+routine plans, names as well when a release artifact, a contradicted stakeholder
+or a revised D-block is involved. Those are the same stakes triggers that
+already choose the verification tier.
+
+**Recorded, not fixed.** The evaluation named a risk this release does not
+touch: formal compliance without semantic selection, where the system honestly
+produces many entries whose conclusions are weak and the form legitimises them.
+The detectors here catch form and reconstructibility, not truth. It is written
+into `BACKLOG.md` as a standing test for future rules: does this help the
+thinking, or only the paperwork?
+
 ## 2.10.1 - Second repo review, applied
 
 A full-repository review (gpt-5.3-codex) run against 2.10.0. Everything

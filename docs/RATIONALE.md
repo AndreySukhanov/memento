@@ -110,6 +110,18 @@ Added in v2.8.3 after a review found the pattern across several rules: obligatio
 
 The test is not about distrust of the model. It is about making maintenance *auditable* - which is the same standard the method applies to facts, decisions and insights.
 
+## Why there is a core and why the rest is optional
+
+An outside evaluation of the whole method (gpt-5.3-codex, 06.08.2026) landed on a verdict worth keeping verbatim in the reasoning file rather than in a changelog nobody rereads: the method is **workable and above the average of file-based practices of 2026** - particularly on decision history, dead-end recall and recoverability - but it is **heavy**, and "this is not a light plugin, it is a disciplinary protocol".
+
+Two of its findings drove this split.
+
+**The value curve breaks after the core.** Threshold, the stable/volatile split, append-only decisions, the sync and a short log pay off on essentially any task long enough to have a folder. Insight synthesis, observers and the consilium pay off *depending on the class of task* - and on a task that does not fit them they are cost with no return. Stating that in the method is more honest than implying every rule is equally load-bearing.
+
+**The strongest argument against the method is a busy month, not a bug.** The evaluation put it as brittleness to a drop in execution discipline: under time pressure the protocol degrades into expensive ritual documentation where the form is maintained and the thinking is not. The failure mode of an all-or-nothing protocol is abandonment - people do not trim it, they stop it, and the memory dies whole. Naming a core small enough to survive a period of zero enthusiasm makes trimming a supported move rather than a defeat.
+
+**What this does not fix.** The same evaluation names a risk the split does not touch: formal compliance without semantic selection - the system honestly producing many entries whose conclusions are weak, with the form legitimising them. The method's own detectors (memory health scores, cold observer reads, the structure and self-checks) catch **form and reconstructibility**, not truth. That gap is real and is not closed here. The nearest thing to an answer is Rule 10 - promotion of a claim requires a real-world fact or an outside verdict - and it is a partial one.
+
 ## What was deliberately rejected
 
 **Locks and lease files.** An external review proposed `LOCKS.md` with TTL leases to serialize concurrent writers. A panel rejected it: two agents read the file, both see it free, both write, and the lease has no way to notice. A TTL makes it worse, since expiry does not prove the holder died. Safe leasing needs a fencing token the store itself enforces, and a Markdown file enforces nothing. The full verdict, including the contested question of temp+rename writes, is in [BACKLOG.md](../BACKLOG.md) item 12.
