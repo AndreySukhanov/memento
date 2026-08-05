@@ -144,7 +144,9 @@ The `/memento:init` command, the auto-activating skill and the auto-loading of `
 Task trackers store *state*, wikis store *documents*. Memento stores *working memory*: dated facts, superseded decisions with rationale, and evidence - the things you need to resume thinking, not just to report progress.
 
 **What about vector databases / RAG memory?**
-Complementary, not competing. Memento is deliberately low-tech: for a single workspace of tasks, structured files beat embeddings on precision, auditability, and zero infrastructure. If you outgrow it, the files are perfect RAG source material.
+Complementary, not competing. For a single workspace of tasks, structured files beat embeddings on precision, auditability, and zero infrastructure. If you outgrow it, the files are perfect RAG source material.
+
+One honest qualifier: *low-tech* describes the storage, not the method. There is no database to run and no service to keep alive, but there is a protocol - a sync order, checks that must report themselves, formats that have required fields. An outside evaluation called it "not a light plugin, a disciplinary protocol", which is fair. That is what the [core and layers](#core-and-layers) split is for: the core is small enough to keep running on a bad week, and the rest is opt-in.
 
 ## A worked example
 
@@ -161,7 +163,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.12.0** - a three-mandate audit applied, templates fixed to match the schema, and a worked example.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.12.1** - the audit closed out: a vocabulary table, three apparent contradictions resolved, and Rule 10's core assumption made measurable.
 
 ## Roadmap
 

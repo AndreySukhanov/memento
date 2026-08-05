@@ -1,5 +1,53 @@
 # Changelog
 
+## 2.12.1 - The rest of the audit: four words, three ambiguities, one assumption made measurable
+
+Everything the three-mandate audit raised that 2.12.0 did not close.
+
+**Four words that were being written into the wrong file.** *Open question*,
+*blocker*, *risk* and *insight* overlap in ordinary English and not here, and a
+cold reader said plainly that they would have put everything into open questions
+to be safe. There is now a table of what each is and what it is not. The
+dangerous one is *insight*: in speech it means any thought worth saying, here it
+is a claim with two sources, a falsifier and a status - and writing
+`## Insight: ...` inside a log satisfies nobody, because the pointer format
+exists so the claim can be found from every task it touches.
+
+**`_needs clarification_` and open questions turned out to be one act, not two.**
+The placeholder marks the hole in the file; the open question records what to ask
+and of whom. Bootstrap writes both, and a session that gets the answer closes
+both. A placeholder with no matching question is invisible - nobody greps a
+charter for italics.
+
+**Three contradictions that were only apparent, now stated as such.** A check
+reports itself only when its operation ran, so "nothing fired, nothing written"
+never conflicts with "silence is not a report" - no triggers means no sync means
+no check to report. A D-block written mid-sync *is* an observer trigger, and the
+correct response is to finish the sync first: a decision verified five minutes
+late is fine, a sync abandoned at step 3 is not. And session start with four
+active tasks primes **one** - the one the first message is about - or asks;
+reading four folders "to be ready" spends the budget the real task needs.
+
+**Which version of the rules is running.** The skill as loaded is the authority,
+not what an old memory file implies the method used to require. Files written
+under an earlier format stay valid, the sync repairs what it touches, and nothing
+gets rewritten to match a new format for its own sake.
+
+**One untested assumption became measurable.** Rule 10 rests on different model
+families erring *independently* - never verified, only reasoned. Now, when an
+insight that was `verified by ...` later becomes `refuted`, the line records who
+had verified it. It costs nothing, and it is the only way the question can ever be
+answered: if the same models keep being wrong together, the panel is one opinion
+wearing three names, and `Observers/` is where that becomes visible.
+
+**Honesty fix in the README.** "Deliberately low-tech" described the storage and
+implied the method. There is no database to run, and there is still a protocol;
+the qualifier now says so and points at the core/layers split as the answer.
+
+**The example gained a `materials/` note** explaining why the cited raw files are
+not shipped - and making the point they exist to illustrate: a fact with a name
+and a date behind it is memory, the same fact without one is a trap.
+
 ## 2.12.0 - The audit applied, and a worked example
 
 The method's own observer pass run on the method itself: memory auditor, sapper,

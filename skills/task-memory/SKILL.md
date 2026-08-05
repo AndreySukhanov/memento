@@ -9,6 +9,8 @@ Eleven rules that keep file-based task memory truthful across sessions, plus the
 
 The only command is `/memento:init`, run **once per workspace**. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
 
+**Which version of the rules is running:** this file, as loaded, is the authority - not what a memory file says the method used to require. Formats change between plugin versions, and files written under an older one stay valid; the sync repairs what it touches and leaves the rest. Never rewrite an old file to match a new format for its own sake.
+
 **Three files, three jobs.** This one states the obligations: trigger, action, what gets recorded. Every required *shape* - frontmatter fields, status vocabulary, block formats - lives in [`docs/SCHEMA.md`](../../docs/SCHEMA.md) and is not repeated here. The reasoning behind the rules, and the failures they came from, is in [`docs/RATIONALE.md`](../../docs/RATIONALE.md); read it when a rule seems arbitrary, not while executing one.
 
 ---
@@ -107,6 +109,8 @@ Names make the claim checkable against a folder listing, and that is worth payin
 
 **Record.** The diff-style report ([SCHEMA](../../docs/SCHEMA.md#sync-report)). Nothing fired -> write nothing, and say so in one line: "no drift triggers fired, memory untouched".
 
+There is no contradiction between that and the checks that must report themselves: **a check reports only when its operation ran**. No triggers means no sync, which means no self-check and no structure check to report. "Silence is not a report" applies inside an operation, never as a reason to start one.
+
 **Exception.** The user objects -> revert, close the `OPS_LOG.md` line as `declined by user`, and respect it for the rest of the session. A declined sync is a valid outcome, but an unrecorded one is indistinguishable from a sync that never ran - and the next session will wonder why a day of work left no entries. Informational sessions, quick lookups and aborted experiments are not triggers.
 
 ## Rule 5: Compaction - seal the log, don't grow it forever
@@ -199,6 +203,8 @@ The agent maintaining the memory has correlated blind spots: it confirms its own
 
 **Disagreement is a record, not a discard.** Main agent disagrees with a verdict -> both positions go into the insight file and the user decides.
 
+**When a verdict turns out to be wrong, name who gave it.** An insight that was `verified by ...` and later becomes `refuted` records, in the same line, which models had verified it: `refuted <date> - <what killed it>; had been verified by <models>`. This costs nothing and is the only way the pass's central assumption - that different families err *independently* - can ever be checked. If the same models keep being wrong together, the panel is one opinion wearing three names, and `Observers/` is where that would become visible.
+
 **Four mandates:**
 
 | Mandate | What it does | Input |
@@ -230,6 +236,24 @@ The agent maintaining the memory has correlated blind spots: it confirms its own
 
 **Exception.** If losing the operation costs under ten minutes of redoing, the file is ceremony.
 
+
+---
+
+## Four words that get written into the wrong file
+
+They overlap in English and not in this method. Getting them wrong is not a formatting mistake - it puts a fact where nobody will look for it.
+
+| | Goes in | Is | Is not |
+|---|---|---|---|
+| **Open question** | `MEMORY.md` | something we do not know and could find out | something we are waiting for |
+| **Blocker** | `TASKS.md` | something that stops work until someone else acts | something merely difficult |
+| **Risk** | `TASKS.md` summary, detail in `MEMORY.md` | a way this could go wrong that we are accepting for now | something already going wrong - that is a fact, log it |
+| **Insight** | `Insights/<date>-<slug>.md` | a conclusion from **two or more** recorded facts, with a falsifier | a good idea, an observation, or a restated fact |
+
+The last one causes the most damage, because "insight" in ordinary speech means any thought worth saying. Here it is a claim with structure - two sources, a way to die, a status. If it does not have those, it is a finding and belongs in the log as a dated entry. Writing `## Insight: ...` inside `MEMORY.md` satisfies nobody: the pointer format exists so that the claim can be found from every task it touches, and prose in one log cannot be.
+
+**`_needs clarification_` versus an open question.** They are two halves of one act, not alternatives. The placeholder marks the *hole in the file* - a charter field nobody could fill at bootstrap. The open question records *what to ask, and of whom*. Bootstrap writes both; a session that answers the question fills the placeholder and closes the question in the same edit. A placeholder with no matching open question is invisible: nobody greps a charter for italics.
+
 ---
 
 ## The verifiability test - applies to every rule above
@@ -255,7 +279,7 @@ Eight operations, all performed on the agent's own initiative - no commands.
 
 **Content before pointer.** In any operation writing more than one file, the content goes first and the thing pointing at it goes last: the insight file before its pointer line, the task folder before its index row, the observer report before the status that cites it. Real atomicity is not available on plain files, so aim for the next best property - every interruption leaves a *recoverable* state. Stop after the content and you get an orphan the structure check finds; stop after the pointer and you get a reference into nothing.
 
-**One ritual at a time.** While a sync runs, no other automatic operation starts - not an observer pass, not a consilium, not a background notification. They wait for the closing report. This failure needs no crash and no parallelism: the sync reaches the decision step, the decision step is itself an observer trigger, the pass writes to the same log, and the remaining steps happen only if the model remembers where it was. It usually does not.
+**One ritual at a time.** While a sync runs, no other automatic operation starts - not an observer pass, not a consilium, not a background notification. They wait for the closing report. This includes triggers the sync itself creates: writing a D-block is an observer-pass trigger, and the correct response is to finish the sync, then run the pass. A decision recorded five minutes before its verification is not a decision at risk; a sync abandoned at step 3 is. This failure needs no crash and no parallelism: the sync reaches the decision step, the decision step is itself an observer trigger, the pass writes to the same log, and the remaining steps happen only if the model remembers where it was. It usually does not.
 
 **Announce in `OPS_LOG.md` before touching a file.** Every operation **that writes** opens a line in `<workspace_root>/OPS_LOG.md` *before* its first write and closes it with the result ([SCHEMA](../../docs/SCHEMA.md#ops_logmd)). Read-only operations - session start when nothing fires, the status overview - write nothing and log nothing; the journal is about writes, and filling it with reads would bury the lines that matter.
 
@@ -282,6 +306,8 @@ Open first, close last: a session that dies mid-operation then leaves an untermi
 4. **Newest dated entries, backwards** - and stop. The default budget is the newest ~1/3 of the log or roughly 100 lines, whichever is smaller; a task being resumed after a long gap earns more, a quick look earns less. Say which you used if it was not the default. The point is that the read ends by decision rather than by reaching the top of the file.
 
 Sealed blocks, closed D-blocks and the raw materials are read **on demand only**. The charter loads itself and needs no step.
+
+**When several tasks are active.** Session start does not read all of them. Read `INDEX.md`, then prime **one** task - the one the user's first message is about. If that is not yet clear, prime none and ask. Reading four task folders "to be ready" spends the budget that the actual task will need, and the method's own trigger for reading a folder is working inside it.
 
 **Record.** Nothing, unless a check fires - then the repair itself is an operation and opens its own log line.
 
