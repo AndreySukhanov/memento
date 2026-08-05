@@ -1,5 +1,43 @@
 # Changelog
 
+## 2.10.1 - Second repo review, applied
+
+A full-repository review (gpt-5.3-codex) run against 2.10.0. Everything
+actionable is in here; what was rejected, and why, is in
+[BACKLOG.md](BACKLOG.md) item 18 so it does not return as a fresh idea.
+
+**The index contradicted itself across three files.** The bundled
+`INDEX.md.tmpl` announced itself as the "single source of truth" while the skill
+and the schema call it a derived, rebuildable shadow. The template now says
+derived - a row that disagrees with its folder loses to the folder - and the
+README stops promising that the registry is "always" current when the design
+itself does not.
+
+**Three outcomes that looked like nothing happening now leave a line.** A sync
+the user declined, an observer pass skipped because the monthly budget ran out,
+and a recovery after an unterminated log entry. All three previously vanished
+into the chat, which meant a day of work could leave no trace for reasons nobody
+could reconstruct later.
+
+**Two obligations became checkable rather than statable.** `dead_ends_checked:`
+now requires the names of the files scanned, not just a count - a count alone can
+be invented, a count with names is one folder listing from verification. And the
+budget's degraded tier must be named in the config as `- cheapest: <model>`, with
+every pass recording `budget_action: normal | degraded | skipped`; otherwise
+"dropped to the cheapest model" and "used whichever model was convenient" produce
+identical records.
+
+**Two over-promises corrected.** `OPS_LOG.md` is written by operations that
+*write* - session start and the status overview are read-only and stay out of it,
+so the journal does not bury its own signal under reads. And "all maintenance is
+automatic" now names its exceptions: a declined sync, a missing key, an exhausted
+budget, a session that only answered questions. Automatic means nobody has to
+remember it, not that it happens regardless of circumstances.
+
+**Rationale that had crept back into the skill moved out.** The argument for the
+log's open-before-write ordering is in `docs/RATIONALE.md`; the skill keeps the
+obligation and the honest limit.
+
 ## 2.10.0 - Evidence instead of promises: an operations log, a next-action line, a fixed reading order, and a countable observer budget
 
 Four backlog items, all of them small, all of them aimed at the same gap: the
