@@ -34,7 +34,9 @@ When a recorded decision changes, do **not** edit or remove the old block in `DE
 
 Then propagate: mark invalidated checkboxes in `TASKS.md` with `(obsolete, see D1.1)` and add the new ones; rewrite the affected `CLAUDE.md` sections to the *current* state only. Without this, a month later nobody can tell why "this way" became "that way" - and someone will accidentally roll back to the rejected option.
 
-**Dead-end check - refuted memory must be consulted, not just kept.** Before recording a new decision, plan, or approach, scan the stored dead ends: `Insights/` files with `status: refuted`, and won't-do items in the relevant tasks' `TASKS.md`. State the result explicitly - either "no known dead ends touch this" or which ones do and why the new plan differs. Storage without retrieval is decoration: the whole point of keeping refuted insights is to prevent exactly this rollback, and a list nobody reads prevents nothing.
+**Dead-end check - refuted memory must be consulted, not just kept.** Before recording a new decision, plan, or approach, scan the stored dead ends: `Insights/` files with `status: refuted`, and won't-do items in the relevant tasks' `TASKS.md`. Storage without retrieval is decoration: the whole point of keeping refuted insights is to prevent exactly this rollback, and a list nobody reads prevents nothing.
+
+Record the result **in the D-block**, not in the chat: a `dead_ends_checked:` line naming the files scanned (or `none found`) with the date. Saying "no known dead ends touch this" in a message costs seven tokens and is indistinguishable from having actually looked; a line in the file can be compared against what `Insights/` really contains.
 
 ## Rule 4: Sync discipline - the agent syncs, automatically
 
@@ -54,7 +56,7 @@ A ritual that depends on the user remembering it will be skipped exactly when th
 
 > Syncing task memory: decision revised (D4 -> D4.1), Jane's deploy-window confirmation logged, 2 checkboxes updated.
 
-If the user objects, revert and respect it for the rest of the session - a declined sync is a valid outcome. **If nothing fired, do nothing silently**: a session of pure question-answering needs no sync, and touching files anyway erodes trust in the log. Purely informational sessions, quick lookups and aborted experiments do **not** count as triggers.
+If the user objects, revert and respect it for the rest of the session - a declined sync is a valid outcome. **If nothing fired, write nothing** - a session of pure question-answering needs no sync, and touching files anyway erodes trust in the log - but say so in one line rather than staying silent: "no drift triggers fired, memory untouched". Purely informational sessions, quick lookups and aborted experiments do **not** count as triggers.
 
 **Write-immediately tier - long sessions must not starve memory.** The boundary sync is a *sweep*, not the only channel. High-value material is written **the moment it lands**, without waiting for any boundary: a decision made or revised (D-block), a correction lens (Rule 6), a standing preference or durable fact for session auto-memory (Rule 8 - it accretes continuously by design). In a session that runs for days, "at the end of the session" means **never** - deferring all writes to the boundary is exactly how weeks of work stay unrecorded (observed in the field: a two-week session where memory only moved when the user asked). The boundary sync then reconciles the files and catches whatever slipped.
 
@@ -258,6 +260,19 @@ Two rules keep it honest. **At session start, if the file is `active`, say so be
 
 Do not checkpoint ordinary work. If losing the operation would mean redoing under ten minutes, the file is ceremony.
 
+## The verifiability test - applies to every rule above
+
+An obligation is only real if **skipping it changes a byte on disk**. Everything else is honour-system: under load the model will produce the sentence that says the duty was done, because saying it costs seven tokens and doing it costs a file read. Neither the user nor a later session can tell the two apart.
+
+So when a rule asks for work, it must also ask for a trace:
+
+- `_Last insight pass: <date>_` is the model to copy - the marker can be compared against the newest dated entry in the log, so a skipped pass is visible afterwards.
+- A check that finds nothing writes one line saying so, with a date. **Silence is not a report** - "ran it, all clean" and "never ran it" must not look identical.
+- A scan whose only output is a sentence in the chat (the dead-end check before v2.8.3) is not verifiable; move the result into the file that the work was about.
+- A threshold the agent has to eyeball (entry counts, KB budgets) will be estimated rather than counted. Where it matters, record the number that was used.
+
+When adding a rule, ask what a later reader would find on disk if this rule had been quietly skipped for a month. If the answer is "nothing", the rule is decoration.
+
 ---
 
 # Automatic operations
@@ -309,6 +324,10 @@ Synced <task name>:
 
 Registration is atomic: a new task folder that is not in `INDEX.md` within the same operation will be forgotten - write the charter and the index row back to back.
 
+**Content before pointer.** In any operation that writes more than one file, the content goes first and the thing that points at it goes last: the insight file before its pointer line, the task folder before its index row, the observer report before the status that cites it. Real atomicity is not available on plain files, so aim for the next best property - every possible interruption leaves a state that is *recoverable*. Stop after the content and you have an orphan the structure check finds and registers; stop after the pointer and you have a reference into nothing, which nobody can reconstruct.
+
+**One ritual at a time.** While a sync is running, no other automatic operation starts - not an observer pass, not a consilium, not the handling of a background notification. They wait for the closing diff report. Without this the failure needs no crash and no parallelism to happen: the sync appends to `MEMORY.md`, reaches the decision step, which is itself a trigger for the observer pass, which writes reports and touches the same log - and the remaining steps happen only if the model remembers where it was. It usually does not, and `TASKS.md` keeps a checkbox that the new decision already invalidated.
+
 ## Structure check (the doctor pass)
 
 The observer's memory auditor judges *content* - contradictions, stale statuses, thin evidence. This pass judges nothing: it checks that the structure still holds together. No model call, no API key, no cost - four greps and a directory listing. Run it as the last step of a sync when the sync touched more than one file, and always before a close.
@@ -320,9 +339,11 @@ The observer's memory auditor judges *content* - contradictions, stale statuses,
 | **Stale checkpoint** | `CHECKPOINT.yml` is `active` and older than 7 days (Rule 11) | force the decision: continue or `abandoned` |
 | **Orphan folder** | a task folder on disk that no `INDEX.md` row mentions | register it, or - if it was deliberately archived - say so in the report |
 
-Report only what it found, in one line each. **A clean pass prints nothing** - a structure check that announces its own success every session is noise, and noise is what gets filtered out first.
+Report only what it found, in one line each. A clean pass reports one line and nothing more - `Structure check: clean (<date>)` in the sync report. Not silence: for an agent, "ran it and found nothing" and "never ran it" have to look different somewhere, or the check quietly stops happening and no one can tell. One line is the cheapest possible difference.
 
 The failure this prevents is quiet: none of these four break anything today. A pointer to a missing file, a folder nobody registered, a task with no `BRIEF.md` - each stays invisible until the day someone needs exactly that file, which is usually the day the task is being handed over.
+
+**The index is a shadow, not a source.** `docs/RETRIEVAL.md` states this for external indexers - markdown is truth, the index is derived and rebuildable - and it holds just as well inside the method. The Active and Completed rows of `INDEX.md` are reconstructible from the task folders themselves; the auto-memory index is reconstructible from the frontmatter of its atomic files. Treat them that way and a lost or contradictory row stops being an incident and becomes a repair this pass performs. That matters because those two aggregate files are the only places where two writers can collide at all - everything else the method writes is already one-fact-per-file (`Insights/YYYY-MM-DD-slug.md`, `Observers/YYYY-MM-DD-model-mandate.md`). The cure for the aggregates is not to guard them, it is to make them cheap to rebuild.
 
 ## Sealing an oversized log (Rule 5 in action)
 
