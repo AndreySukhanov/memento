@@ -138,7 +138,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.8.2** - every state has an exit, plus a zero-cost structure check.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.8.3** - ordering instead of locking, and obligations that leave a trace on disk.
 
 ## Roadmap
 

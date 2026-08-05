@@ -61,7 +61,7 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 **Cost.** S. Report template line + status-overview aggregation.
 
-### 12. Write safety - atomicity that is a procedure, not a promise 🔴 from external review (gpt-5.3-codex, 06.08.2026)
+### 12. Write safety - atomicity that is a procedure, not a promise ⛔ half rejected by panel, half re-scoped (06.08.2026)
 
 **Problem.** `commands/init.md` instructs the agent to "write `CLAUDE.md` and update `INDEX.md` atomically". On plain Markdown, with no protocol, that is a declaration - an interrupted write leaves a registered task with no charter, or a charter no index knows about. The exposure grew with v2.8.0: a consilium can be running while the main session syncs, and nothing coordinates writes to `INDEX.md`, a task's `MEMORY.md`, `Insights/*.md` or `CHECKPOINT.yml`.
 
@@ -73,11 +73,25 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 **Cost.** M. One paragraph in the write operations, one new workspace file, and a takeover rule.
 
+> **Panel verdict, 06.08.2026** (gpt-5.6-sol plus an in-session lens; a third model returned an empty response and did not count).
+>
+> **`LOCKS.md` is rejected outright.** Both lenses independently reconstructed the same race: two agents read the file, both see it free, both write - and atomic replace protects the bytes while doing nothing about the lost update. A TTL makes it worse rather than better, since expiry does not prove the holder died; it may wake after the takeover and keep writing. Safe leasing needs a fencing token the store itself checks, and a Markdown file checks nothing. Any workable version needs an atomic arbitration primitive (`mkdir`, `O_EXCL`, a hard link, an OS lock) - all of which sit outside "plain files".
+>
+> **temp+rename is contested, and the disagreement is kept, not averaged.** The external lens rates it useful for single-file writes. The in-session lens rates it actively harmful *here*: this method almost never writes a whole file - the sync appends a dated entry, adds a `D<N>.<M>` block, ticks a checkbox, fixes one index line. Routing surgical edits through a full rewrite means an LLM re-emitting a 12 KB log every time, which silently drops lines and reformats tables. That trades a torn write nobody has observed for lossy rewrites on a schedule.
+>
+> **Neither layer solves the bug this item was opened for.** That bug is a two-file transaction (`CLAUDE.md` plus the index row); atomic replacement of one file has nothing to say about it.
+>
+> **What shipped instead (v2.8.3), at a fraction of the cost:** content-before-pointer ordering, so every interruption leaves a state the structure check can repair; the index demoted to a rebuildable shadow, which removes the only two files where writers can actually collide; and one-ritual-at-a-time, which addresses the failure the panel found to be real.
+>
+> **What stays open, now with a falsifier.** By this method's own Rule 9, "partly unworkable on long, parallel sessions" was an *interpretation*: no falsifier was named and no incident was ever observed - it came from reading the text, not from a broken workspace. It is now falsifiable: **an index row pointing at a folder that does not exist, or two interleaved entries inside one `MEMORY.md`**. The structure check looks for the first for free. If a month of use produces neither, this item closes as not needed.
+
 ### 13. `OPS_LOG.md` - an append-only journal of automatic operations 🔴 from external review
 
 **Problem.** The automatic operations (sync, seal, observer pass, close) touch several files in sequence. If the session dies mid-sequence, nothing records how far it got: the next session sees a partially updated workspace and cannot tell which half is missing.
 
 **Sketch.** Each automatic operation appends two lines to `OPS_LOG.md` - start (operation, target files) and end (result, or the failure). On session start, an unterminated entry is a recovery signal, exactly as an `active` `CHECKPOINT.yml` is for long user-facing work. The log is append-only and never edited; it is a black box, not a status file.
+
+**The asymmetry is the point** (panel review, 06.08.2026): the opening line is written *before* the first file is touched. A forgotten closing line then raises a false alarm - which someone notices - instead of leaving no trace at all, which nobody does. Fail loud beats fail silent, and for an LLM executor that ordering carries most of the value.
 
 **Why it fits.** Same philosophy as the checkpoint rule (Rule 11), one level down: the checkpoint tracks *the user's* long operation, the ops log tracks *the agent's* own maintenance. Both exist because a session can die between two writes.
 

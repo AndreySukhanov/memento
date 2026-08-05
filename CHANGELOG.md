@@ -1,5 +1,46 @@
 # Changelog
 
+## 2.8.3 - Ordering instead of locking; obligations that leave a trace
+
+A panel review of the proposed locking design (backlog 12) rejected half of it
+and re-scoped the rest. What ships here is cheaper than what was proposed and
+addresses the failure the panel found to be real.
+
+**`LOCKS.md` is not happening.** Two lenses independently reconstructed the
+same race - both agents read the lock file, both see it free, both write - and
+noted that a TTL makes it worse, since expiry does not prove the holder died.
+Safe leasing needs a fencing token the store itself enforces; a Markdown file
+enforces nothing. The rejection is recorded in the backlog with its reasoning,
+so the idea does not come back around in three months.
+
+**Content before pointer.** Real atomicity is unavailable on plain files, so
+the method aims at the next best property: every interruption leaves a
+*recoverable* state. Content is written first, the thing that points at it
+last - the insight file before its pointer line, the folder before its index
+row. Stop halfway and you get an orphan the structure check finds; stop the
+other way and you get a reference into nothing.
+
+**The index is a shadow, not a source.** `docs/RETRIEVAL.md` said this to
+external indexers; it applies inward too. Index rows are reconstructible from
+the folders, so a lost or contradictory row is a repair rather than an
+incident - and those aggregates were the only two files where writers could
+collide at all. Everything else is already one fact per file.
+
+**One ritual at a time.** While a sync runs, no other automatic operation
+starts. This failure needs no crash and no parallelism: the sync reaches the
+decision step, which is itself an observer-pass trigger, the pass writes to the
+same log, and the remaining steps happen only if the model remembers where it
+was. It usually does not.
+
+**The verifiability test.** A new cross-cutting criterion: an obligation is
+real only if skipping it changes a byte on disk. Under load a model will emit
+the sentence that says the duty was done, because saying it is free.
+Consequences: the dead-end check moves out of the chat into a
+`dead_ends_checked:` line in the D-block, where it can be compared against what
+`Insights/` actually holds; a clean structure check reports one dated line
+instead of staying silent; a sync with no triggers says so. "Ran it, all clean"
+and "never ran it" must not look identical.
+
 ## 2.8.2 - Exits and a structure check
 
 Two of the six findings from the external review, the two that needed no
