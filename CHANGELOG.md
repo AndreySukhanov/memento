@@ -1,5 +1,55 @@
 # Changelog
 
+## 2.9.1 - What the panel found in 2.9.0
+
+The compression in 2.9.0 came with a debt the backlog wrote down explicitly:
+an outside read, because the author does not grade their own work. Three lenses
+ran on the old and new files - completeness of obligations, executability under
+load, and a skeptic looking for guarantees that are not implemented. This
+release is their findings, applied.
+
+**The critical one, found independently by all three lenses, was introduced by
+2.9.0 itself.** The sync said to update `_Last insight pass:` *"either way"* -
+whether or not the synthesis pass actually ran. That single word destroyed the
+marker's only job. Stamped on a skip, it makes "checked, found nothing" and
+"never looked" identical on disk, and it resets the very backlog that was
+supposed to accumulate into the next trigger. The marker now moves **only when
+the pass ran**; a pass that ran and found nothing writes `(0 found)`, and a
+skipped pass leaves the date where it was so the gap keeps growing.
+
+**Self-check now leaves a trace.** `Self-check: clean (<date>)` is required on a
+clean pass. Without it the new step broke the rule it was written to serve, one
+section further up the same file.
+
+**Obligations restored** that the rewrite thinned out: the dead-end check is
+owed by plans and approaches, not only decisions; a revision carries the
+stakeholder quote; a hypothesis may **not** feed a decision block or a charter
+edit until its status says `confirmed` or `verified by`; compaction triggers
+also when the log starts crowding the session, and material that still drives
+what you would do today is left live rather than sealed; `Insights/` is created
+on the first insight; the auto-memory index is grouped by glyph; a folder is
+named plainly after its task; the observer's Memory quality section answers all
+three questions, not just the score; the status overview names the repair.
+
+**Contradictions between the two files, resolved.** `MEMORY.md` is
+*append-first*, not append-only - three in-place edits are legal (dedup merge,
+sealing, single-line fix) and everything else is a correction lens. The five
+files are five *memory* files; materials and artifacts live beside them.
+`confirmed` and `verified by` are different statuses with different sources, and
+an *insufficient evidence* verdict promotes nothing.
+
+**Dead-end checks now carry counts** - `scanned 4 refuted, 1 relevant: ...`
+rather than `none found`. Two lenses pointed out that a bare "none found" is
+exactly what an unrun check also produces, while a count can be compared against
+a folder anyone can list.
+
+**Recorded, not fixed:** one lens argued that moving formats into `SCHEMA.md`
+made things worse, since an extra file read at a busy moment is a read that does
+not happen. The disagreement is kept rather than averaged - the counter-argument
+is that the 43 KB file was not being executed either. The cheap half of the fix
+ships anyway: the handful of fields used in almost every sync are now written
+out in full at the end of the skill, so the common path needs no second file.
+
 ## 2.9.0 - Trigger, action, record - and a schema the method checks itself against
 
 The external review's headline complaint was length: 43 KB of skill file, too

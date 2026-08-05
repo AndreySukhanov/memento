@@ -85,7 +85,7 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 >
 > **What stays open, now with a falsifier.** By this method's own Rule 9, "partly unworkable on long, parallel sessions" was an *interpretation*: no falsifier was named and no incident was ever observed - it came from reading the text, not from a broken workspace. It is now falsifiable: **an index row pointing at a folder that does not exist, or two interleaved entries inside one `MEMORY.md`**. The structure check looks for the first for free. If a month of use produces neither, this item closes as not needed.
 
-### 13. `OPS_LOG.md` - an append-only journal of automatic operations 🔴 from external review
+### 13. `OPS_LOG.md` - an append-only journal of automatic operations 🔴 from external review · **case strengthened by the v2.9.0 panel**
 
 **Problem.** The automatic operations (sync, seal, observer pass, close) touch several files in sequence. If the session dies mid-sequence, nothing records how far it got: the next session sees a partially updated workspace and cannot tell which half is missing.
 
@@ -94,6 +94,8 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 **The asymmetry is the point** (panel review, 06.08.2026): the opening line is written *before* the first file is touched. A forgotten closing line then raises a false alarm - which someone notices - instead of leaving no trace at all, which nobody does. Fail loud beats fail silent, and for an LLM executor that ordering carries most of the value.
 
 **Why it fits.** Same philosophy as the checkpoint rule (Rule 11), one level down: the checkpoint tracks *the user's* long operation, the ops log tracks *the agent's* own maintenance. Both exist because a session can die between two writes.
+
+> **The skeptic lens (06.08.2026) arrived here from a different direction and made the case sharper.** Its complaint was that three things the method calls guarantees - "one ritual at a time", "content before pointer", and automatic operation itself - are enforced by nothing but the model remembering the rule. Its exact words about the ritual: *"the remaining steps happen only if the model remembers where it was. It usually does not"* - followed by a rule whose execution again depends on the model remembering that rule. That circularity is real and this item is the only proposed thing that breaks it: an operation that opens a log line before touching a file leaves evidence of itself independent of whether the model remembered anything afterwards. It does not make the ritual atomic; it makes a broken ritual **findable**, which is the difference between a guarantee and a claim.
 
 **Cost.** S-M. A line in each operation plus a session-start check.
 
