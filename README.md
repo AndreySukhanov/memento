@@ -137,7 +137,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.8.0** - falsifiable hypotheses, checkpoints for long operations, and an auto-firing consilium skill for parallel domain review.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.8.1** - documentation drift found by an external review of the repository; the structural findings are open in the backlog.
 
 ## Roadmap
 

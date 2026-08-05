@@ -5,7 +5,7 @@ description: Rules and automatic maintenance for Memento task memory. Use when w
 
 # Memento task-memory method
 
-Ten rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
+Eleven rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. They were extracted from months of daily multi-stakeholder work; each rule exists because its absence caused a real failure (drifted statuses, lost decision rationale, duplicated facts).
 
 The only command is `/memento:init`, and it is run **once per workspace** - it creates the `INDEX.md` registry and registers what already exists. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
 
@@ -335,10 +335,10 @@ Runs **automatically** when a trigger fires - no user confirmation needed:
 - a **task is being closed** (final audit before the archive);
 - the user asks for it.
 
-Mechanics (external models over the OpenRouter API):
+Mechanics (same routing as `/memento:observers` - one pool, one convention):
 
-1. **Key and models.** The API key comes from the `OPENROUTER_API_KEY` environment variable - **never stored in any file**. The model list lives in `<workspace_root>/Observers/CONFIG.md` (aim for 2-3 models from *different families*). No key or no config -> skip with a one-line note; never block the sync on an unavailable observer.
-2. **Per mandate, one request.** Pack the mandate's instruction plus its input files (see the Rule 10 table) into a single prompt and POST it to `https://openrouter.ai/api/v1/chat/completions` (header `Authorization: Bearer $OPENROUTER_API_KEY`, body `{"model": "<from CONFIG>", "messages": [...]}`). The observer gets files only - no session context, no summaries of "what we did": the files must speak for themselves.
+1. **Key and models.** The model list lives in `<workspace_root>/Observers/CONFIG.md` as `- model: <id>` lines (aim for 2-3 models from *different families*). Routing is decided by the id: **without** a `/` it is the provider's own API (e.g. OpenAI, key `OPENAI_API_KEY`); **with** a `/` it goes through OpenRouter (`OPENROUTER_API_KEY`). Keys come from environment variables and are **never stored in any file**. No key or no config -> skip with a one-line note; never block the sync on an unavailable observer.
+2. **Per mandate, one request.** Pack the mandate's instruction plus its input files (see the Rule 10 table) into a single prompt and send it to the provider the model id selects. The observer gets files only - no session context, no summaries of "what we did": the files must speak for themselves.
 3. **Save the raw report** to `Observers/YYYY-MM-DD-<model>-<mandate>.md` verbatim, before any triage. Reports are never deleted.
 4. **Triage** (main agent): update insight statuses (`verified by <model>, <date>` / refuted with the reason), open questions for "insufficient evidence" verdicts, record disagreements in the insight file (both positions) and surface them to the user. Sapper findings that invalidate a decision's premise -> a `D<N>.<M>` revision proposal, never a silent edit.
 5. **Report to the user** in one block: which mandates ran, on which models, verdict counts (confirmed / refuted / insufficient), the memory health scores, and anything escalated.

@@ -4,6 +4,8 @@ Candidates for future rules and operations. Each entry states the problem, a des
 
 Sources of inspiration are named where relevant - the 2026 memory-runtime landscape (EverOS, memsearch, VerificAgent, MEMPROBE) converged on several ideas worth adopting, and several worth deliberately *not* adopting.
 
+Entries marked 🔴 came from an **external code review** of the whole repository (gpt-5.3-codex, 06.08.2026) - the plugin's own Rule 10 applied to the plugin: the author does not grade their own work. Its headline verdict is recorded here rather than softened: *in its current form the method is partly unworkable on long, parallel sessions without an atomicity and locking protocol* - a systemic hole, not another nice rule. Items 12-17 are that review, triaged.
+
 ---
 
 ## Now - strongest candidates for the next releases
@@ -59,6 +61,38 @@ Sources of inspiration are named where relevant - the 2026 memory-runtime landsc
 
 **Cost.** S. Report template line + status-overview aggregation.
 
+### 12. Write safety - atomicity that is a procedure, not a promise 🔴 from external review (gpt-5.3-codex, 06.08.2026)
+
+**Problem.** `commands/init.md` instructs the agent to "write `CLAUDE.md` and update `INDEX.md` atomically". On plain Markdown, with no protocol, that is a declaration - an interrupted write leaves a registered task with no charter, or a charter no index knows about. The exposure grew with v2.8.0: a consilium can be running while the main session syncs, and nothing coordinates writes to `INDEX.md`, a task's `MEMORY.md`, `Insights/*.md` or `CHECKPOINT.yml`.
+
+**Sketch.** Two layers, both plain files.
+- **Atomic replace as the standard write:** write to `<name>.tmp`, then rename over the target. Rename is atomic on every filesystem the plugin will meet, and a crash leaves either the old file or the new one, never half of both.
+- **`LOCKS.md` with leases** for the shared files: one row per held lock - file, holder, started, TTL. Take the lease before writing, release after; an expired lease may be taken over, with the takeover recorded. This is not general concurrency control, it is a cheap way to stop two writers from interleaving edits to the same log.
+
+**Why it fits.** No infrastructure, no daemon - a text file and a rename. And it repairs an existing promise rather than adding a feature: the method already claims atomicity in writing.
+
+**Cost.** M. One paragraph in the write operations, one new workspace file, and a takeover rule.
+
+### 13. `OPS_LOG.md` - an append-only journal of automatic operations 🔴 from external review
+
+**Problem.** The automatic operations (sync, seal, observer pass, close) touch several files in sequence. If the session dies mid-sequence, nothing records how far it got: the next session sees a partially updated workspace and cannot tell which half is missing.
+
+**Sketch.** Each automatic operation appends two lines to `OPS_LOG.md` - start (operation, target files) and end (result, or the failure). On session start, an unterminated entry is a recovery signal, exactly as an `active` `CHECKPOINT.yml` is for long user-facing work. The log is append-only and never edited; it is a black box, not a status file.
+
+**Why it fits.** Same philosophy as the checkpoint rule (Rule 11), one level down: the checkpoint tracks *the user's* long operation, the ops log tracks *the agent's* own maintenance. Both exist because a session can die between two writes.
+
+**Cost.** S-M. A line in each operation plus a session-start check.
+
+### 14. Compress the method into trigger -> action -> record 🔴 from external review
+
+**Problem.** `skills/task-memory/SKILL.md` is ~36 KB. The external reviewer's verdict was blunt: too much explanatory prose, too few machine-checkable obligations - an agent will retain the philosophy and quietly drop the small duties (markers, thresholds, status formats). Several rules also restate each other: Rule 4 duplicates the sync order that "The sync" already owns, Rule 5 repeats the dedup logic, Rule 10 states cold / read-only / diversity three times.
+
+**Sketch.** Keep the rationale - it is why the rules survive contact with a busy session - but move it out of the operational path. Each rule becomes a compact block: **trigger, input, action, record format, exception**; the reasoning moves below it or into the README. Wording that states an intention ("announce before spending", "synthesis is the value", "a forced insight is worse than silence") is rewritten as a checkable action or dropped.
+
+**Why it fits.** The method's own principle applied to itself: an instruction the agent cannot reliably execute is decoration, exactly as an insight nobody retrieves is decoration.
+
+**Cost.** M. A rewrite of one file, with the risk of losing nuance - worth an outside read afterwards.
+
 ---
 
 ## Next - worth doing, needs more shaping
@@ -94,6 +128,38 @@ Sources of inspiration are named where relevant - the 2026 memory-runtime landsc
 **Problem.** Each session re-derives "where was I" even with good memory - the files say what happened, not what to pick up first.
 
 **Sketch.** The sync's last step may append one line to `CURRENT PHASE`: *next: <the single most likely next action>*. Strictly one line, strictly overwritten each sync - a stale "next" is worse than none. (EverOS ships a whole "foresight" track; one honest line is the zero-cost version.)
+
+**Cost.** S.
+
+_External review (06.08.2026) arrived at the same idea from the cold-start angle and proposed a separate `NEXT.md` per task instead - next action, blocker, evidence needed - to cut the tokens a fresh session spends reconstructing state. Same problem, bigger footprint: worth deciding one line inside `CURRENT PHASE` versus a file, but not worth two entries._
+
+### 15. Format self-check before a sync completes 🔴 from external review
+
+**Problem.** The method relies on formats that only a human notices when broken: insight frontmatter (`status`, `falsifier`, `depends_on`, at least two sources), decision blocks `D<N>.<M>`, the `_Last insight pass:_` marker, status glyphs. Nothing checks them, so drift is silent and only surfaces when a cold reader - or an observer - trips over it.
+
+**Sketch.** A `SCHEMA.md` stating the required shapes, and one self-check step at the end of the sync: the agent re-reads what it just wrote against the schema and fixes or reports deviations. No linter binary - the agent is the linter, which is the same bet the whole plugin makes.
+
+**Why it fits.** Cheap, file-only, and it turns a class of silent errors into loud ones.
+
+**Cost.** M.
+
+### 16. Doctor pass - structural repair, not content review 🔴 from external review
+
+**Problem.** Structural rot accumulates below the level any current pass looks at: pointer lines to insight files that were renamed, task folders missing one of the five files, an `active` checkpoint from three weeks ago, a folder on disk that no index row mentions.
+
+**Sketch.** A periodic read-only sweep that reports exactly these four - broken pointers, incomplete file sets, stale checkpoints, orphan folders - and proposes the repairs. Distinct from the observer's memory auditor, which judges *content*; this one only checks that the structure holds together, and therefore needs no model call at all.
+
+**Why it fits.** Maintenance is the agent's duty; this is the cheapest possible form of it.
+
+**Cost.** S.
+
+### 17. Exits for states that currently have none 🔴 from external review
+
+**Problem.** Two states can be entered and not left. An `active` `CHECKPOINT.yml` has a "finish it" rule but no escalation if nobody does - after a few weeks it becomes furniture. And `status: interpretation` (Rule 9) forbids a claim from carrying a decision but never says how an interpretation becomes a hypothesis, so it can sit forever, neither usable nor removable.
+
+**Sketch.** For the checkpoint: an age threshold after which the session must raise it rather than mention it. For interpretations: a stated transition - an interpretation becomes a hypothesis the moment a falsifier can be named, and is closed when the question it answers stops mattering.
+
+**Why it fits.** The method already refuses to delete anything; that only works if every state has a defined way out.
 
 **Cost.** S.
 
