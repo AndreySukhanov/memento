@@ -15,7 +15,7 @@ The only command is `/memento:init`, run **once per workspace**. From there ever
 
 ## The core and the layers
 
-Six rules earn their keep on any task long enough to need a folder at all. The rest earn theirs on particular kinds of work, and on a task they do not fit they are cost without return. An outside evaluation of this method put it plainly: the value curve breaks after the core, and everything past it depends on the class of task and on how well it is executed.
+Seven rules earn their keep on any task long enough to need a folder at all. The rest earn theirs on particular kinds of work, and on a task they do not fit they are cost without return. An outside evaluation of this method put it plainly: the value curve breaks after the core, and everything past it depends on the class of task and on how well it is executed.
 
 **The core - always on:**
 
@@ -43,6 +43,8 @@ Operations: **session start**, **the sync**, **structure check**, **closing**. P
 
 **Reduced mode.** A workspace can declare `mode: core` in its `INDEX.md` header; the default is `mode: full`. In core mode the layers do not fire on their own - they run only when the user asks for them by name. Nothing else changes: the same files, the same formats, the same sync.
 
+**The gate is checked at the trigger, not remembered.** Every rule marked *layer* below, and the consilium skill, describe themselves as firing automatically - that description assumes `full`. Before any layer acts on its own trigger, read the mode line: `core` means stand down and say nothing. This one paragraph is the whole gating mechanism; without it the rules' own "fires on its own" wording quietly overrides the mode a workspace declared.
+
 This exists because the honest failure of a method like this is not a bug, it is a busy month. Under pressure a protocol that asks for everything gets abandoned entirely rather than trimmed, and the whole memory dies with it. Declaring what is optional makes trimming a supported move instead of a defeat - and the core is small enough to survive a period of no enthusiasm at all, which is the only test that matters.
 
 ---
@@ -53,9 +55,9 @@ This exists because the honest failure of a method like this is not a bug, it is
 
 **Action.** Create a full 5-file folder (see *Auto-init*) if **any** of these holds:
 - more than one working day of work;
-- more than two stakeholders in different roles;
+- two or more stakeholders in different roles;
 - a release artifact is required (migration script, spec, PR);
-- more than two sequential phases (research -> alignment -> implementation -> verification -> release).
+- two or more sequential phases (research -> alignment -> implementation -> verification -> release).
 
 Otherwise a one-line note in the workspace index is enough.
 
@@ -90,7 +92,7 @@ Names make the claim checkable against a folder listing, and that is worth payin
 
 **Trigger.** Any of these fired during the session:
 - a decision was made, revised or rejected;
-- a stakeholder statement arrived - quote, requirement, constraint;
+- a stakeholder statement arrived - a quote, a requirement, a constraint. Bare acknowledgements ("ok", "got it", "+1") are not statements and are not triggers;
 - an artifact changed - script, spec, migration, PR;
 - a phase moved - blocked, unblocked, completed, reopened;
 - new evidence appeared - log, screenshot, measurement, test result;
@@ -133,7 +135,7 @@ Names make the claim checkable against a folder listing, and that is worth payin
 
 **Companion.** Keep `## CURRENT PHASE` right under the lenses, refreshed whenever the situation flips and always dated. Files can be perfectly correct while the reading frame is not.
 
-**One `next:` line, rewritten every sync.** The last thing the sync does inside `CURRENT PHASE` is state the single most likely next action - what a fresh session should pick up first. Strictly one line, strictly overwritten, never a list: the files already say what happened, and this says where to re-enter. A stale `next:` is worse than none, so it is rewritten or deleted on every sync that touches the task - if the sync cannot name one, it deletes the line rather than leaving yesterday's.
+**One `next:` line, rewritten every sync.** The last thing the sync does inside `CURRENT PHASE` is state the single most likely next action - what a fresh session should pick up first. When several compete, the order is: what unblocks someone else, then what is on a deadline, then what the last session was in the middle of. Strictly one line, strictly overwritten, never a list: the files already say what happened, and this says where to re-enter. A stale `next:` is worse than none, so it is rewritten or deleted on every sync that touches the task - if the sync cannot name one, it deletes the line rather than leaving yesterday's.
 
 ## Rule 7: Status glyphs - state visible at a glance
 
@@ -212,7 +214,7 @@ The agent maintaining the memory has correlated blind spots: it confirms its own
 
 **Record.** Reports in `Observers/YYYY-MM-DD-<model>-<mandate>.md`, verbatim, never deleted. Every report ends with a **Memory quality** section answering all three: could the task be reconstructed from the files alone, what was missing, and a 0-10 score - which the status overview reads and a close cannot ignore ([SCHEMA](../../docs/SCHEMA.md#observer-report)).
 
-**Not the only outside view.** Observers verify what is already written, cold and after the fact. When the question is "what breaks if we do this?" and the answer spans several areas at once, the tool is a **consilium** - parallel in-session agents, each on a lens, plus a mandatory skeptic looking for the prior rejection. Verification after versus perspective before; the consilium skill fires on its own. On demand, the panel is `/memento:observers <question>`.
+**Not the only outside view.** Observers verify what is already written, cold and after the fact. When the question is "what breaks if we do this?" and the answer spans several areas at once, the tool is a **consilium** - parallel in-session agents, each on a lens, plus a mandatory skeptic looking for the prior rejection. Verification after versus perspective before. Its trigger conditions are owned by the consilium skill itself and are not restated here; in `mode: core` it waits to be asked. On demand, the panel is `/memento:observers <question>`.
 
 ## Rule 11: Checkpoint long operations - the session can die mid-way · *layer*
 
@@ -277,7 +279,7 @@ Open first, close last: a session that dies mid-operation then leaves an untermi
 1. **Correction lenses** - what you must not believe from anything below.
 2. **`CURRENT PHASE`** and its `next:` line - the frame, and where to re-enter.
 3. **Open questions and blockers** (`MEMORY.md`, `TASKS.md`) - what is unresolved right now.
-4. **Newest dated entries, backwards** - stop at the stated token budget, not at the bottom of the file.
+4. **Newest dated entries, backwards** - and stop. The default budget is the newest ~1/3 of the log or roughly 100 lines, whichever is smaller; a task being resumed after a long gap earns more, a quick look earns less. Say which you used if it was not the default. The point is that the read ends by decision rather than by reaching the top of the file.
 
 Sealed blocks, closed D-blocks and the raw materials are read **on demand only**. The charter loads itself and needs no step.
 
@@ -392,7 +394,9 @@ The folder stays where it is - closed folders are the long-term archive. Delete 
 
 ## The fields you will otherwise get wrong
 
-Everything above points at [`docs/SCHEMA.md`](../../docs/SCHEMA.md) for shapes, and that file is worth opening whenever you write something you write rarely - a lens, a checkpoint, an observer report. But a handful of fields come up in almost every sync, and an extra file read at exactly the busy moment is a read that does not happen. Those live here, in full:
+Everything above points at [`docs/SCHEMA.md`](../../docs/SCHEMA.md) for shapes, and that file is worth opening whenever you write something you write rarely - a lens, a checkpoint, an observer report. But a handful of fields come up in almost every sync, and an extra file read at exactly the busy moment is a read that does not happen. Those are copied here.
+
+**This is a copy, not a second source.** If it ever disagrees with `docs/SCHEMA.md`, the schema wins and this block is the thing that is wrong - two normative places for one format is how the disagreement gets created in the first place.
 
 **Insight file** - `Insights/YYYY-MM-DD-slug.md`: `date`, `title`, `tasks`, `status`, `sources` (>= 2), and either `falsifier` + `depends_on` or `status: interpretation`.
 

@@ -25,6 +25,8 @@ Observers verify. Consilium looks. On a large task both earn their keep: consili
 
 This skill activates **on its own** when the situation matches - the agent should not wait to be asked, and the user should not have to remember a command.
 
+**Unless the workspace says otherwise.** A consilium is a layer in the Memento method, not part of its core. If the workspace `INDEX.md` carries `mode: core`, this skill does not self-activate at all and runs only when asked for by name. Check that line before firing; a mode a workspace declared must not be overridden by this file's own eagerness.
+
 **Indications.** The change touches **three or more areas**; it crosses languages, models or services; it is methodologically contested; it alters a contract another team depends on; it needs sign-off from named stakeholders; it is a release-scale piece of work; or it is a regression post-mortem ("we fixed X and Y broke"). Also on request: "look at it from all sides", "what will break here".
 
 **Contraindications.** Rewording one paragraph, finding a file, checking a field value, reading a log. There a consilium is lost tempo and burnt tokens - answer directly.
