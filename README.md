@@ -43,8 +43,10 @@ Alongside task memory there is a second, **cross-task layer**: session auto-memo
 ```
 workspace/
 ├── INDEX.md                 # registry of all task folders: active / completed / timeline
+├── CHECKPOINT.yml           # only while a long operation is running: which step it stopped on
 ├── Insights/                # one insight per dated file: 2026-07-26-deploy-window-freeze.md
 ├── Observers/               # outside-observer reports + CONFIG.md (model list; key via env var)
+├── Consilium/               # optional CONFIG.md: the domain lenses for this workspace
 ├── task-one/
 │   ├── CLAUDE.md            # charter    - scope, environments, stable IDs, stakeholders
 │   ├── MEMORY.md            # log        - dated facts with sources, findings, evidence, open questions
@@ -91,6 +93,9 @@ An auto-activating **skill** teaches the agent the method itself - the threshold
 - **Closing.** When a task is done, the agent proposes the close (confirmation required - closing is semantic), records the final outcome and decision, and moves the index row to Completed. Folders are never deleted - closed tasks are your long-term archive.
 - **Status.** Ask "how are my tasks doing?" and get a read-only overview with staleness detection - which memories haven't been synced in a week, where the index contradicts the task's own files - plus each task's **memory health score**: every observer report grades whether a cold reader could reconstruct the task from the files alone (0-10), and a task cannot close over a low score without a repair pass.
 - **Dead-end recall.** Refuted insights and won't-do items are not just kept - they are *consulted*: before any new decision or plan is recorded, the agent checks the stored dead ends and states either "no known dead ends touch this" or which ones do. The accidental rollback to a rejected option is the failure this whole method exists to prevent.
+- **Falsifiable hypotheses.** Every recorded conclusion carries two extra fields: `falsifier` - the recognizable fact that would kill it (a log line, a field value, a run result, a stakeholder sentence) - and `depends_on`, the facts it stands on. When a new fact lands, it is checked against the `depends_on` of live hypotheses and their statuses are updated immediately, so memory reacts instead of accumulating. A conclusion for which no falsifier can be named is not a hypothesis but an **interpretation**: labelled as such, and never allowed to carry a decision. The failure this prevents is silent promotion - an unfalsifiable reading that sits in memory long enough starts being quoted as a finding.
+- **Consilium.** When a change touches three or more areas at once - crosses languages or services, alters a contract someone depends on, or is a regression that appeared after a fix - a second skill fires on its own and splits the question across parallel read-only agents, each with its own lens and required reading, plus a **mandatory skeptic** whose job is to find the prior rejection. Disagreements between lenses are reported as disagreements, never averaged: two domains contradicting each other marks the zone of real uncertainty, which is the most useful thing the exercise produces. Observers verify what is already written; a consilium looks at what would break before it is written.
+- **Checkpoints.** Operations too long for one turn (a bulk edit across locales, an eval run, a data load, a release package) get a `CHECKPOINT.yml` written before the first step and updated after each one. If a session starts with an active checkpoint, the agent says which operation stopped where before doing anything else. Context runs out, tools time out, machines reboot - the next session should not have to guess whether step 4 of 9 finished.
 
 ## What makes it different
 
@@ -132,7 +137,7 @@ Complementary, not competing. Memento is deliberately low-tech: for a single wor
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.7.1** - write-immediately tier: long sessions must not starve memory.
+See [CHANGELOG.md](CHANGELOG.md). Latest: **v2.8.0** - falsifiable hypotheses, checkpoints for long operations, and an auto-firing consilium skill for parallel domain review.
 
 ## Roadmap
 

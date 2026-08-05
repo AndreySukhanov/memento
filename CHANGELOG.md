@@ -1,5 +1,45 @@
 # Changelog
 
+## 2.8.0 - Falsifiable hypotheses, checkpoints, consilium
+
+Three additions, all field-driven. The first two harden what memory already
+stores; the third adds a second kind of outside view.
+
+**Falsifier and depends_on (Rule 9).** A hypothesis with no stated way to die
+is an opinion wearing a status field - and it hardens into an assumption
+nobody revisits. Every recorded conclusion now carries `falsifier` (the
+recognizable fact that would kill it) and `depends_on` (the facts it rests
+on). When a new fact lands it is checked against the `depends_on` of live
+hypotheses, so statuses move the same session instead of drifting. A
+conclusion for which no falsifier can be named is not a hypothesis but an
+**interpretation** - labelled `status: interpretation`, and never allowed to
+carry a decision. That closes the silent-promotion path: an unfalsifiable
+reading that sits in memory long enough starts getting cited as a finding.
+
+**Rule 11: checkpoint long operations.** Work that does not fit one turn -
+a bulk edit across locales, an eval run, a data load, a release package -
+gets `CHECKPOINT.yml` written before the first step and updated after each
+one, not at the end (the end is exactly the moment that never arrives). A
+session that starts with an `active` checkpoint reports where it stopped
+before doing anything else. Both halves matter: a checkpoint nobody reads is
+a diary, and a stale `active` file from three weeks ago trains the reader to
+ignore it.
+
+**Consilium - parallel domain review, as an auto-firing skill.** Observers verify what is
+already written, cold and after the fact. They are the wrong tool for "what
+breaks if we do this?" when the answer spans several areas at once. A
+consilium splits the question across in-session agents - each with its own
+lens and required reading - plus a **mandatory skeptic** whose job is to find
+the prior rejection. All agents are read-only; disagreements are reported as
+disagreements, never averaged, because two lenses contradicting each other is
+the most useful output the exercise produces. Verification after versus
+perspective before - the two are siblings, not duplicates.
+
+It ships as a **skill**, not a command, on purpose: a command has to be
+remembered at exactly the moment you are deep in the change and least
+likely to think of it. The skill fires on its own when the situation
+matches, announces what it is about to run, and lets you stop it.
+
 ## 2.7.1 - Write-immediately tier (field bug fix)
 
 **Field bug, found in production use:** Rule 4 framed all memory writing as a
