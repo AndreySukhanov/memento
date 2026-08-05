@@ -160,6 +160,20 @@ The method's own Rule 10 run on the method: memory auditor (gpt-5.6-sol), sapper
 
 **Sapper findings kept as live assumptions rather than fixed.** Three rules rest on things never tested, only reasoned: that different model families err *independently* (the load-bearing assumption under Rule 10), that two sources plus a panel meaningfully reduce false conclusions rather than legitimising weak causality, and that ~250 lines / ~12 KB is a sound compaction threshold across task types. Each is falsifiable and none is falsified: the first dies if `Observers/` accumulates cases where different models were wrong the same way about hypotheses later refuted; the second if insights routinely pass the schema and the panel and then get revised in fact; the third if seals repeatedly cut context that turns out to be live. Watching, not acting.
 
+### 21. The audit's leftovers, and the pool that keeps emptying itself ✅ shipped in v2.12.1
+
+Everything item 20 raised and 2.12.0 did not close: the vocabulary table for open question / blocker / risk / insight, the relationship between `_needs clarification_` and open questions, the three apparent contradictions (check-reports-itself vs nothing-fired, observer triggers created mid-sync, session start with several active tasks), and the version question - which rules is this agent running.
+
+**One thing here is more than tidying.** Rule 10's whole claim rests on different model families erring independently, and that had never been tested - it was reasoned from "different training, different failures". It is now recorded: an insight that was verified and is later refuted names the models that verified it. The data accumulates on its own from that point, and if it ever shows the same models wrong together, the panel is one opinion wearing three names.
+
+**And a finding about running observers at all, which belongs here rather than in a changelog.** The model pool emptied itself twice in one day - first when paid models hit `402` mid-pass, then again when the replacements chosen to fix that turned out to be paid too. A separate incident had a model report success with a zero-length response. Three rules came out of it, and they generalise past this project:
+
+1. **A model enters the pool only after a probe that reads the answer**, not after a successful call. The runner proves a request happened; only the length of the reply proves a model answered.
+2. **At least two of three pool entries should cost nothing**, so an exhausted balance degrades the panel rather than emptying it.
+3. **A prose table in the config configures nothing.** Both incidents were preceded by a config that documented the right decision in words while the machine-readable lines said something else.
+
+The probe itself is nine lines of loop and lives with the workspace, not in the plugin - but the rules are in `docs/SCHEMA.md` under the config format, where the next person setting up observers will meet them.
+
 ---
 
 ## Next - worth doing, needs more shaping

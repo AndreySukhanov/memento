@@ -155,7 +155,7 @@ platform-migration. One of the two must move.
 | `verified by <model>, <date>` | single observer verdict |
 | `verified by <n>/<m> panel (<models>), <date>; dissent: <model> - <reason>` | panel vote, dissent named |
 | `confirmed <date> - <what confirmed it>` | a real-world fact settled it |
-| `refuted <date> - <what killed it>` | kept forever; this is the dead-end store |
+| `refuted <date> - <what killed it>` | kept forever; this is the dead-end store. If it had been verified before, add `; had been verified by <models>` |
 | `closed <date> - question no longer live` | the only other exit from `interpretation` |
 
 The author writes only `hypothesis`, `interpretation` and `refuted`. `confirmed` requires a real-world fact, `verified by ...` requires an observer - and a verdict of *insufficient evidence* is neither: the status stays `hypothesis` and the missing evidence becomes an open question.
@@ -306,6 +306,12 @@ Keys come from environment variables and are never written here.
 **Prose in this file configures nothing.** A table that disagrees with the `- model:` lines does not change what runs - it only makes the file look configured while the old pool keeps being called. Observed in the field: a workspace whose config had documented, in full prose, a decision to stop calling two paid models, while every pass kept calling them and failing on payment errors. Changing the pool means changing these lines.
 
 **`budget:` is counted in passes, not money** - the ledger is the `Observers/` folder itself, and the count is one directory listing, checkable by anyone. Prices change and cannot be verified from here; file counts can. Over budget -> drop to the cheapest model in the pool, then skip with a one-line note. Never block a sync on the budget.
+
+**Three rules for choosing what goes in the pool**, each from an incident:
+
+1. **Probe before adding, and read the answer.** A runner reporting success proves a request was made, not that a model replied - one model returned zero characters and the empty file sat in `Observers/` looking like a verdict. Judge a candidate by the length and relevance of what came back.
+2. **At least two entries should cost nothing.** A pool of paid models empties itself the moment a balance runs out, and it does so mid-pass, leaving a panel that silently ran short. Free entries mean an exhausted balance degrades the panel instead of deleting it.
+3. **The table is a snapshot, the lines are the configuration.** Providers change availability without notice, so a model list that was correct last month is not evidence about today.
 
 **`- cheapest:` is required whenever `- budget:` is set.** The degraded tier has to be named in advance, not judged per pass - otherwise "dropped to the cheapest model" and "used whichever model was convenient" produce identical records.
 
