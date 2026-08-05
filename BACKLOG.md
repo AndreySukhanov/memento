@@ -97,7 +97,7 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 **Cost.** S-M. A line in each operation plus a session-start check.
 
-### 14. Compress the method into trigger -> action -> record 🔴 from external review
+### 14. Compress the method into trigger -> action -> record ✅ shipped in v2.9.0
 
 **Problem.** `skills/task-memory/SKILL.md` is ~36 KB. The external reviewer's verdict was blunt: too much explanatory prose, too few machine-checkable obligations - an agent will retain the philosophy and quietly drop the small duties (markers, thresholds, status formats). Several rules also restate each other: Rule 4 duplicates the sync order that "The sync" already owns, Rule 5 repeats the dedup logic, Rule 10 states cold / read-only / diversity three times.
 
@@ -106,6 +106,8 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 **Why it fits.** The method's own principle applied to itself: an instruction the agent cannot reliably execute is decoration, exactly as an insight nobody retrieves is decoration.
 
 **Cost.** M. A rewrite of one file, with the risk of losing nuance - worth an outside read afterwards.
+
+> **Shipped 06.08.2026, 43 KB -> 27 KB.** Three files instead of one: `SKILL.md` keeps the operational path (trigger / action / record / exception per rule), `docs/SCHEMA.md` owns every required shape, `docs/RATIONALE.md` owns the arguments. Nothing was dropped - the prose moved. The restatements did go: Rule 4 no longer repeats the sync order, Rule 5 no longer repeats dedup twice, Rule 10 no longer states cold / read-only / diversity in three places. The nuance risk is real and the mitigation is the same one the method prescribes for itself - an outside read, still owed.
 
 ---
 
@@ -147,7 +149,7 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 _External review (06.08.2026) arrived at the same idea from the cold-start angle and proposed a separate `NEXT.md` per task instead - next action, blocker, evidence needed - to cut the tokens a fresh session spends reconstructing state. Same problem, bigger footprint: worth deciding one line inside `CURRENT PHASE` versus a file, but not worth two entries._
 
-### 15. Format self-check before a sync completes 🔴 from external review
+### 15. Format self-check before a sync completes ✅ shipped in v2.9.0
 
 **Problem.** The method relies on formats that only a human notices when broken: insight frontmatter (`status`, `falsifier`, `depends_on`, at least two sources), decision blocks `D<N>.<M>`, the `_Last insight pass:_` marker, status glyphs. Nothing checks them, so drift is silent and only surfaces when a cold reader - or an observer - trips over it.
 
@@ -156,6 +158,8 @@ _External review (06.08.2026) arrived at the same idea from the cold-start angle
 **Why it fits.** Cheap, file-only, and it turns a class of silent errors into loud ones.
 
 **Cost.** M.
+
+> **Shipped 06.08.2026 together with 14**, which is what made it cheap: the schema had to be written down anyway to get the formats out of `SKILL.md`, and once it exists the check is one more sync step (step 9) that reads it. Scope is deliberately narrow - the self-check reads **what this sync just wrote**, not the workspace; sweeping the whole thing is the structure check's job, and merging the two would make both too expensive to run every time. Deviations are fixed in place; anything that cannot be fixed without inventing a fact becomes an open question, because the schema never outranks the truth of the log.
 
 ### 16. Doctor pass - structural repair, not content review ✅ shipped in v2.8.2
 
