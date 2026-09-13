@@ -2,6 +2,17 @@
 
 **Persistent, file-based task memory for Claude Code. Your agent forgets everything between sessions - Memento doesn't.**
 
+![version](https://img.shields.io/badge/version-2.12.1-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-orange)
+
+**At a glance**
+
+- One command once per workspace - the agent creates and maintains task memory itself.
+- Every task is a folder of five Markdown files with strict roles: charter, log, plan, decisions, brief.
+- Hypotheses must name what would kill them; rejected ideas stay on record so nobody rolls back to them.
+- Outside models from other families read the memory cold and check it - the author does not verify its own work.
+
+See a filled-in task folder: [examples/checkout-latency-bug](examples/checkout-latency-bug).
+
 > In the film *Memento*, Leonard can't form long-term memories - so he survives on a ruthless system of notes, photos and tattoos. Your AI agent has the same condition: every session it wakes up blank. This plugin is its system of notes - plain Markdown files, structured so that any future session (or any teammate) can pick up a months-old task in minutes. Developers may also recognize the *Memento pattern*: capturing state so it can be restored later. That is exactly what this is.
 
 ## The problem
