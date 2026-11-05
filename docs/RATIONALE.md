@@ -112,7 +112,7 @@ The test is not about distrust of the model. It is about making maintenance *aud
 
 ## Why there is a core and why the rest is optional
 
-An outside evaluation of the whole method (gpt-5.3-codex, 06.08.2026) landed on a verdict worth keeping verbatim in the reasoning file rather than in a changelog nobody rereads: the method is **workable and above the average of file-based practices of 2026** - particularly on decision history, dead-end recall and recoverability - but it is **heavy**, and "this is not a light plugin, it is a disciplinary protocol".
+An outside evaluation of the whole method (06.08.2026) landed on a verdict worth keeping verbatim in the reasoning file rather than in a changelog nobody rereads: the method is **workable and above the average of file-based practices of 2026** - particularly on decision history, dead-end recall and recoverability - but it is **heavy**, and "this is not a light plugin, it is a disciplinary protocol".
 
 Two of its findings drove this split.
 

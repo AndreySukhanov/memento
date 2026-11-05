@@ -102,7 +102,7 @@ recorded in `BACKLOG.md`. None is falsified. Watching.
 
 ## 2.11.0 - A declared core, and layers that are allowed to be optional
 
-An outside evaluation of the method (gpt-5.3-codex) called it workable and
+An outside evaluation of the method called it workable and
 above the average of file-based practices in 2026 - decision history, dead-end
 recall and recoverability specifically - and also **heavy**: "not a light
 plugin, a disciplinary protocol". Two of its findings are answered here.
@@ -148,7 +148,7 @@ thinking, or only the paperwork?
 
 ## 2.10.1 - Second repo review, applied
 
-A full-repository review (gpt-5.3-codex) run against 2.10.0. Everything
+A full-repository review run against 2.10.0. Everything
 actionable is in here; what was rejected, and why, is in
 [BACKLOG.md](BACKLOG.md) item 18 so it does not return as a fresh idea.
 
@@ -400,7 +400,7 @@ day someone needs exactly that file, which is usually the handover.
 
 ## 2.8.1 - Documentation drift found by external review
 
-An outside code review of the whole repository (gpt-5.3-codex) found four
+An outside code review of the whole repository found four
 places where the docs no longer matched the plugin. All four are corrected
 here; the structural findings went to the backlog as items 12-17.
 

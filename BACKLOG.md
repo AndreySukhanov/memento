@@ -4,7 +4,7 @@ Candidates for future rules and operations. Each entry states the problem, a des
 
 Sources of inspiration are named where relevant - the 2026 memory-runtime landscape (EverOS, memsearch, VerificAgent, MEMPROBE) converged on several ideas worth adopting, and several worth deliberately *not* adopting.
 
-Entries marked 🔴 came from an **external code review** of the whole repository (gpt-5.3-codex, 06.08.2026) - the plugin's own Rule 10 applied to the plugin: the author does not grade their own work. Its headline verdict is recorded here rather than softened: *in its current form the method is partly unworkable on long, parallel sessions without an atomicity and locking protocol* - a systemic hole, not another nice rule. Items 12-17 are that review, triaged.
+Entries marked 🔴 came from an **external code review** of the whole repository (06.08.2026) - the plugin's own Rule 10 applied to the plugin: the author does not grade their own work. Its headline verdict is recorded here rather than softened: *in its current form the method is partly unworkable on long, parallel sessions without an atomicity and locking protocol* - a systemic hole, not another nice rule. Items 12-17 are that review, triaged.
 
 ---
 
@@ -73,7 +73,7 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 **Cost.** M. One paragraph in the write operations, one new workspace file, and a takeover rule.
 
-> **Panel verdict, 06.08.2026** (gpt-5.6-sol plus an in-session lens; a third model returned an empty response and did not count).
+> **Panel verdict, 06.08.2026** (two lenses; a third returned an empty response and did not count).
 >
 > **`LOCKS.md` is rejected outright.** Both lenses independently reconstructed the same race: two agents read the file, both see it free, both write - and atomic replace protects the bytes while doing nothing about the lost update. A TTL makes it worse rather than better, since expiry does not prove the holder died; it may wake after the takeover and keep writing. Safe leasing needs a fencing token the store itself checks, and a Markdown file checks nothing. Any workable version needs an atomic arbitration primitive (`mkdir`, `O_EXCL`, a hard link, an OS lock) - all of which sit outside "plain files".
 >
@@ -113,7 +113,7 @@ Entries marked 🔴 came from an **external code review** of the whole repositor
 
 > **Shipped 06.08.2026, 43 KB -> 27 KB.** Three files instead of one: `SKILL.md` keeps the operational path (trigger / action / record / exception per rule), `docs/SCHEMA.md` owns every required shape, `docs/RATIONALE.md` owns the arguments. Nothing was dropped - the prose moved. The restatements did go: Rule 4 no longer repeats the sync order, Rule 5 no longer repeats dedup twice, Rule 10 no longer states cold / read-only / diversity in three places. The nuance risk is real and the mitigation is the same one the method prescribes for itself - an outside read, still owed.
 
-### 18. Repo review, second pass (gpt-5.3-codex, 06.08.2026 on v2.10.0) - triaged
+### 18. Repo review, second pass (06.08.2026, on v2.10.0) - triaged
 
 The first external review produced items 12-17. This is the second, run on the repository after 2.9.0-2.10.1. Everything actionable was applied the same day; what follows is the record of what was applied, what was rejected, and why - so neither half comes back around uninvestigated.
 
@@ -134,7 +134,7 @@ The first external review produced items 12-17. This is the second, run on the r
 
 ### 19. Core and layers - the method declares what is optional ✅ shipped in v2.11.0
 
-**Problem.** Every rule was presented as equally load-bearing. An outside evaluation of the method (gpt-5.3-codex, 06.08.2026) disagreed on both halves: the value curve **breaks after the core** - threshold, stable/volatile split, append-only decisions, sync, short log - while insight synthesis, observers and the consilium pay off depending on the class of task and are cost without return on tasks that do not fit them. And the strongest argument against the whole method is not a bug but a busy month: brittleness to a drop in execution discipline, after which it degrades into expensive ritual documentation where the form is maintained and the thinking is not.
+**Problem.** Every rule was presented as equally load-bearing. An outside evaluation of the method (06.08.2026) disagreed on both halves: the value curve **breaks after the core** - threshold, stable/volatile split, append-only decisions, sync, short log - while insight synthesis, observers and the consilium pay off depending on the class of task and are cost without return on tasks that do not fit them. And the strongest argument against the whole method is not a bug but a busy month: brittleness to a drop in execution discipline, after which it degrades into expensive ritual documentation where the form is maintained and the thinking is not.
 
 **Shipped.** Seven core rules and four core operations named as such; five layers named as optional with the condition under which each is worth its cost; `mode: core` as one machine-readable line in the `INDEX.md` header, default `full`. In core mode the layers fire only when asked for by name.
 
@@ -146,7 +146,7 @@ The first external review produced items 12-17. This is the second, run on the r
 
 ### 20. Three-mandate audit of the repository (06.08.2026) - applied
 
-The method's own Rule 10 run on the method: memory auditor (gpt-5.6-sol), sapper (gpt-5.3-codex), cold reader (minimax-m3). A fourth model, deepseek-v4-pro, failed on `402 Payment Required` mid-run - the same failure mode that emptied the pool once before, and worth recording again: a pool of paid models degrades silently into no pool at all. Both remaining lenses on the OpenAI side means diversity was thinner than the rule asks for; noted rather than papered over.
+The method's own Rule 10 run on the method: memory auditor, sapper and cold reader from the observer pool. A fourth observer failed on `402 Payment Required` mid-run - the same failure mode that emptied the pool once before, and worth recording again: a pool of paid models degrades silently into no pool at all. Two of the three remaining lenses came from one provider, so diversity was thinner than the rule asks for; noted rather than papered over.
 
 **The worst finding was the cheapest to miss: the bundled templates did not satisfy the schema.** `MEMORY.md.tmpl` had its own section order, no `Sealed` block, an undated `## Current phase`, and no glyph legend; `TASKS.md.tmpl` wrote phase headers with no glyphs; the observer config created by `init` set `- budget:` without the `- cheapest:` line the schema requires. Every new workspace therefore started life failing its own self-check. Fixed, and it is the most instructive class of bug in this repository: the specification and the thing that produces files had drifted apart while both looked maintained.
 
