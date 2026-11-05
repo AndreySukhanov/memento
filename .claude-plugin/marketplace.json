@@ -10,5 +10,8 @@
       "source": "./",
       "description": "Persistent, file-based task memory for Claude Code. Your agent forgets everything between sessions - Memento doesn't."
     }
-  ]
+  ],
+  "metadata": {
+    "description": "Memento - persistent, file-based task memory for Claude Code: five Markdown files per task, append-only decisions, Stop-hook guards and outside observers."
+  }
 }
