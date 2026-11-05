@@ -10,6 +10,7 @@ Key facts:
 - Outside observers: other model families (their own APIs or OpenRouter, keys from environment variables) read the memory cold as verifier, Sapper, pattern scout and auditor; high-stakes claims get a panel vote.
 - Guards: Stop hooks (Node.js) refuse to end a turn while memory is behind; every turn that changed memory is snapshotted into a 20-deep backup ring; `/memento-md:check` verifies a cold start, including a moved workspace.
 - Commands: `/memento-md:init <workspace>`, `/memento-md:check`, `/memento-md:observers <question>`. Install: `/plugin marketplace add AndreySukhanov/memento`, then `/plugin install memento-md@memento`.
+- Optional mod `memento-panel` (Claude Code 2.1.287+, `/plugin install memento-panel@memento`): a band above the prompt when memory falls behind and a pane with active tasks, next steps, checkpoints and unverified insights; read-only.
 - `mode: core` in INDEX.md keeps only the seven core rules; the other layers run when asked for by name.
 - Version 3.0.0; plugin name `memento-md`; Source-Available license - free to read, run and learn from for non-commercial use.
 

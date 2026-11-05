@@ -1,5 +1,9 @@
 # Changelog
 
+## memento-panel 0.1.0 - Memento beside the chat
+
+**A panel mod, `memento-panel`** (optional; Claude Code 2.1.287 or later): `/plugin install memento-panel@memento`. A band above the prompt appears only when memory falls behind - an operation left open in `OPS_LOG.md`, or a task whose `DECISIONS.md` is more than 45 minutes ahead of its `MEMORY.md`, the same checks the guards run - with **Sync now** to ask the agent to catch up and **Hide** until the reason changes. `/memento-panel` opens a pane with the active tasks from `INDEX.md`, how fresh each log is, every `next:` step, an active `CHECKPOINT.yml`, the insights still waiting for verification, the mode, the guards and the backup count. The mod only reads the workspace; the `memento-md` plugin itself is unchanged.
+
 ## 3.0.0 - The plugin is now memento-md
 
 **Breaking: the plugin is renamed to `memento-md`.** The name `memento` is taken in the Claude plugin directory by another plugin, so the plugin itself gets a new name; the repository, the marketplace and the method keep the Memento name. The commands move with it: `/memento-md:init`, `/memento-md:check`, `/memento-md:observers`.

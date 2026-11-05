@@ -1,0 +1,20 @@
+{
+  "name": "memento-panel",
+  "version": "0.1.0",
+  "description": "Memento task memory beside the chat: a band when memory falls behind, and a pane with active tasks, next steps, checkpoints and unverified insights. Needs Claude Code 2.1.287+.",
+  "author": {
+    "name": "Andrey Sukhanov",
+    "url": "https://github.com/AndreySukhanov"
+  },
+  "repository": "https://github.com/AndreySukhanov/memento",
+  "homepage": "https://github.com/AndreySukhanov/memento/tree/master/mods/memento-panel",
+  "license": "LicenseRef-Source-Available",
+  "keywords": [
+    "mod",
+    "panel",
+    "claude-code",
+    "memory",
+    "task-memory"
+  ],
+  "types": "./types/index.d.ts"
+}

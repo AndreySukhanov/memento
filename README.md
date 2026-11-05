@@ -158,6 +158,7 @@ session auto-memory/         # cross-task layer (one fact per file)
 | 🔒 | **Guards** | Stop hooks refuse to end a turn while memory is behind: an operation left open in `OPS_LOG.md`, a decision 45+ min ahead of its log, a promise to write with no file changed |
 | 💾 | **Backup ring** | Every turn that changed memory snapshots it into `.memento/backups/` — the newest 20 are kept |
 | 🧊 | **Cold-start check** | `/memento-md:check` — a fresh session answers from context first, then compares with the files; catches memory that never loads, including a moved workspace |
+| 🪟 | **Panel mod** | Optional, Claude Code 2.1.287+: a band above the prompt the moment memory falls behind, and a pane with active tasks, next steps and checkpoints — `/plugin install memento-panel@memento` |
 
 <details>
 <summary><b>🤖 Automatic maintenance, in full</b></summary>
@@ -202,6 +203,19 @@ Two commands in Claude Code, then one per workspace.
 You run init once per workspace; observers — whenever a question deserves a panel. All *maintenance* — including creating folders for new tasks — is the agent's duty rather than yours, and needs no commands. It is not unconditional: a sync you decline is reverted and recorded as declined, an observer pass with no key or no budget left is skipped with a note, and a session that only answered questions writes nothing at all. Automatic means nobody has to remember it, not that it happens regardless of circumstances.
 
 The guards run on Node.js: with `node` on your `PATH` they work out of the box; without it they stay off, and `/memento-md:check` says so.
+
+### 🪟 Memento beside the chat (optional mod)
+
+On Claude Code 2.1.287 or later, one more install puts the memory beside the chat:
+
+```
+/plugin install memento-panel@memento
+```
+
+- **A band above the prompt** the moment memory falls behind — an operation left open in `OPS_LOG.md`, a decision ahead of its log — with **Sync now** in one press.
+- **`/memento-panel`** — a pane with the active tasks, how fresh each log is, every `next:` step, an active checkpoint and the insights still waiting for verification.
+
+The mod only reads the workspace; the memory stays plain Markdown. Details: [`mods/memento-panel`](mods/memento-panel).
 
 ---
 
