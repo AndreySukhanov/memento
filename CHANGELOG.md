@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.13.0 - Guards, and a workspace that survives a move
+
+Until this release every guarantee in the method held exactly as long as the model remembered it. The operations log said so itself: it "does not help if the agent forgot the log entirely".
+
+**Guards.** Stop hooks (`hooks/guards.js`, plain Node, no dependencies) now refuse to end a turn while memory is visibly behind: an operation opened in `OPS_LOG.md` and never closed; a task whose `DECISIONS.md` is more than 45 minutes ahead of its `MEMORY.md`; a final reply that promises to write memory while no memory file changed. Each block names the file and the gap. Guards fail open - no Node or an error in the script, and the turn ends normally - never block twice in a row, run in both `core` and `full` mode, and switch off with one `guards: off` line in `INDEX.md`.
+
+**Backup ring.** Every turn end snapshots the memory files into `.memento/backups/` when something changed, keeping the newest 20. The panel on item 12 named the real risk - an LLM re-emitting a long log and silently dropping lines - and this makes that loss recoverable.
+
+**`/memento:check`.** A cold-start check for a fresh session: answer from context first (instructions, auto-memory, the active task's `next:` line, mode), then compare with the files, then run the guards self-test. Memory that exists on disk but never reaches the model is worse than none, because everyone believes it works.
+
+**Moving a workspace.** Claude Code keys auto-memory by the project path, so a moved or renamed workspace silently starts without its cross-task layer. The skill now has the procedure, and a session-start hook warns - only when the evidence exists: no auto-memory here, but a same-named folder elsewhere has one.
+
+**Backlog.** Inter-workspace mail is recorded as item 22 - the first concrete slice of shared-workspace governance (#9), whose precondition, a real multi-workspace setup, is now met.
+
+Requires Node.js on `PATH` for the guards; everything else stays plain Markdown. Tests: `node hooks/guards.test.js` (18, offline).
+
 ## 2.12.1 - The rest of the audit: four words, three ambiguities, one assumption made measurable
 
 Everything the three-mandate audit raised that 2.12.0 did not close.

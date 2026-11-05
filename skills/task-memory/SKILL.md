@@ -7,7 +7,7 @@ description: Rules and automatic maintenance for Memento task memory. Use when w
 
 Eleven rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. Each rule exists because its absence caused a real failure - drifted statuses, lost rationale, an accidental rollback to a rejected design.
 
-The only command is `/memento:init`, run **once per workspace**. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
+The one command a workspace needs is `/memento:init`, run **once per workspace**; `/memento:check` verifies after setup or a move that the memory actually loads. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
 
 **Which version of the rules is running:** this file, as loaded, is the authority - not what a memory file says the method used to require. Formats change between plugin versions, and files written under an older one stay valid; the sync repairs what it touches and leaves the rest. Never rewrite an old file to match a new format for its own sake.
 
@@ -48,6 +48,24 @@ Operations: **session start**, **the sync**, **structure check**, **closing**. P
 **The gate is checked at the trigger, not remembered.** Every rule marked *layer* below, and the consilium skill, describe themselves as firing automatically - that description assumes `full`. Before any layer acts on its own trigger, read the mode line: `core` means stand down and say nothing. This one paragraph is the whole gating mechanism; without it the rules' own "fires on its own" wording quietly overrides the mode a workspace declared.
 
 This exists because the honest failure of a method like this is not a bug, it is a busy month. Under pressure a protocol that asks for everything gets abandoned entirely rather than trimmed, and the whole memory dies with it. Declaring what is optional makes trimming a supported move instead of a defeat - and the core is small enough to survive a period of no enthusiasm at all, which is the only test that matters.
+
+---
+
+## Guards - the checks that do not depend on remembering
+
+Everything above is enforced by the model remembering it. Three checks are not: Stop hooks (`hooks/guards.js`, Node) run when a turn ends, in both `core` and `full` mode, and refuse to let the turn end while memory is visibly behind.
+
+| Guard | Fires when | What to do |
+|---|---|---|
+| Open operation | `OPS_LOG.md` has a `>` line from the last 12 hours with no matching `<` | finish the operation and close the line, or close it with the reason it stopped |
+| Sync lag | a task's `DECISIONS.md` is more than 45 min newer than its `MEMORY.md` (changed in the last 12 hours) | log the dated fact behind the decision (Rule 4) |
+| Broken promise | the final reply says memory will be written ("I'll record...", "запишу...") and no memory file changed in the last 5 min | write it now, or say plainly that nothing was written |
+
+Every turn end also snapshots the memory files - the workspace files, every task's five files, the auto-memory folder - into `.memento/backups/<timestamp>/`, only when something changed since the last snapshot. The newest 20 are kept; the folder ignores itself in git. Restoring is manual: copy files back from a snapshot, as an operation with its own `OPS_LOG.md` line.
+
+**When a guard blocks, do the write - don't argue.** The reason names the file and the gap. A guard can be wrong (a decision edited by hand, a figure of speech read as a promise): then say so in one line and end the turn - a guard never blocks twice in a row. A guard that keeps firing falsely is a bug to report, not a reason to stop keeping memory.
+
+**Off switch.** A `guards: off` line in the `INDEX.md` header disables all three and the backup. Guards fail open: no Node, or an error in the script, and the turn ends normally - `/memento:check` reports which.
 
 ---
 
@@ -314,6 +332,22 @@ Sealed blocks, closed D-blocks and the raw materials are read **on demand only**
 **Exception.** Neither file exists, or both are clean -> say nothing and get to work. This is the one operation whose silence is correct: it runs every session, and a daily "nothing to report" trains the reader to skip the line that matters.
 
 **Why not just read the log.** The three cheapest things to read - lenses, phase, blockers - are the three that change how everything else is interpreted, and they sit in a fixed place precisely so that a session with almost no budget can still read them. Entering through the newest log entries instead is the common failure: they are the most detailed and the least oriented.
+
+## Moving a workspace
+
+**Trigger.** The workspace folder is moved or renamed, or the session-start guard reports that a same-named folder elsewhere holds this workspace's auto-memory.
+
+Task folders move with the workspace; **auto-memory does not**. Claude Code keeps it under `~/.claude/projects/<project path with every non-alphanumeric character replaced by "-">/memory/`, so a new path starts with an empty one - and auto-memory written there splits the cross-task layer in two.
+
+**Action.**
+
+1. Find the old folder: `~/.claude/projects/<old encoded path>/memory/` - the guard names it when it can.
+2. Before any new auto-memory is written, move its contents into the folder for the new path. If both already hold files, merge by hand: two files with one fact is a Rule 2 violation.
+3. Run `/memento:check` in a fresh session: it should find the auto-memory and name at least two of its files.
+
+**Record.** One closed pair in `OPS_LOG.md`: old path, new path, files moved.
+
+**Exception.** A workspace that never used auto-memory (`mode: core`, Rule 8 never fired) has nothing to move; step 3 still applies.
 
 ## Auto-init (Rule 1 in action)
 

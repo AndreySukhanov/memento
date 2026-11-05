@@ -176,6 +176,14 @@ The probe itself is nine lines of loop and lives with the workspace, not in the 
 
 ---
 
+### 23. Guards - enforcement outside the model ✅ shipped in v2.13.0
+
+Stop hooks for an unclosed `OPS_LOG.md` operation, a decision far ahead of its log, and a promise to write with no file changed; a 20-deep backup ring on every turn end that changed something. Fail open, never twice in a row, `guards: off` to disable. Reasoning in [RATIONALE](docs/RATIONALE.md#guards---enforcement-that-does-not-depend-on-remembering).
+
+### 24. Moving a workspace + cold-start check ✅ shipped in v2.13.0
+
+Auto-memory is keyed by the project path, so a moved workspace silently loses its cross-task layer. A procedure in the skill, a session-start warning that fires only on evidence, and `/memento:check` - answer from context first, then compare with the files.
+
 ## Next - worth doing, needs more shaping
 
 ### 5. Retrieval interop - "markdown is truth, index is a rebuildable shadow" ✅ shipped as [docs/RETRIEVAL.md](docs/RETRIEVAL.md)
@@ -256,11 +264,29 @@ _External review (06.08.2026) arrived at the same idea from the cold-start angle
 
 ---
 
+### 22. Inter-workspace mail - the first slice of shared-workspace governance (#9)
+
+**Problem.** Item 9 waits for "a real multi-writer workspace". That now exists in the form it most often takes in practice: not two agents in one folder, but a **lead workspace and satellite workspaces**, one per project, that pass decisions, constraints and results between them without reading each other's files. Shared folders leak - a satellite reads what it should not - and relaying through chat loses state: a result announced in one session is forgotten by the next.
+
+**Sketch.** A mailbox pair inside each satellite: `link/from-lead.md` (only the lead writes) and `link/to-lead.md` (only the satellite writes).
+- Every message is a block `### <side>-<N> · <date> · <type>`, numbered per side (`L-1`, `S-1`...), typed: `task`, `constraint`, `decision`, `result`, `question`, `accepted`, `partly accepted`.
+- A reader never edits the other side's file. Acknowledgement is an `accepted` block in its own file with `(reply to: L-3)`; mentioning the number in prose does not count. An unacknowledged message is never overwritten by a newer one.
+- A session-start hook lists unacknowledged messages on each side.
+- Mail is not a knowledge base: after processing, durable content moves into the receiver's own `DECISIONS.md` and log; the message stays as the trail.
+- **One owner per kind of fact**: the lead holds cross-project priorities and the person's resources, the satellite holds project status and results. Mail never becomes a second status file.
+- **Minimum necessary context**: the lead passes the working constraint ("no paid APIs until the 1st"), not the private reason behind it.
+
+**Why it fits.** Plain files, append-only, ownership by file instead of by lock - the half of item 12 the panel kept (no shared writes), not the half it rejected (`LOCKS.md`). Acknowledgement is Rule 3 applied to communication: a message is a record, and handling it is a new record, not an edit.
+
+**Evidence and falsifier.** A lead-plus-satellites setup has run on this protocol since October 2026. Falsifier: a satellite acting on a superseded message, or a result that was never acknowledged - the session-start listing makes both visible.
+
+**Cost.** M. One template pair, the message format in SCHEMA, the listing in the guards script, a section in the skill.
+
 ## Later - real ideas, not yet earned
 
 ### 9. Shared-workspace governance
 
-Multiple agents (or agent + human teammates) writing one workspace: per-file ownership, append-only zones, arbitration through lenses instead of overwrites. Active research area ("governed shared memory"); wait until a real multi-writer workspace exists before designing.
+Multiple agents (or agent + human teammates) writing one workspace: per-file ownership, append-only zones, arbitration through lenses instead of overwrites. Active research area ("governed shared memory"); wait until a real multi-writer workspace exists before designing. The first slice is now drafted as item 22.
 
 ### 10. Profile portability
 

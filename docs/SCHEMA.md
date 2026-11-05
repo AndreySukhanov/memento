@@ -280,6 +280,8 @@ mode: core
 
 `full` (the default, and what an absent line means) runs the layered rules on their own triggers. `core` keeps rules 1-7 and the four core operations, and leaves the layers - auto-memory, insight synthesis, observers, checkpoints, consilium - to run only when asked for by name. Prose describing a mode configures nothing; this line does.
 
+A second header line, `guards: off`, disables the Stop-hook guards and the memory backup (task-memory skill, *Guards*). Absent means on. Backups live in `<workspace>/.memento/backups/<YYYYMMDD-HHMMSS>/`, mirroring the workspace layout, with auto-memory under `_auto-memory/`; the newest 20 are kept.
+
 Both this file and the auto-memory index are **derived**: their rows are reconstructible from the folders and the frontmatter they point at. A contradiction between an index row and the folder it names is a repair, not an incident - the folder wins.
 
 ---

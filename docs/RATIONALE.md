@@ -96,6 +96,24 @@ Three of the method's stated guarantees - *one ritual at a time*, *content befor
 
 **A rejected addition: a "session start primed" marker.** A review proposed recording, in the first sync of a session, whether the session-start reading order had been followed. It was rejected on this method's own test. The line would change a byte on disk, but nothing on disk could contradict it: unlike `_Last insight pass:`, which can be compared against the newest dated entry, a self-reported "yes, I read the lenses first" has no counter-evidence anywhere. That is precisely the honour-system sentence the verifiability test was written to exclude, and adding it would have made the file *look* more rigorous while measuring nothing.
 
+## Guards - enforcement that does not depend on remembering
+
+The operations log admits its own limit: it "does not help if the agent forgot the log entirely". Every guarantee in this method had the same limit - it held exactly as long as the model remembered it. The 2.7.1 field bug showed what that costs: in a session that ran for days the boundary never came, and the agent, following the rule faithfully, wrote memory only when asked. Guards are the first part of the method that runs outside the model.
+
+**Why these three.** Each catches a failure that is invisible from inside the session. An open `OPS_LOG.md` line is an operation the agent believes it finished. A decision 45 minutes ahead of its log is a sync that never came - the sync writes the log *before* the decisions, so a short lag is the normal order and a long one is not. A reply that says "I'll record this" with no file changed is the cheapest failure of all: the promise reads as done to the user, and nothing is on disk.
+
+**Why narrow patterns.** "I'll save the file" and "let me note that" are about code and speech, not memory. A guard that cries wolf gets switched off, and then it guards nothing - so the promise check matches only explicit promises to write memory, and accepts any sign the write already happened.
+
+**Why fail open and never twice.** A guard that breaks a session because its own script failed is a guard that gets uninstalled. So any error, a missing Node, or a workspace it cannot find lets the turn end. And a guard that has blocked once lets the next stop through: if the agent disagrees after reading the reason, the disagreement is information, and an endless loop is not.
+
+**Why a backup ring.** Plain files have no undo, and the panel on item 12 named the real risk precisely: not a torn write, but an LLM re-emitting a long log and silently dropping lines. Twenty snapshots taken only when something changed cost almost nothing and make that loss recoverable instead of permanent.
+
+## Moving a workspace
+
+Claude Code keys auto-memory by the project path. Move or rename the folder and the next session starts with an empty cross-task layer - and nothing on disk says so: the task folders are all there, the charter loads, everything looks fine. The procedure exists because the failure is silent, and the session-start warning fires only on evidence (a same-named folder elsewhere that holds auto-memory), because a warning on every fresh workspace would train everyone to ignore it.
+
+`/memento:check` is the same idea turned on the whole setup: memory that exists on disk but does not reach the model is worse than none, because everyone believes it works. Answering from context *before* opening files is the only way to see what actually arrives.
+
 ## Rule 11 - checkpoints
 
 Context runs out, tools time out, machines reboot. The next session then inherits a half-finished bulk operation with no way to tell whether step 4 of 9 completed - and re-running a step is sometimes worse than skipping one.

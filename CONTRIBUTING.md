@@ -22,7 +22,9 @@ Clone the repo and install the plugin from your local copy in Claude Code:
 /plugin install memento@memento
 ```
 
-The plugin is Markdown: commands in `commands/`, skills in `skills/`, task-file templates in `templates/`. Run `/memento:init` on a scratch workspace and check that a sync writes what you expect.
+The plugin is Markdown plus one script: commands in `commands/`, skills in `skills/`, task-file templates in `templates/`, guards in `hooks/`. Run `/memento:init` on a scratch workspace and check that a sync writes what you expect.
+
+The guards are the one piece of code: `hooks/guards.js` (plain Node, no dependencies). Change it together with `hooks/guards.test.js` and run `node hooks/guards.test.js` - the tests build throwaway workspaces and need no network.
 
 ## Ground rules
 
