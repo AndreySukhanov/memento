@@ -15,6 +15,10 @@
     "knowledge-base",
     "agent-memory",
     "context",
-    "productivity"
+    "productivity",
+    "claude-code",
+    "persistent-memory",
+    "long-term-memory",
+    "claude-code-memory"
   ]
 }
