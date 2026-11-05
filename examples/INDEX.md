@@ -7,7 +7,7 @@ mode: full
 > Workspace-level registry of all task folders - the fast answer to "what is active and
 > where does it live". Derived, not authoritative: every row is rebuildable from the task
 > folders themselves, so a row that disagrees with its folder loses to the folder.
-> Created by `/memento:init`; the sync and the close write here automatically. The status
+> Created by `/memento-md:init`; the sync and the close write here automatically. The status
 > overview only reads it.
 
 ## Active

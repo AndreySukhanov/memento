@@ -8,10 +8,10 @@ Key facts:
 - The agent creates the folder itself when a task crosses the threshold (more than a day, 2+ stakeholders, a release artifact, 2+ phases) and syncs memory in a fixed order with a self-check against the schema.
 - Insights are falsifiable hypotheses with `falsifier` and `depends_on`; refuted ones are kept and checked before every new decision (dead-end recall).
 - Outside observers: other model families (their own APIs or OpenRouter, keys from environment variables) read the memory cold as verifier, Sapper, pattern scout and auditor; high-stakes claims get a panel vote.
-- Guards: Stop hooks (Node.js) refuse to end a turn while memory is behind; every turn that changed memory is snapshotted into a 20-deep backup ring; `/memento:check` verifies a cold start, including a moved workspace.
-- Commands: `/memento:init <workspace>`, `/memento:check`, `/memento:observers <question>`. Install: `/plugin marketplace add AndreySukhanov/memento`, then `/plugin install memento@memento`.
+- Guards: Stop hooks (Node.js) refuse to end a turn while memory is behind; every turn that changed memory is snapshotted into a 20-deep backup ring; `/memento-md:check` verifies a cold start, including a moved workspace.
+- Commands: `/memento-md:init <workspace>`, `/memento-md:check`, `/memento-md:observers <question>`. Install: `/plugin marketplace add AndreySukhanov/memento`, then `/plugin install memento-md@memento`.
 - `mode: core` in INDEX.md keeps only the seven core rules; the other layers run when asked for by name.
-- Version 2.13.0; Source-Available license.
+- Version 3.0.0; plugin name `memento-md`; Source-Available license - free to read, run and learn from for non-commercial use.
 
 ## Docs
 
@@ -25,6 +25,6 @@ Key facts:
 
 - [Retrieval contract](https://github.com/AndreySukhanov/memento/blob/master/docs/RETRIEVAL.md): how external search runtimes index the Markdown memory
 - [Consilium skill](https://github.com/AndreySukhanov/memento/blob/master/skills/consilium/SKILL.md): parallel read-only lenses plus a mandatory skeptic for changes across 3+ areas
-- [Changelog](https://github.com/AndreySukhanov/memento/blob/master/CHANGELOG.md): release history up to v2.13.0
+- [Changelog](https://github.com/AndreySukhanov/memento/blob/master/CHANGELOG.md): release history up to v3.0.0
 - [Backlog](https://github.com/AndreySukhanov/memento/blob/master/BACKLOG.md): what is open, what shipped, what was rejected
 - [License](https://github.com/AndreySukhanov/memento/blob/master/LICENSE): Source-Available - free to read, run and learn from

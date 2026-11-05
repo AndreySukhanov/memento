@@ -1,6 +1,6 @@
 {
-  "name": "memento",
-  "version": "2.13.0",
+  "name": "memento-md",
+  "version": "3.0.0",
   "description": "Persistent, file-based task memory for Claude Code. Your agent forgets everything between sessions - Memento doesn't.",
   "author": {
     "name": "Andrey Sukhanov",

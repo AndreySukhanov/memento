@@ -128,7 +128,7 @@ Four weeks of investigation, compressed. What is still load-bearing:
 
 ## File history
 
-- **2026-05-29** - initialized by `/memento:init` from 41 support tickets, the
+- **2026-05-29** - initialized by `/memento-md:init` from 41 support tickets, the
   Grafana board and the #checkout export.
 - **2026-06-25** - first seal: 187 lines -> 96, 4 weeks of entries into one block.
 - **2026-07-24** - current.

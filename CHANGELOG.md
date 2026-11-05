@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.0.0 - The plugin is now memento-md
+
+**Breaking: the plugin is renamed to `memento-md`.** The name `memento` is taken in the Claude plugin directory by another plugin, so the plugin itself gets a new name; the repository, the marketplace and the method keep the Memento name. The commands move with it: `/memento-md:init`, `/memento-md:check`, `/memento-md:observers`.
+
+**Upgrading.** `/plugin uninstall memento@memento`, then `/plugin marketplace update memento` and `/plugin install memento-md@memento`. Workspaces, task folders, auto-memory and `.memento/backups/` are untouched - nothing in your memory files depends on the plugin name.
+
+**Ready for the Claude plugin directory.** A plugin icon, a marketplace description and search keywords in `plugin.json`; the README gained a definition paragraph and an FAQ, and the repository an `llms.txt`.
+
+**License.** Free to read, run and learn from for personal, educational and other non-commercial purposes; commercial or derivative use requires written permission. See [LICENSE](LICENSE).
+
 ## 2.13.0 - Guards, and a workspace that survives a move
 
 Until this release every guarantee in the method held exactly as long as the model remembered it. The operations log said so itself: it "does not help if the agent forgot the log entirely".

@@ -3,7 +3,7 @@ description: Run any question through the outside-observer model panel (Rule 10 
 argument-hint: [the question; optionally paths to material files]
 ---
 
-# /memento:observers - ad-hoc multi-model panel
+# /memento-md:observers - ad-hoc multi-model panel
 
 The scheduled observer passes (Rule 10) verify insights and audit memory on their own triggers. This command is the **on-demand mode**: any question where a second (and third) model family's view is worth the tokens - reviewing a draft or a prompt, stress-testing a contested decision, checking a hypothesis, risk assessment, "what am I missing here?".
 

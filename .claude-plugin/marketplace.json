@@ -6,7 +6,7 @@
   },
   "plugins": [
     {
-      "name": "memento",
+      "name": "memento-md",
       "source": "./",
       "description": "Persistent, file-based task memory for Claude Code. Your agent forgets everything between sessions - Memento doesn't."
     }

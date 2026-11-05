@@ -4,7 +4,7 @@
 //
 //   node guards.js stop           Stop hook: back up, then check; may block the stop
 //   node guards.js session-start  SessionStart hook: warn about a moved workspace
-//   node guards.js selftest       Print what the guards see (used by /memento:check)
+//   node guards.js selftest       Print what the guards see (used by /memento-md:check)
 //
 // Fail-open by design: any error inside a guard lets the turn end normally.
 // A guard that breaks sessions would get uninstalled, and then nothing is guarded.

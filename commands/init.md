@@ -3,7 +3,7 @@ description: One-time workspace initialization - creates the INDEX.md registry a
 argument-hint: [path to the workspace root; or a task folder inside an initialized workspace]
 ---
 
-# /memento:init - initialize the workspace (once)
+# /memento-md:init - initialize the workspace (once)
 
 ## Argument
 

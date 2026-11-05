@@ -12,7 +12,7 @@
 
 **Bootstrap → sync → insights → outside observers → close. One command per workspace. Plain Markdown forever.**
 
-[![Version](https://img.shields.io/badge/version-2.13.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue)](CHANGELOG.md)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-D97757?logo=anthropic&logoColor=white)](https://docs.claude.com/en/docs/claude-code)
 [![Markdown](https://img.shields.io/badge/storage-plain%20Markdown-000000?logo=markdown&logoColor=white)](#️-how-it-works)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
@@ -157,7 +157,7 @@ session auto-memory/         # cross-task layer (one fact per file)
 | ✅ | **Closing** | The close is proposed, confirmed, recorded; the index row moves to Completed. Folders are never deleted |
 | 🔒 | **Guards** | Stop hooks refuse to end a turn while memory is behind: an operation left open in `OPS_LOG.md`, a decision 45+ min ahead of its log, a promise to write with no file changed |
 | 💾 | **Backup ring** | Every turn that changed memory snapshots it into `.memento/backups/` — the newest 20 are kept |
-| 🧊 | **Cold-start check** | `/memento:check` — a fresh session answers from context first, then compares with the files; catches memory that never loads, including a moved workspace |
+| 🧊 | **Cold-start check** | `/memento-md:check` — a fresh session answers from context first, then compares with the files; catches memory that never loads, including a moved workspace |
 
 <details>
 <summary><b>🤖 Automatic maintenance, in full</b></summary>
@@ -178,7 +178,7 @@ An auto-activating **skill** teaches the agent the method itself — the thresho
 - **An operations log.** Every operation that *writes* opens a line in `OPS_LOG.md` *before* it touches a file, and closes it with the result afterwards — read-only passes stay out of it. The ordering is asymmetric on purpose: a session that dies mid-sync leaves an unterminated line naming the operation and the files it had reached, so the next session starts by repairing exactly those. Forgetting to close a line raises a false alarm someone notices; writing nothing until the end leaves a silent half-finished workspace nobody does. It is not atomicity — plain files cannot offer that — it is evidence instead of a promise.
 - **Checkpoints.** Operations too long for one turn (a bulk edit across locales, an eval run, a data load, a release package) get a `CHECKPOINT.yml` written before the first step and updated after each one. If a session starts with an active checkpoint, the agent says which operation stopped where before doing anything else. Context runs out, tools time out, machines reboot — the next session should not have to guess whether step 4 of 9 finished.
 - **Guards.** Everything above is a duty the model must remember; guards are the part that does not depend on remembering. Stop hooks (`hooks/guards.js`, plain Node) run at the end of every turn and refuse to let it end while memory is visibly behind: an operation opened in `OPS_LOG.md` and never closed, a decision more than 45 minutes ahead of its log, a final reply that promises a memory write while no memory file changed. Each block names the file and the gap; the agent does the write, or says in one line why the guard is wrong — a guard never blocks twice in a row. Every turn that changed memory also snapshots it into a 20-deep backup ring. Guards fail open: no Node or a script error, and the turn ends normally. One `guards: off` line in `INDEX.md` turns them off.
-- **Moving a workspace.** Claude Code keys auto-memory by the project path, so a moved or renamed workspace silently starts without its cross-task layer. A session-start hook warns when the evidence exists — no auto-memory here, a same-named folder elsewhere that has one — and the skill moves it before anything new is written. `/memento:check` then proves, from a cold session, that the memory actually loads.
+- **Moving a workspace.** Claude Code keys auto-memory by the project path, so a moved or renamed workspace silently starts without its cross-task layer. A session-start hook warns when the evidence exists — no auto-memory here, a same-named folder elsewhere that has one — and the skill moves it before anything new is written. `/memento-md:check` then proves, from a cold session, that the memory actually loads.
 
 </details>
 
@@ -190,18 +190,18 @@ Two commands in Claude Code, then one per workspace.
 
 ```
 /plugin marketplace add AndreySukhanov/memento
-/plugin install memento@memento
+/plugin install memento-md@memento
 ```
 
 | Command | What it does |
 |---|---|
-| `/memento:init <workspace>` | **One-time workspace initialization.** Creates the `INDEX.md` registry and registers existing task folders (bootstrapping the 5-file set for those that only have raw materials). Pointed at a task folder inside an initialized workspace, it bootstraps just that folder — a manual escape hatch you rarely need. |
-| `/memento:check` | **Cold-start check.** Run as the first message of a fresh session after init or a move: the agent answers from context first — instructions, auto-memory, the active task's next step — then compares with the files and runs the guards self-test. |
-| `/memento:observers <question>` | **Ad-hoc multi-model panel.** Runs any question (plus attached materials) through the outside-observer pool and synthesizes consensus, disagreements and unique findings. For anything where a second model family's view is worth the tokens: draft reviews, contested decisions, "what am I missing?". |
+| `/memento-md:init <workspace>` | **One-time workspace initialization.** Creates the `INDEX.md` registry and registers existing task folders (bootstrapping the 5-file set for those that only have raw materials). Pointed at a task folder inside an initialized workspace, it bootstraps just that folder — a manual escape hatch you rarely need. |
+| `/memento-md:check` | **Cold-start check.** Run as the first message of a fresh session after init or a move: the agent answers from context first — instructions, auto-memory, the active task's next step — then compares with the files and runs the guards self-test. |
+| `/memento-md:observers <question>` | **Ad-hoc multi-model panel.** Runs any question (plus attached materials) through the outside-observer pool and synthesizes consensus, disagreements and unique findings. For anything where a second model family's view is worth the tokens: draft reviews, contested decisions, "what am I missing?". |
 
 You run init once per workspace; observers — whenever a question deserves a panel. All *maintenance* — including creating folders for new tasks — is the agent's duty rather than yours, and needs no commands. It is not unconditional: a sync you decline is reverted and recorded as declined, an observer pass with no key or no budget left is skipped with a note, and a session that only answered questions writes nothing at all. Automatic means nobody has to remember it, not that it happens regardless of circumstances.
 
-The guards run on Node.js: with `node` on your `PATH` they work out of the box; without it they stay off, and `/memento:check` says so.
+The guards run on Node.js: with `node` on your `PATH` they work out of the box; without it they stay off, and `/memento-md:check` says so.
 
 ---
 
@@ -245,7 +245,7 @@ That design came straight from the strongest objection an outside evaluation rai
 ## ❓ FAQ
 
 ### How do I give Claude Code persistent memory between sessions?
-Install Memento with two commands (see [Quick Start](#-quick-start)) and run `/memento:init <workspace>` once. From then on the agent creates a five-file folder for every task that crosses the threshold, writes facts, decisions and plans as it works, and Claude Code auto-loads the task's `CLAUDE.md` charter whenever the agent works in that folder. The next session starts with the task's context, not a blank page.
+Install Memento with two commands (see [Quick Start](#-quick-start)) and run `/memento-md:init <workspace>` once. From then on the agent creates a five-file folder for every task that crosses the threshold, writes facts, decisions and plans as it works, and Claude Code auto-loads the task's `CLAUDE.md` charter whenever the agent works in that folder. The next session starts with the task's context, not a blank page.
 
 ### Is Memento an MCP server or a vector database?
 Neither. It is a Claude Code plugin — a skill, slash commands and Stop hooks — that writes plain Markdown files. Nothing to host, nothing to keep running. *Low-tech* describes the storage, not the discipline: there is a protocol — a sync order, checks that must report themselves, formats with required fields — and the [core and layers](#-core-and-layers) split keeps it light enough to run on a bad week.
@@ -257,19 +257,19 @@ Complementary, not competing. For a single workspace of tasks, structured files 
 Memento builds on both. Each task folder's `CLAUDE.md` is that task's charter, auto-loaded for free, and Claude Code's auto-memory becomes the cross-task layer — one fact per file, indexed. On top it adds what a single file cannot hold: a log of dated facts with sources, append-only decisions, a plan, the original brief, a fixed sync order with a self-check, and guards that refuse to end a turn while memory is behind.
 
 ### What stops the agent from forgetting to write memory?
-Guards. Stop hooks run at the end of every turn and block it while memory is visibly behind — an operation left open in `OPS_LOG.md`, a decision 45+ minutes ahead of its log, a reply that promises a write while no memory file changed. Every turn that changed memory is snapshotted into a 20-deep backup ring, and `/memento:check` proves from a cold session that the memory actually loads.
+Guards. Stop hooks run at the end of every turn and block it while memory is visibly behind — an operation left open in `OPS_LOG.md`, a decision 45+ minutes ahead of its log, a reply that promises a write while no memory file changed. Every turn that changed memory is snapshotted into a 20-deep backup ring, and `/memento-md:check` proves from a cold session that the memory actually loads.
 
 ### Does it need an API key or cost anything?
 The memory itself needs nothing but Claude Code: no key, no service, no database. Only the optional outside observers call other model families — through their own APIs or OpenRouter, keys from environment variables; with no key or no budget left, the pass is skipped with a note.
 
 ### Does it work with other agents besides Claude Code?
-The `/memento:init` command, the auto-activating skill and the auto-loading of `CLAUDE.md` are Claude Code features. The method — five files, litmus test, append-only decisions, sync order — works with any agent or with no agent at all.
+The `/memento-md:init` command, the auto-activating skill and the auto-loading of `CLAUDE.md` are Claude Code features. The method — five files, litmus test, append-only decisions, sync order — works with any agent or with no agent at all.
 
 ### How is this different from a TODO app or a wiki?
 Task trackers store *state*, wikis store *documents*. Memento stores *working memory*: dated facts, superseded decisions with rationale, and evidence — the things you need to resume thinking, not just to report progress.
 
 ### Can I move or rename a workspace?
-Yes — task folders travel with it, but Claude Code keeps auto-memory under a folder named after the old path. The session-start guard notices when a same-named folder elsewhere holds it, and the skill moves it before anything new is written; `/memento:check` confirms the result.
+Yes — task folders travel with it, but Claude Code keeps auto-memory under a folder named after the old path. The session-start guard notices when a same-named folder elsewhere holds it, and the skill moves it before anything new is written; `/memento-md:check` confirms the result.
 
 ### What happens to my memory if I uninstall it?
 Nothing. Every file is plain Markdown — greppable, diffable, readable in any editor. Your memory is not held hostage by a plugin.
@@ -285,7 +285,7 @@ Nothing. Every file is plain Markdown — greppable, diffable, readable in any e
 | [`docs/RATIONALE.md`](docs/RATIONALE.md) | Why each rule is what it is, and the failure it came from. Read it when a rule looks arbitrary or you are about to relax one. |
 | [`docs/RETRIEVAL.md`](docs/RETRIEVAL.md) | The interop contract for external search runtimes: markdown is truth, your index is a derived cache. |
 | [`examples/`](examples/) | A filled-in task folder after a dozen sessions, with a guide to what to look at and why. |
-| [`CHANGELOG.md`](CHANGELOG.md) | Latest: **v2.13.0** — guards that refuse to end a turn while memory is behind, a backup ring, `/memento:check`, and a workspace that survives a move. |
+| [`CHANGELOG.md`](CHANGELOG.md) | Latest: **v3.0.0** — the plugin is now `memento-md` (commands `/memento-md:…`); before that, v2.13.0 added guards, a backup ring, `/memento-md:check` and a workspace that survives a move. |
 
 </details>
 

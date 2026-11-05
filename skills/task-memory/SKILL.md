@@ -7,7 +7,7 @@ description: Rules and automatic maintenance for Memento task memory. Use when w
 
 Eleven rules that keep file-based task memory truthful across sessions, plus the maintenance operations the agent performs **automatically**. Each rule exists because its absence caused a real failure - drifted statuses, lost rationale, an accidental rollback to a rejected design.
 
-The one command a workspace needs is `/memento:init`, run **once per workspace**; `/memento:check` verifies after setup or a move that the memory actually loads. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
+The one command a workspace needs is `/memento-md:init`, run **once per workspace**; `/memento-md:check` verifies after setup or a move that the memory actually loads. From there everything is the agent's own duty: creating task folders when a task earns one, syncing, sealing, closing, status. Memory that waits for a command drifts.
 
 **Which version of the rules is running:** this file, as loaded, is the authority - not what a memory file says the method used to require. Formats change between plugin versions, and files written under an older one stay valid; the sync repairs what it touches and leaves the rest. Never rewrite an old file to match a new format for its own sake.
 
@@ -65,7 +65,7 @@ Every turn end also snapshots the memory files - the workspace files, every task
 
 **When a guard blocks, do the write - don't argue.** The reason names the file and the gap. A guard can be wrong (a decision edited by hand, a figure of speech read as a promise): then say so in one line and end the turn - a guard never blocks twice in a row. A guard that keeps firing falsely is a bug to report, not a reason to stop keeping memory.
 
-**Off switch.** A `guards: off` line in the `INDEX.md` header disables all three and the backup. Guards fail open: no Node, or an error in the script, and the turn ends normally - `/memento:check` reports which.
+**Off switch.** A `guards: off` line in the `INDEX.md` header disables all three and the backup. Guards fail open: no Node, or an error in the script, and the turn ends normally - `/memento-md:check` reports which.
 
 ---
 
@@ -238,7 +238,7 @@ The agent maintaining the memory has correlated blind spots: it confirms its own
 
 **Record.** Reports in `Observers/YYYY-MM-DD-<model>-<mandate>.md`, verbatim, never deleted. Every report ends with a **Memory quality** section answering all three: could the task be reconstructed from the files alone, what was missing, and a 0-10 score - which the status overview reads and a close cannot ignore ([SCHEMA](../../docs/SCHEMA.md#observer-report)).
 
-**Not the only outside view.** Observers verify what is already written, cold and after the fact. When the question is "what breaks if we do this?" and the answer spans several areas at once, the tool is a **consilium** - parallel in-session agents, each on a lens, plus a mandatory skeptic looking for the prior rejection. Verification after versus perspective before. Its trigger conditions are owned by the consilium skill itself and are not restated here; in `mode: core` it waits to be asked. On demand, the panel is `/memento:observers <question>`.
+**Not the only outside view.** Observers verify what is already written, cold and after the fact. When the question is "what breaks if we do this?" and the answer spans several areas at once, the tool is a **consilium** - parallel in-session agents, each on a lens, plus a mandatory skeptic looking for the prior rejection. Verification after versus perspective before. Its trigger conditions are owned by the consilium skill itself and are not restated here; in `mode: core` it waits to be asked. On demand, the panel is `/memento-md:observers <question>`.
 
 ## Rule 11: Checkpoint long operations - the session can die mid-way · *layer*
 
@@ -343,7 +343,7 @@ Task folders move with the workspace; **auto-memory does not**. Claude Code keep
 
 1. Find the old folder: `~/.claude/projects/<old encoded path>/memory/` - the guard names it when it can.
 2. Before any new auto-memory is written, move its contents into the folder for the new path. If both already hold files, merge by hand: two files with one fact is a Rule 2 violation.
-3. Run `/memento:check` in a fresh session: it should find the auto-memory and name at least two of its files.
+3. Run `/memento-md:check` in a fresh session: it should find the auto-memory and name at least two of its files.
 
 **Record.** One closed pair in `OPS_LOG.md`: old path, new path, files moved.
 
@@ -359,7 +359,7 @@ Task folders move with the workspace; **auto-memory does not**. Claude Code keep
 
 Then follow the **Task bootstrap procedure** in the plugin's `commands/init.md` - read that file for the full discipline: classify and read all materials including every image, extract dated stakeholder quotes and evidence with explicit keep/mention/skip decisions, fill the templates from `${CLAUDE_PLUGIN_ROOT}/templates/`, never invent facts (gaps become open questions), and register the folder in `INDEX.md` in the same operation. No materials yet -> bootstrap from session context; everything unknown becomes an open question.
 
-**Exception.** No `INDEX.md` at the workspace root -> do not silently create structure; suggest `/memento:init` once. Name the folder plainly after the task; the user can rename it later.
+**Exception.** No `INDEX.md` at the workspace root -> do not silently create structure; suggest `/memento-md:init` once. Name the folder plainly after the task; the user can rename it later.
 
 ## The sync (Rule 4 in action)
 
@@ -421,7 +421,7 @@ The folder stays where it is - closed folders are the long-term archive. Delete 
 
 **Trigger** (no confirmation needed): 3+ `status: hypothesis` insights accumulated; a release artifact about to be handed off or a major decision about to be recorded; a task being closed; the user asks.
 
-**Action.** Same routing as `/memento:observers` - one pool, one convention:
+**Action.** Same routing as `/memento-md:observers` - one pool, one convention:
 
 1. **Key and models.** The model list is `- model: <id>` lines in `<workspace_root>/Observers/CONFIG.md` (aim for 2-3 models from *different families*). The id decides routing: **no `/`** -> the provider's own API (e.g. OpenAI, `OPENAI_API_KEY`); **with `/`** -> OpenRouter (`OPENROUTER_API_KEY`). Keys come from environment variables and are **never written into any file**. Only those lines configure anything - prose in the same file that contradicts them changes nothing ([SCHEMA](../../docs/SCHEMA.md#observersconfigmd)).
 2. **One request per mandate.** The mandate's instruction plus its input files, in a single prompt. Files only - no session context, no "what we did" summaries.
@@ -446,7 +446,7 @@ The folder stays where it is - closed folders are the long-term archive. Delete 
 1. Read `INDEX.md` Active rows; per task, the top of `MEMORY.md` (Current status + date) and `TASKS.md` (phase, unchecked items, blockers).
 2. Compute staleness: days since the most recent dated entry.
 3. Pick up the memory health score from the latest observer report, if any.
-4. Warn about: **stale memory** (active, no entries for 7+ days - suggest a sync or parking); **index drift** (`INDEX.md` contradicts the task's own files - quote both, the folder wins); **missing files** (an active folder lacking one of the five - suggest `/memento:init` on that folder to repair); **low or dropping health** (score <=5, or below the previous report - name the gap the observer cited).
+4. Warn about: **stale memory** (active, no entries for 7+ days - suggest a sync or parking); **index drift** (`INDEX.md` contradicts the task's own files - quote both, the folder wins); **missing files** (an active folder lacking one of the five - suggest `/memento-md:init` on that folder to repair); **low or dropping health** (score <=5, or below the previous report - name the gap the observer cited).
 
 **Record.** Nothing. One block per task on screen (status, phase, blockers, health, warnings) and a one-line verdict: how many healthy / stale / drifted.
 

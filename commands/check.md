@@ -1,9 +1,9 @@
 ---
-description: Cold-start check of Memento memory - run as the first message of a fresh session after /memento:init, after moving or renaming a workspace, or whenever memory seems not to load
+description: Cold-start check of Memento memory - run as the first message of a fresh session after /memento-md:init, after moving or renaming a workspace, or whenever memory seems not to load
 argument-hint: (no arguments)
 ---
 
-# /memento:check - does the memory actually load?
+# /memento-md:check - does the memory actually load?
 
 Memory that exists on disk but does not reach the model is worse than none: everyone believes it works. This command tests the one thing a cold session depends on - what arrives **without asking** - and then compares it with the files.
 

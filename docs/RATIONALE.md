@@ -112,7 +112,7 @@ The operations log admits its own limit: it "does not help if the agent forgot t
 
 Claude Code keys auto-memory by the project path. Move or rename the folder and the next session starts with an empty cross-task layer - and nothing on disk says so: the task folders are all there, the charter loads, everything looks fine. The procedure exists because the failure is silent, and the session-start warning fires only on evidence (a same-named folder elsewhere that holds auto-memory), because a warning on every fresh workspace would train everyone to ignore it.
 
-`/memento:check` is the same idea turned on the whole setup: memory that exists on disk but does not reach the model is worse than none, because everyone believes it works. Answering from context *before* opening files is the only way to see what actually arrives.
+`/memento-md:check` is the same idea turned on the whole setup: memory that exists on disk but does not reach the model is worse than none, because everyone believes it works. Answering from context *before* opening files is the only way to see what actually arrives.
 
 ## Rule 11 - checkpoints
 

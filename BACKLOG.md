@@ -182,7 +182,7 @@ Stop hooks for an unclosed `OPS_LOG.md` operation, a decision far ahead of its l
 
 ### 24. Moving a workspace + cold-start check ✅ shipped in v2.13.0
 
-Auto-memory is keyed by the project path, so a moved workspace silently loses its cross-task layer. A procedure in the skill, a session-start warning that fires only on evidence, and `/memento:check` - answer from context first, then compare with the files.
+Auto-memory is keyed by the project path, so a moved workspace silently loses its cross-task layer. A procedure in the skill, a session-start warning that fires only on evidence, and `/memento-md:check` - answer from context first, then compare with the files.
 
 ## Next - worth doing, needs more shaping
 
