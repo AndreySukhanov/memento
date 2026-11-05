@@ -6,6 +6,8 @@
 
 ### Persistent, file-based task memory for Claude Code. Your agent forgets everything between sessions — Memento doesn't.
 
+**Memento is a Claude Code plugin that gives your agent persistent memory between sessions**: one folder of plain Markdown files per task, written and kept current by the agent itself. Long-term memory for AI agents without a vector database or an MCP server — decisions with their rationale, dated facts with sources, and hypotheses that outside models from other families check before anything is built on them.
+
 **Not "another memory database."** Memento turns every task into a folder of five Markdown files with strict roles, keeps them truthful on its own — and then refuses to trust itself: outside models from other families read the memory cold and check it. No vector store, no MCP server, no service to keep alive.
 
 **Bootstrap → sync → insights → outside observers → close. One command per workspace. Plain Markdown forever.**
@@ -16,7 +18,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 [![License](https://img.shields.io/badge/license-Source--Available-blue)](LICENSE)
 
-[Quick Start](#-quick-start) · [How It Works](#️-how-it-works) · [Features](#-features) · [What makes it different](#-what-makes-it-different) · [Worked example](#-a-worked-example) · [Roadmap](#-roadmap)
+[Quick Start](#-quick-start) · [How It Works](#️-how-it-works) · [Features](#-features) · [What makes it different](#-what-makes-it-different) · [Worked example](#-a-worked-example) · [FAQ](#-faq) · [Roadmap](#-roadmap)
 
 </div>
 
@@ -238,24 +240,41 @@ That design came straight from the strongest objection an outside evaluation rai
 
 **Born in production, not in a demo.** Extracted from months of daily prompt-engineering work on a production AI product: dozens of parallel tasks, four-plus stakeholders, decisions revised weekly. Every rule exists because its absence caused a real, remembered failure — drifted statuses, lost rationale, an accidental rollback to a rejected design. What you install is what survived.
 
-<details>
-<summary><b>❓ FAQ</b></summary>
+---
 
-**Does it need Claude Code specifically?**
+## ❓ FAQ
+
+### How do I give Claude Code persistent memory between sessions?
+Install Memento with two commands (see [Quick Start](#-quick-start)) and run `/memento:init <workspace>` once. From then on the agent creates a five-file folder for every task that crosses the threshold, writes facts, decisions and plans as it works, and Claude Code auto-loads the task's `CLAUDE.md` charter whenever the agent works in that folder. The next session starts with the task's context, not a blank page.
+
+### Is Memento an MCP server or a vector database?
+Neither. It is a Claude Code plugin — a skill, slash commands and Stop hooks — that writes plain Markdown files. Nothing to host, nothing to keep running. *Low-tech* describes the storage, not the discipline: there is a protocol — a sync order, checks that must report themselves, formats with required fields — and the [core and layers](#-core-and-layers) split keeps it light enough to run on a bad week.
+
+### How does it compare to vector databases and RAG memory?
+Complementary, not competing. For a single workspace of tasks, structured files beat embeddings on precision, auditability and zero infrastructure. If you outgrow it, the files are perfect RAG source material — see [`docs/RETRIEVAL.md`](docs/RETRIEVAL.md).
+
+### How is it different from one big CLAUDE.md or Claude Code's auto-memory?
+Memento builds on both. Each task folder's `CLAUDE.md` is that task's charter, auto-loaded for free, and Claude Code's auto-memory becomes the cross-task layer — one fact per file, indexed. On top it adds what a single file cannot hold: a log of dated facts with sources, append-only decisions, a plan, the original brief, a fixed sync order with a self-check, and guards that refuse to end a turn while memory is behind.
+
+### What stops the agent from forgetting to write memory?
+Guards. Stop hooks run at the end of every turn and block it while memory is visibly behind — an operation left open in `OPS_LOG.md`, a decision 45+ minutes ahead of its log, a reply that promises a write while no memory file changed. Every turn that changed memory is snapshotted into a 20-deep backup ring, and `/memento:check` proves from a cold session that the memory actually loads.
+
+### Does it need an API key or cost anything?
+The memory itself needs nothing but Claude Code: no key, no service, no database. Only the optional outside observers call other model families — through their own APIs or OpenRouter, keys from environment variables; with no key or no budget left, the pass is skipped with a note.
+
+### Does it work with other agents besides Claude Code?
 The `/memento:init` command, the auto-activating skill and the auto-loading of `CLAUDE.md` are Claude Code features. The method — five files, litmus test, append-only decisions, sync order — works with any agent or with no agent at all.
 
-**How is this different from a TODO app or a wiki?**
+### How is this different from a TODO app or a wiki?
 Task trackers store *state*, wikis store *documents*. Memento stores *working memory*: dated facts, superseded decisions with rationale, and evidence — the things you need to resume thinking, not just to report progress.
 
-**Can I move or rename a workspace?**
+### Can I move or rename a workspace?
 Yes — task folders travel with it, but Claude Code keeps auto-memory under a folder named after the old path. The session-start guard notices when a same-named folder elsewhere holds it, and the skill moves it before anything new is written; `/memento:check` confirms the result.
 
-**What about vector databases / RAG memory?**
-Complementary, not competing. For a single workspace of tasks, structured files beat embeddings on precision, auditability, and zero infrastructure. If you outgrow it, the files are perfect RAG source material — see [`docs/RETRIEVAL.md`](docs/RETRIEVAL.md).
+### What happens to my memory if I uninstall it?
+Nothing. Every file is plain Markdown — greppable, diffable, readable in any editor. Your memory is not held hostage by a plugin.
 
-*Low-tech* describes the storage, not the discipline. There is no database to run and no service to keep alive — but there is a protocol: a sync order, checks that must report themselves, formats with required fields. That discipline is exactly what keeps the memory honest, and the [core and layers](#-core-and-layers) split keeps it light enough to run on a bad week.
-
-</details>
+**Every answer here is in the files — and the files outlive the plugin.**
 
 <details>
 <summary><b>📚 Docs</b></summary>

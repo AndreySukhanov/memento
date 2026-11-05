@@ -1,0 +1,30 @@
+# Memento
+
+> Claude Code plugin for persistent, file-based task memory: the agent keeps every task in five Markdown files with strict roles, keeps them current on its own, and lets outside models from other families check the memory cold. Long-term memory for AI agents with no database and no MCP server.
+
+Key facts:
+
+- One folder per task, five files: CLAUDE.md (charter, auto-loaded by Claude Code), MEMORY.md (dated facts with sources), TASKS.md (plan), DECISIONS.md (append-only decision records; a revision is a D1.1 block, the original stays), BRIEF.md (the original problem statement and definition of done). A workspace INDEX.md registers every task folder.
+- The agent creates the folder itself when a task crosses the threshold (more than a day, 2+ stakeholders, a release artifact, 2+ phases) and syncs memory in a fixed order with a self-check against the schema.
+- Insights are falsifiable hypotheses with `falsifier` and `depends_on`; refuted ones are kept and checked before every new decision (dead-end recall).
+- Outside observers: other model families (their own APIs or OpenRouter, keys from environment variables) read the memory cold as verifier, Sapper, pattern scout and auditor; high-stakes claims get a panel vote.
+- Guards: Stop hooks (Node.js) refuse to end a turn while memory is behind; every turn that changed memory is snapshotted into a 20-deep backup ring; `/memento:check` verifies a cold start, including a moved workspace.
+- Commands: `/memento:init <workspace>`, `/memento:check`, `/memento:observers <question>`. Install: `/plugin marketplace add AndreySukhanov/memento`, then `/plugin install memento@memento`.
+- `mode: core` in INDEX.md keeps only the seven core rules; the other layers run when asked for by name.
+- Version 2.13.0; Source-Available license.
+
+## Docs
+
+- [README](https://github.com/AndreySukhanov/memento/blob/master/README.md): the problem, how it works, features, quick start, FAQ
+- [Task memory skill](https://github.com/AndreySukhanov/memento/blob/master/skills/task-memory/SKILL.md): the method the agent follows - threshold, file roles, sync order, insights, observers, guards
+- [Schema](https://github.com/AndreySukhanov/memento/blob/master/docs/SCHEMA.md): every required shape - insight frontmatter, decision blocks, correction lenses, checkpoint YAML, index rows
+- [Rationale](https://github.com/AndreySukhanov/memento/blob/master/docs/RATIONALE.md): why each rule exists and the failure it came from
+- [Worked example](https://github.com/AndreySukhanov/memento/blob/master/examples/checkout-latency-bug): a task folder six weeks in
+
+## Optional
+
+- [Retrieval contract](https://github.com/AndreySukhanov/memento/blob/master/docs/RETRIEVAL.md): how external search runtimes index the Markdown memory
+- [Consilium skill](https://github.com/AndreySukhanov/memento/blob/master/skills/consilium/SKILL.md): parallel read-only lenses plus a mandatory skeptic for changes across 3+ areas
+- [Changelog](https://github.com/AndreySukhanov/memento/blob/master/CHANGELOG.md): release history up to v2.13.0
+- [Backlog](https://github.com/AndreySukhanov/memento/blob/master/BACKLOG.md): what is open, what shipped, what was rejected
+- [License](https://github.com/AndreySukhanov/memento/blob/master/LICENSE): Source-Available - free to read, run and learn from
