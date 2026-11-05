@@ -196,36 +196,38 @@ You run init once per workspace; observers — whenever a question deserves a pa
 
 ## 🛡 What makes it different
 
-File-based agent memory is a crowded category in 2026: markdown-first memory runtimes, tiered session logs, SQLite observation stores, `AGENTS.md` as a standard. Some of them also *reflect* — synthesize conclusions from accumulated facts. Memento shares the file-based foundation, and its insight synthesis has good company.
+File-based agent memory is a crowded category in 2026: markdown-first memory runtimes, tiered session logs, SQLite observation stores, `AGENTS.md` as a standard. Some of them even *reflect* — synthesize conclusions from accumulated facts. **Storing facts is solved. Trusting them is not.**
 
-The difference is what happens **after** the memory writes something down. The known central risk of reflective memory is **self-reinforcing error**: the agent derives a conclusion, stores it, later retrieves it as if it were a fact, and builds the next conclusion on top. Industry reviews call the quality gates for this "still underdeveloped". Memento's answer is structural, not aspirational:
+The difference is what happens **after** the memory writes something down. Reflective memory has one known killer — **self-reinforcing error**: the agent derives a conclusion, stores it, later retrieves it as if it were a fact, and builds the next conclusion on top. Industry reviews call the quality gates for this "still underdeveloped". Memento closes that loop structurally, not with good intentions:
 
 - **The author never grades their own work.** A hypothesis cannot be promoted by the agent that wrote it — only by a real-world fact or an outside observer's verdict.
 - **Outside observers are different model families, reading cold.** Independent models get the files and nothing else — no session context, no summaries. Their errors are uncorrelated with the author's, and the cold read doubles as a standing test that the memory actually speaks for itself.
 - **Decisions get mined for rot.** The Sapper mandate re-examines what recorded decisions *rest on* — assumptions that were never proven, or that newer facts have quietly contradicted.
 - **Verification leaves a trail.** Observer reports are stored verbatim and never deleted; disagreements are recorded with both positions, not resolved by silence.
 
+**Every conclusion in Memento has to survive someone who didn't write it.**
+
 ---
 
 ## 🧩 Core and layers
 
-Not every rule earns its keep on every task, and pretending otherwise is how a method gets abandoned instead of trimmed. Seven rules are the **core** — the threshold, the stable/volatile split, append-only decisions, the sync, compaction, correction lenses, glyphs — together with four operations: session start, sync, structure check, closing. They pay off on any task long enough to deserve a folder.
+Most methods die the same way: all-or-nothing under pressure, then nothing at all. **Memento is built to survive a busy month.** Seven rules are the **core** — the threshold, the stable/volatile split, append-only decisions, the sync, compaction, correction lenses, glyphs — together with four operations: session start, sync, structure check, closing. They pay off on any task long enough to deserve a folder.
 
-The rest are **layers**, each with a condition under which it is worth its cost: cross-task auto-memory when preferences recur, insight synthesis when conclusions are the deliverable, outside observers when a wrong decision is expensive, checkpoints for operations that span turns, the consilium for changes crossing three or more areas. A workspace that wants only the core says so with one line — `mode: core` in `INDEX.md` — and the layers then run only when asked for by name.
+Everything else is a **layer** you switch on when it earns its cost: cross-task auto-memory when preferences recur, insight synthesis when conclusions are the deliverable, outside observers when a wrong decision is expensive, checkpoints for operations that span turns, the consilium for changes crossing three or more areas. A workspace that wants only the core says so with one line — `mode: core` in `INDEX.md` — and the layers then run only when asked for by name.
 
-This is a direct answer to the strongest objection an outside evaluation raised: the risk is not a bug, it is a busy month. An all-or-nothing protocol does not get trimmed under pressure, it gets dropped, and the memory dies whole. The core is small enough to survive a stretch with no enthusiasm behind it.
+That design came straight from the strongest objection an outside evaluation raised: the real risk is not a bug, it is a busy month. An all-or-nothing protocol does not get trimmed under pressure — it gets dropped, and the memory dies whole. **The core is small enough to keep running with no enthusiasm behind it.**
 
 ---
 
 ## 🧪 A worked example
 
-[`examples/`](examples/) holds one task six weeks in — a revised decision that did not delete its original, two correction lenses, a refuted insight that later stopped someone re-proposing it, a sealed block, and an operations log with a session death and its recovery in the middle. Every other file here is a specification; that folder is what the specification looks like once it has been used. Start with [`examples/checkout-latency-bug`](examples/checkout-latency-bug) if the rules read as abstract.
+**Don't take the spec's word for it — open a task six weeks in.** [`examples/`](examples/) holds one task six weeks in — a revised decision that did not delete its original, two correction lenses, a refuted insight that later stopped someone re-proposing it, a sealed block, and an operations log with a session death and its recovery in the middle. Every other file here is a specification; that folder is what the specification looks like once it has been used. Start with [`examples/checkout-latency-bug`](examples/checkout-latency-bug) if the rules read as abstract.
 
 ---
 
 ## 🌱 Origin
 
-Extracted from months of daily prompt-engineering work on a production AI product: dozens of parallel tasks, four-plus stakeholders, decisions revised weekly. Every rule in the method exists because its absence caused a real, remembered failure — drifted statuses, lost rationale, an accidental rollback to a rejected design. This is the distilled version of what survived.
+**Born in production, not in a demo.** Extracted from months of daily prompt-engineering work on a production AI product: dozens of parallel tasks, four-plus stakeholders, decisions revised weekly. Every rule exists because its absence caused a real, remembered failure — drifted statuses, lost rationale, an accidental rollback to a rejected design. What you install is what survived.
 
 <details>
 <summary><b>❓ FAQ</b></summary>
@@ -239,7 +241,7 @@ Task trackers store *state*, wikis store *documents*. Memento stores *working me
 **What about vector databases / RAG memory?**
 Complementary, not competing. For a single workspace of tasks, structured files beat embeddings on precision, auditability, and zero infrastructure. If you outgrow it, the files are perfect RAG source material — see [`docs/RETRIEVAL.md`](docs/RETRIEVAL.md).
 
-One honest qualifier: *low-tech* describes the storage, not the method. There is no database to run and no service to keep alive, but there is a protocol — a sync order, checks that must report themselves, formats that have required fields. An outside evaluation called it "not a light plugin, a disciplinary protocol", which is fair. That is what the [core and layers](#-core-and-layers) split is for: the core is small enough to keep running on a bad week, and the rest is opt-in.
+*Low-tech* describes the storage, not the discipline. There is no database to run and no service to keep alive — but there is a protocol: a sync order, checks that must report themselves, formats with required fields. That discipline is exactly what keeps the memory honest, and the [core and layers](#-core-and-layers) split keeps it light enough to run on a bad week.
 
 </details>
 
