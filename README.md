@@ -2,7 +2,7 @@
 
 **Persistent, file-based task memory for Claude Code. Your agent forgets everything between sessions - Memento doesn't.**
 
-![version](https://img.shields.io/badge/version-2.12.1-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-orange)
+![version](https://img.shields.io/badge/version-2.12.1-blue) [![license](https://img.shields.io/badge/license-Source--Available-blue)](LICENSE) ![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-orange)
 
 **At a glance**
 
@@ -182,4 +182,6 @@ See [BACKLOG.md](BACKLOG.md) - what is still open (verified skill distillation, 
 
 ## License
 
-MIT
+**Source-Available** — free to read, run and learn from. Commercial or derivative use requires written permission. See [LICENSE](LICENSE).
+
+Licensing contact: [avsukhanov21@gmail.com](mailto:avsukhanov21@gmail.com)
